@@ -28,8 +28,10 @@ steps:
           # strip leading/trailing "
           temp="${FIREFOX_VERSION_STRING%\"}"
           FIREFOX_VERSION="${temp#\"}"
+          echo "Latest stable version of Firefox is $FIREFOX_VERSION"
         else
           FIREFOX_VERSION=<<parameters.version>>
+          echo "Selected version of Firefox is $FIREFOX_VERSION"
         fi
 
         # check if Firefox needs to be installed
@@ -79,7 +81,7 @@ steps:
         gpg --verify "$FIREFOX_FILE_NAME.asc" "$FIREFOX_FILE_NAME"
         rm -rf "$FIREFOX_FILE_NAME.asc"
 
-        sed -i 's%linux-x86_64/en-US/firefox%linux-x86_64-en-US-firefox%g' SHA256SUMS
+        perl -i -pe 's%linux-x86_64/en-US/firefox%linux-x86_64-en-US-firefox%g' SHA256SUMS
         grep "$FIREFOX_FILE_NAME" SHA256SUMS | sha256sum -c -
         rm -rf SHA256SUMS
 
