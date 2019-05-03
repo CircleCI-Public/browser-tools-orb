@@ -119,7 +119,7 @@ workflows:
       - test:
           name: test-older-alpine-dev
           executor: ci-base
-          firefox-version: 66.0.3
+          firefox-version: "66.0.3"
           geckodriver-version: v0.23.0
           filters: *integration-dev_filters
           pre-steps:
@@ -134,7 +134,7 @@ workflows:
       - test:
           name: test-older-machine-dev
           executor: machine
-          firefox-version: 65.0.1
+          firefox-version: "65.0.1"
           geckodriver-version: v0.22.0
           filters: *integration-dev_filters
 
@@ -147,7 +147,7 @@ workflows:
       - test:
           name: test-older-mac-dev
           executor: macos
-          firefox-version: 64.0
+          firefox-version: "64.0"
           geckodriver-version: v0.21.0
           filters: *integration-dev_filters
 
@@ -160,7 +160,7 @@ workflows:
       - test:
           name: test-older-docker-dev
           executor: docker
-          firefox-version: 57.0.3
+          firefox-version: "57.0.3"
           geckodriver-version: v0.20.1
           filters: *integration-dev_filters
 
@@ -173,7 +173,7 @@ workflows:
       - test:
           name: test-older-ci-docker-dev
           executor: ci-docker
-          firefox-version: 62.0.2
+          firefox-version: "62.0.2"
           geckodriver-version: v0.18.0
           filters: *integration-dev_filters
 
