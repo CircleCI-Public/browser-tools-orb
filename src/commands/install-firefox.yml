@@ -88,10 +88,8 @@ steps:
         rm -rf SHA256SUMS
 
         # setup firefox installation
-        $SUDO tar -xvjf "$FIREFOX_FILE_NAME" -C /opt
+        $SUDO tar -xvjf "$FIREFOX_FILE_NAME" -C /usr/local/bin
         rm -rf "$FIREFOX_FILE_NAME"
-
-        $SUDO ln -s /opt/firefox/firefox /usr/local/bin/firefox
 
         if uname -a | grep Darwin >> /dev/null 2>&1; then
           echo "mac"
