@@ -1,0 +1,27 @@
+description: >
+  Install Google's Chrome browser, for use in browser testing. Note:
+  only the latest stable release can be installed, as Google does not
+  maintain a public archive of previous releases. Requirements: curl,
+  apt-get, sed
+
+steps:
+  - run:
+      name: Install Google Chrome
+      command: |
+        if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
+
+        # download chrome
+        curl --silent --show-error --location --fail --retry 3 \
+          --output google-chrome-stable_current_amd64.deb \
+          https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+
+        # setup chrome installation
+        $SUDO dpkg -i google-chrome-stable_current_amd64.deb || $SUDO apt-get -fy install
+
+        rm -rf google-chrome-stable_current_amd64.deb
+
+        $SUDO sed -i 's|HERE/chrome"|HERE/chrome" --disable-setuid-sandbox --no-sandbox|g' \
+            "/opt/google/chrome/google-chrome"
+
+        # verify version
+        google-chrome --version

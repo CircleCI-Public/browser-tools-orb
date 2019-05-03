@@ -1,0 +1,36 @@
+description: >
+  Install Google's Chromedriver WebDriver proxy, for use in browser
+  testing with Chrome. A Chromedriver version will be dynamically
+  selected based on the installed version of Chrome; for details, see
+  https://sites.google.com/a/chromium.org/chromedriver/downloads/version-selection
+  Requirements: sed, curl, unzip
+
+steps:
+  - run:
+      name: Install Chromedriver
+      command: |
+        if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
+
+        # determine chrome version
+        CHROME_VERSION="$(google-chrome --version)"
+        CHROME_VERSION_STRING="$(echo $CHROME_VERSION | sed 's/^Google Chrome //')"
+
+        # determine chromedriver release
+        CHROMEDRIVER_RELEASE="${CHROME_VERSION_STRING%%.*}"
+        CHROMEDRIVER_VERSION=$(curl --location --fail --retry 3 \
+          "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROMEDRIVER_RELEASE")
+
+        # download chromedriver
+        curl --silent --show-error --location --fail --retry 3 \
+          --output chromedriver_linux64.zip \
+          "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
+
+        # setup chromedriver installation
+        unzip chromedriver_linux64.zip
+        rm -rf chromedriver_linux64.zip
+
+        sudo mv chromedriver /usr/local/bin/chromedriver
+        sudo chmod +x /usr/local/bin/chromedriver
+
+        # verify version
+        chromedriver --version
