@@ -47,9 +47,8 @@ jobs:
     steps:
       - jq/install
 
-      - browser-tools/install-browser-tools:
-          firefox-version: <<parameters.firefox-version>>
-          geckodriver-version: <<parameters.geckodriver-version>>
+      - browser-tools/install-firefox:
+          version: <<parameters.firefox-version>>
 
 integration-dev_filters: &integration-dev_filters
   branches:
@@ -113,17 +112,13 @@ workflows:
           name: test-latest-alpine-dev
           executor: ci-base
           filters: *integration-dev_filters
-          pre-steps:
-            - run: apk add gnupg
 
       - test:
           name: test-older-alpine-dev
           executor: ci-base
           firefox-version: "66.0.3"
-          geckodriver-version: v0.23.0
+          # geckodriver-version: v0.23.0
           filters: *integration-dev_filters
-          pre-steps:
-            - run: apk add gnupg
 
       # machine
       - test:
@@ -135,7 +130,7 @@ workflows:
           name: test-older-machine-dev
           executor: machine
           firefox-version: "65.0.1"
-          geckodriver-version: v0.22.0
+          # geckodriver-version: v0.22.0
           filters: *integration-dev_filters
 
       # mac
@@ -148,7 +143,7 @@ workflows:
           name: test-older-mac-dev
           executor: macos
           firefox-version: "64.0"
-          geckodriver-version: v0.21.0
+          # geckodriver-version: v0.21.0
           filters: *integration-dev_filters
 
       # docker
@@ -161,7 +156,7 @@ workflows:
           name: test-older-docker-dev
           executor: docker
           firefox-version: "57.0.3"
-          geckodriver-version: v0.20.1
+          # geckodriver-version: v0.20.1
           filters: *integration-dev_filters
 
       # ci-docker
@@ -174,7 +169,7 @@ workflows:
           name: test-older-ci-docker-dev
           executor: ci-docker
           firefox-version: "62.0.2"
-          geckodriver-version: v0.18.0
+          # geckodriver-version: v0.18.0
           filters: *integration-dev_filters
 
       # triggered by master branch commits
