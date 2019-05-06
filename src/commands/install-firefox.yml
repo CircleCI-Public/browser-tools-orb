@@ -99,9 +99,11 @@ steps:
         if uname -a | grep Darwin >> /dev/null 2>&1; then
           echo "no PGP data for macOS Firefox releases"
         else
+          echo "attempting to curl .asc from "$FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.asc""
+
           curl --silent --show-error --location --fail --retry 3 \
             --output "$FIREFOX_FILE_NAME.asc" \
-            "$FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.asc"
+            "$FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.$FILE_EXT.asc"
 
           # verify download archive
           gpg --verify "$FIREFOX_FILE_NAME.asc" "$FIREFOX_FILE_NAME"
