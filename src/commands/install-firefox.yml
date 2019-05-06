@@ -72,7 +72,7 @@ steps:
         gpg --verify SHA256SUMS.asc SHA256SUMS
         rm -f SHA256SUMS.asc
 
-        # download firefox
+        # setup firefox download
         if uname -a | grep Darwin >> /dev/null 2>&1; then
           FIREFOX_FILE="Firefox%20$FIREFOX_VERSION"
           PLATFORM=mac
@@ -90,6 +90,7 @@ steps:
         FIREFOX_FILE_NAME="$PLATFORM-en-US-$FIREFOX_FILE"
         echo "Firefox file name: $FIREFOX_FILE_NAME"
 
+        # download firefox
         echo "attempting to curl from $FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.$FILE_EXT"
 
         curl --silent --show-error --location --fail --retry 3 \
@@ -104,7 +105,7 @@ steps:
           echo "attempting to curl .asc from $FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.$FILE_EXT.asc"
 
           curl --silent --show-error --location --fail --retry 3 \
-            --output "$FIREFOX_FILE_NAME.asc" \
+            --output "$FIREFOX_FILE_NAME.$FILE_EXT.asc" \
             "$FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.$FILE_EXT.asc"
 
           # verify download archive
