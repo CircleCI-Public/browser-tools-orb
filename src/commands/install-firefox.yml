@@ -55,8 +55,6 @@ steps:
         # create Firefox download URL base
         FIREFOX_URL_BASE="https://archive.mozilla.org/pub/firefox/releases/$FIREFOX_VERSION"
 
-        echo "Firefox URL base: $FIREFOX_URL_BASE"
-
         # import public key
         if uname -a | grep Darwin >> /dev/null 2>&1; then
           HOMEBREW_NO_AUTO_UPDATE=1 brew install gnupg coreutils
@@ -72,43 +70,42 @@ steps:
 
         # verify shasum256
         gpg --verify SHA256SUMS.asc SHA256SUMS
-        rm -rf SHA256SUMS.asc
-
-        echo "shasums verified"
+        rm -f SHA256SUMS.asc
 
         # download firefox
         if uname -a | grep Darwin >> /dev/null 2>&1; then
-          FIREFOX_FILE="Firefox%20$FIREFOX_VERSION.dmg"
+          FIREFOX_FILE="Firefox%20$FIREFOX_VERSION"
           PLATFORM=mac
           FILE_EXT=dmg
         else
-          FIREFOX_FILE="firefox-$FIREFOX_VERSION.tar.bz2"
+          FIREFOX_FILE="firefox-$FIREFOX_VERSION"
           PLATFORM=linux-x86_64
           FILE_EXT=tar.bz2
         fi
 
         FIREFOX_FILE_LOCATION="$PLATFORM/en-US/$FIREFOX_FILE"
+
         echo "Firefox file location: $FIREFOX_FILE_LOCATION"
 
         FIREFOX_FILE_NAME="$PLATFORM-en-US-$FIREFOX_FILE"
         echo "Firefox file name: $FIREFOX_FILE_NAME"
 
-        echo "attempting to curl from $FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION"
+        echo "attempting to curl from $FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.$FILE_EXT"
 
         curl --silent --show-error --location --fail --retry 3 \
           --output "$FIREFOX_FILE_NAME.$FILE_EXT" \
-          "$FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION"
+          "$FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.$FILE_EXT"
 
         if uname -a | grep Darwin >> /dev/null 2>&1; then
           echo "no PGP data for macOS Firefox releases"
         else
           curl --silent --show-error --location --fail --retry 3 \
             --output "$FIREFOX_FILE_NAME.asc" \
-            "$FIREFOX_URL_BASE/$PLATFORM/en-US/$FIREFOX_FILE.asc"
+            "$FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.asc"
 
           # verify download archive
           gpg --verify "$FIREFOX_FILE_NAME.asc" "$FIREFOX_FILE_NAME"
-          rm -rf "$FIREFOX_FILE_NAME.asc"
+          rm -f "$FIREFOX_FILE_NAME.asc"
         fi
 
         perl -i -pe "s%$PLATFORM/en-US/firefox%$PLATFORM-en-US-firefox%g" SHA256SUMS
