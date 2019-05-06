@@ -101,15 +101,15 @@ steps:
 
           perl -i -pe "s%mac/en-US/Firefox%mac-en-US-Firefox%g" SHA256SUMS
         else
-          echo "attempting to curl .asc from "$FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.asc""
+          echo "attempting to curl .asc from $FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.$FILE_EXT.asc"
 
           curl --silent --show-error --location --fail --retry 3 \
             --output "$FIREFOX_FILE_NAME.asc" \
             "$FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.$FILE_EXT.asc"
 
           # verify download archive
-          gpg --verify "$FIREFOX_FILE_NAME.asc" "$FIREFOX_FILE_NAME"
-          rm -f "$FIREFOX_FILE_NAME.asc"
+          gpg --verify "$FIREFOX_FILE_NAME.$FILE_EXT.asc" "$FIREFOX_FILE_NAME.$FILE_EXT"
+          rm -f "$FIREFOX_FILE_NAME.$FILE_EXT.asc"
 
           perl -i -pe "s%linux-x86_64/en-US/firefox%linux-x86_64-en-US-firefox%g" SHA256SUMS
         fi
