@@ -12,6 +12,12 @@ parameters:
       e.g., 66.0.3, 53.0, etc. For a list of releases, see the following:
       https://archive.mozilla.org/pub/firefox/releases/
 
+  install-dir:
+    type: string
+    default: /usr/local/bin
+    description: >
+      Directory in which to install Firefox
+
 steps:
   - run:
       name: Install Firefox
@@ -88,7 +94,7 @@ steps:
         rm -rf SHA256SUMS
 
         # setup firefox installation
-        $SUDO tar -xvjf "$FIREFOX_FILE_NAME" -C /usr/local/bin
+        $SUDO tar -xvjf "$FIREFOX_FILE_NAME" -C <<parameters.install-dir>>
         rm -rf "$FIREFOX_FILE_NAME"
 
         if uname -a | grep Darwin >> /dev/null 2>&1; then
