@@ -97,7 +97,7 @@ steps:
 
         curl --silent --show-error --location --fail --retry 3 \
           --output "$FIREFOX_FILE_NAME.$FILE_EXT" \
-          "$FIREFOX_URL_BASE/FIREFOX_FILE_LOCATION"
+          "$FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION"
 
         if uname -a | grep Darwin >> /dev/null 2>&1; then
           echo "no PGP data for macOS Firefox releases"
