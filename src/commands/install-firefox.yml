@@ -98,6 +98,8 @@ steps:
 
         if uname -a | grep Darwin >> /dev/null 2>&1; then
           echo "no PGP data for macOS Firefox releases"
+
+          perl -i -pe "s%mac/en-US/Firefox%mac-en-US-Firefox%g" SHA256SUMS
         else
           echo "attempting to curl .asc from "$FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.asc""
 
@@ -108,9 +110,10 @@ steps:
           # verify download archive
           gpg --verify "$FIREFOX_FILE_NAME.asc" "$FIREFOX_FILE_NAME"
           rm -f "$FIREFOX_FILE_NAME.asc"
+
+          perl -i -pe "s%linux-x86_64/en-US/firefox%linux-x86_64-en-US-firefox%g" SHA256SUMS
         fi
 
-        perl -i -pe "s%$PLATFORM/en-US/firefox%$PLATFORM-en-US-firefox%g" SHA256SUMS
         grep "$FIREFOX_FILE_NAME" SHA256SUMS | sha256sum -c -
         rm -rf SHA256SUMS
 
