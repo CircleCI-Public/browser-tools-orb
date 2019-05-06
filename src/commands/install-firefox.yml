@@ -127,17 +127,19 @@ steps:
         if uname -a | grep Darwin >> /dev/null 2>&1; then
           hdiutil attach "$FIREFOX_FILE_NAME.$FILE_EXT"
         else
-          $SUDO tar -xvjf "$FIREFOX_FILE_NAME.$FILE_EXT" -C <<parameters.install-dir>>
+          $SUDO tar -xvjf "$FIREFOX_FILE_NAME.$FILE_EXT"
+          $SUDO rm -f "$FIREFOX_FILE_NAME.$FILE_EXT"
+          $SUDO chmod +x firefox/firefox
+          $SUDO mv firefox <<parameters.install-dir>>
         fi
-
-        rm -rf "$FIREFOX_FILE_NAME"
 
         if uname -a | grep Darwin >> /dev/null 2>&1; then
           echo "mac"
         elif cat /etc/issue | grep Alpine >> /dev/null 2>&1; then
           echo "alpine"
         else
-          $SUDO apt-get install -y libgtk3.0-cil-dev libasound2 libasound2 libdbus-glib-1-2 libdbus-1-3
+          echo "deb/ubuntu"
+          # $SUDO apt-get install -y libgtk3.0-cil-dev libasound2 libasound2 libdbus-glib-1-2 libdbus-1-3
         fi
 
         # verify version
