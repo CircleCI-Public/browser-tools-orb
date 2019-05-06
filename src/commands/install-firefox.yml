@@ -115,7 +115,7 @@ steps:
           perl -i -pe "s%linux-x86_64/en-US/firefox%linux-x86_64-en-US-firefox%g" SHA256SUMS
         fi
 
-        grep "$FIREFOX_FILE_NAME" SHA256SUMS | sha256sum -c -
+        grep "$FIREFOX_FILE_NAME.$FILE_EXT" SHA256SUMS | sha256sum -c -
         rm -rf SHA256SUMS
 
         # setup firefox installation
