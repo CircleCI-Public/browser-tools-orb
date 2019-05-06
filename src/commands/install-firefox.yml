@@ -24,6 +24,7 @@ steps:
       command: |
         if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
 
+        # grab Firefox version
         if [[ <<parameters.version>> == "latest" ]]; then
           # extract latest version from mozilla product details API
 
@@ -51,6 +52,7 @@ steps:
           fi
         fi
 
+        # create Firefox download URL base
         FIREFOX_URL_BASE="https://archive.mozilla.org/pub/firefox/releases/$FIREFOX_VERSION"
 
         echo "$FIREFOX_URL_BASE"
@@ -73,28 +75,46 @@ steps:
         rm -rf SHA256SUMS.asc
 
         # download firefox
-        FIREFOX_FILE="firefox-$FIREFOX_VERSION.tar.bz2"
-        FIREFOX_FILE_LOCATION="linux-x86_64/en-US/$FIREFOX_FILE"
-        FIREFOX_FILE_NAME="linux-x86_64-en-US-$FIREFOX_FILE"
+        if uname -a | grep Darwin >> /dev/null 2>&1; then
+          FIREFOX_FILE="Firefox%20$FIREFOX_VERSION.dmg"
+          PLATFORM=mac
+          FILE_EXT=dmg
+        else
+          FIREFOX_FILE="firefox-$FIREFOX_VERSION.tar.bz2"
+          PLATFORM=linux-x86_64
+          FILE_EXT=tar.bz2
+        fi
+
+        FIREFOX_FILE_LOCATION="$PLATFORM/en-US/$FIREFOX_FILE"
+        FIREFOX_FILE_NAME="$PLATFORM-en-US-$FIREFOX_FILE"
 
         curl --silent --show-error --location --fail --retry 3 \
-          --output "$FIREFOX_FILE_NAME.asc" \
-          "$FIREFOX_URL_BASE/linux-x86_64/en-US/$FIREFOX_FILE.asc"
+          --output "$FIREFOX_FILE_NAME.$FILE_EXT" \
+          "$FIREFOX_URL_BASE/FIREFOX_FILE_LOCATION"
 
-        curl --silent --show-error --location --fail --retry 3 \
-          --output "$FIREFOX_FILE_NAME" \
-          "$FIREFOX_URL_BASE/linux-x86_64/en-US/$FIREFOX_FILE"
+        if uname -a | grep Darwin >> /dev/null 2>&1; then
+          echo "no PGP data for macOS Firefox releases"
+        else
+          curl --silent --show-error --location --fail --retry 3 \
+            --output "$FIREFOX_FILE_NAME.asc" \
+            "$FIREFOX_URL_BASE/$PLATFORM/en-US/$FIREFOX_FILE.asc"
 
-        # verify download archive
-        gpg --verify "$FIREFOX_FILE_NAME.asc" "$FIREFOX_FILE_NAME"
-        rm -rf "$FIREFOX_FILE_NAME.asc"
+          # verify download archive
+          gpg --verify "$FIREFOX_FILE_NAME.asc" "$FIREFOX_FILE_NAME"
+          rm -rf "$FIREFOX_FILE_NAME.asc"
+        fi
 
-        perl -i -pe 's%linux-x86_64/en-US/firefox%linux-x86_64-en-US-firefox%g' SHA256SUMS
+        perl -i -pe "s%$PLATFORM/en-US/firefox%$PLATFORM-en-US-firefox%g" SHA256SUMS
         grep "$FIREFOX_FILE_NAME" SHA256SUMS | sha256sum -c -
         rm -rf SHA256SUMS
 
         # setup firefox installation
-        $SUDO tar -xvjf "$FIREFOX_FILE_NAME" -C <<parameters.install-dir>>
+        if uname -a | grep Darwin >> /dev/null 2>&1; then
+          hdiutil attach "$FIREFOX_FILE_NAME.$FILE_EXT"
+        else
+          $SUDO tar -xvjf "$FIREFOX_FILE_NAME.$FILE_EXT" -C <<parameters.install-dir>>
+        fi
+
         rm -rf "$FIREFOX_FILE_NAME"
 
         if uname -a | grep Darwin >> /dev/null 2>&1; then
