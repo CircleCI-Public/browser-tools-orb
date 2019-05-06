@@ -59,7 +59,7 @@ steps:
 
         # import public key
         if uname -a | grep Darwin >> /dev/null 2>&1; then
-          HOMEBREW_NO_AUTO_UPDATE=1 brew install -q gnupg coreutils
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install gnupg coreutils
         elif cat /etc/issue | grep Alpine >> /dev/null 2>&1; then
           $SUDO apk add -q perl gnupg
         fi
@@ -88,9 +88,12 @@ steps:
         fi
 
         FIREFOX_FILE_LOCATION="$PLATFORM/en-US/$FIREFOX_FILE"
-        FIREFOX_FILE_NAME="$PLATFORM-en-US-$FIREFOX_FILE"
+        echo "Firefox file location: $FIREFOX_FILE_LOCATION"
 
-        echo "attempting to curl from $FIREFOX_URL_BASE/FIREFOX_FILE_LOCATION"
+        FIREFOX_FILE_NAME="$PLATFORM-en-US-$FIREFOX_FILE"
+        echo "Firefox file name: $FIREFOX_FILE_NAME"
+
+        echo "attempting to curl from $FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION"
 
         curl --silent --show-error --location --fail --retry 3 \
           --output "$FIREFOX_FILE_NAME.$FILE_EXT" \
