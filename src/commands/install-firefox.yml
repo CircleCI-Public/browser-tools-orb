@@ -104,13 +104,18 @@ steps:
         else
           echo "attempting to curl .asc from $FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.$FILE_EXT.asc"
 
-          curl --silent --show-error --location --fail --retry 3 \
-            --output "$FIREFOX_FILE_NAME.$FILE_EXT.asc" \
-            "$FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.$FILE_EXT.asc"
+          # only do this step if .asc file exists for this version
+          if [[ $(curl --silent --show-error --location --fail --retry 3 \
+            "$FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.$FILE_EXT.asc") ]]; then
 
-          # verify download archive
-          gpg --verify "$FIREFOX_FILE_NAME.$FILE_EXT.asc" "$FIREFOX_FILE_NAME.$FILE_EXT"
-          rm -f "$FIREFOX_FILE_NAME.$FILE_EXT.asc"
+            curl --silent --show-error --location --fail --retry 3 \
+              --output "$FIREFOX_FILE_NAME.$FILE_EXT.asc" \
+              "$FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.$FILE_EXT.asc"
+
+            # verify download archive
+            gpg --verify "$FIREFOX_FILE_NAME.$FILE_EXT.asc" "$FIREFOX_FILE_NAME.$FILE_EXT"
+            rm -f "$FIREFOX_FILE_NAME.$FILE_EXT.asc"
+          fi
 
           perl -i -pe "s%linux-x86_64/en-US/firefox%linux-x86_64-en-US-firefox%g" SHA256SUMS
         fi
