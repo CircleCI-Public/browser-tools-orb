@@ -114,25 +114,6 @@ steps:
 
           exit 0
 
-          # dont seem to need these if installing via APK
-          # $SUDO apk add --no-cache -q gtk+3.0-dev dbus-glib-dev libc6-compat libstdc++ libgcc libbsd-dev glib pango xorg-server dbus networkmanager
-
-          # add glibc compatibility layer
-          # curl --output /etc/apk/keys/sgerrand.rsa.pub \
-          #  --silent --show-error --location --fail --retry 3 \
-          #  https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
-
-          # GLIBC_URL_STRING=$(curl \
-          #  --silent --show-error --location --fail --retry 3 \
-          #  https://api.github.com/repos/sgerrand/alpine-pkg-glibc/releases/latest | jq '.assets[3].browser_download_url')
-
-          # strip leading/trailing "
-          # curl --output glibc.apk \
-          #  --silent --show-error --location --fail --retry 3 \
-          #  "${GLIBC_URL_STRING:1:-1}"
-
-          # $SUDO apk add glibc.apk && rm -f glibc.apk
-
         # deb/ubuntu: setup version, install packages, then continue
         else
           grab_firefox_version
@@ -174,9 +155,9 @@ steps:
           "$FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.$FILE_EXT"
 
         if uname -a | grep Darwin >> /dev/null 2>&1; then
-          echo "no PGP data for macOS Firefox releases"
+          echo "No PGP data for macOS Firefox releases; skipping PGP verification"
 
-          perl -i -pe "s%mac/en-US/Firefox%mac-en-US-Firefox%g" SHA256SUMS
+          perl -i -pe "s&mac/en-US/Firefox $FIREFOX_VERSION&mac-en-US-Firefox%20$FIREFOX_VERSION&g" SHA256SUMS
         else
           # only do this step if .asc file exists for this version
           if [[ $(curl --silent --location --fail --retry 3 \
