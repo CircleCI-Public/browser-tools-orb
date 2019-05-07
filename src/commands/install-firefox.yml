@@ -9,14 +9,30 @@ parameters:
     description: >
       Version of Firefox to install, defaults to the latest stable release.
       To install an older release, specify a full semantic version number,
-      e.g., 66.0.3, 53.0, etc. For a list of releases, see the following:
-      https://archive.mozilla.org/pub/firefox/releases/
+      e.g., 66.0.3, 53.0, etc. Note: version-selection is not supported for
+      Alpine Linux-based execution environments, as Mozilla's Firefox
+      binaries are not compiled to run on Alpine. Use the `alpine-version`
+      parameter to select from a limited number of Alpine-based
+      Firefox packages. Otherwise, for a full list of releases, see the
+      following: https://archive.mozilla.org/pub/firefox/releases/
+
+  alpine-version:
+    type: enum
+    default: stable
+    enum: [stable, esr]
+    description: >
+      For Alpine Linux users, select a Firefox version: either the latest
+      stable release, or the latest Extended Support Release. For more
+      information, see https://mozilla.org/firefox/organizations and
+      https://pkgs.alpinelinux.org/packages?name=firefox*
 
   install-dir:
     type: string
     default: /usr/local/bin
     description: >
-      Directory in which to install Firefox
+      Directory in which to install Firefox. Note: directory-
+      selection is not supported for Alpine Linux-based execution
+      environments.
 
 steps:
   - run:
@@ -24,43 +40,58 @@ steps:
       command: |
         if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
 
-        # grab Firefox version
-        if [[ <<parameters.version>> == "latest" ]]; then
-          # extract latest version from mozilla product details API
+        # only run this in non-Alpine environments:
+        if uname -a | grep Darwin >> /dev/null 2>&1 || cat /etc/issue | grep -v Alpine; then
+          # grab Firefox version
+          if [[ <<parameters.version>> == "latest" ]]; then
+            # extract latest version from mozilla product details API
 
-          FIREFOX_VERSION_STRING=$(curl \
-            https://product-details.mozilla.org/1.0/firefox_versions.json | \
-            jq '.LATEST_FIREFOX_VERSION')
+            FIREFOX_VERSION_STRING=$(curl \
+              https://product-details.mozilla.org/1.0/firefox_versions.json | \
+              jq '.LATEST_FIREFOX_VERSION')
 
-          # strip leading/trailing "
-          temp="${FIREFOX_VERSION_STRING%\"}"
-          FIREFOX_VERSION="${temp#\"}"
-          echo "Latest stable version of Firefox is $FIREFOX_VERSION"
-        else
-          FIREFOX_VERSION=<<parameters.version>>
-          echo "Selected version of Firefox is $FIREFOX_VERSION"
-        fi
-
-        # check if Firefox needs to be installed
-        if command -v firefox >> /dev/null 2>&1; then
-          if firefox --version | grep "$FIREFOX_VERSION" >> /dev/null 2>&1; then
-            echo "firefox $FIREFOX_VERSION is already installed"
-            exit 0
+            # strip leading/trailing "
+            temp="${FIREFOX_VERSION_STRING%\"}"
+            FIREFOX_VERSION="${temp#\"}"
+            echo "Latest stable version of Firefox is $FIREFOX_VERSION"
           else
-            echo "A different version of Firefox is installed ($(firefox --version)); removing it"
-            $SUDO rm -f $(command -v firefox)
+            FIREFOX_VERSION=<<parameters.version>>
+            echo "Selected version of Firefox is $FIREFOX_VERSION"
           fi
+
+          # check if Firefox needs to be installed
+          if command -v firefox >> /dev/null 2>&1; then
+            if firefox --version | grep "$FIREFOX_VERSION" >> /dev/null 2>&1; then
+              echo "firefox $FIREFOX_VERSION is already installed"
+              exit 0
+            else
+              echo "A different version of Firefox is installed ($(firefox --version)); removing it"
+              $SUDO rm -f $(command -v firefox)
+            fi
+          fi
+
+          # create Firefox download URL base
+          FIREFOX_URL_BASE="https://archive.mozilla.org/pub/firefox/releases/$FIREFOX_VERSION"
         fi
 
-        # create Firefox download URL base
-        FIREFOX_URL_BASE="https://archive.mozilla.org/pub/firefox/releases/$FIREFOX_VERSION"
-
-        # import public key
-        # install necessary packages
+        # mac: install necessary packages, then continue
         if uname -a | grep Darwin >> /dev/null 2>&1; then
           HOMEBREW_NO_AUTO_UPDATE=1 brew install gnupg coreutils
+
+        # alpine: install everything, then check version & halt
         elif cat /etc/issue | grep Alpine >> /dev/null 2>&1; then
-          $SUDO apk add --no-cache -q perl gnupg gtk+3.0-dev dbus-glib-dev libc6-compat libstdc++ libgcc libbsd-dev
+          if [[ <<parameters.alpine-version>> == "stable" ]]; then
+            FIREFOX_PKG=firefox
+          elif [[ <<parameters.alpine-version>> == "esr" ]]
+            FIREFOX_PKG=firefox-esr
+          fi
+
+          $SUDO apk add --no-cache -q perl gnupg gtk+3.0-dev dbus-glib-dev libc6-compat libstdc++ libgcc libbsd-dev "$FIREFOX_PKG"
+
+          echo "$(firefox --version) has been installed to $(which firefox)"
+
+          circleci step halt
+
           # glib pango xorg-server dbus networkmanager
 
           # add glibc compatibility layer
@@ -79,11 +110,13 @@ steps:
 
           # $SUDO apk add glibc.apk && rm -f glibc.apk
 
+        # debian/ubuntu: install necessary packages, then continue
         else
           $SUDO apt-get update && \
             $SUDO apt-get install -y libgtk-3-dev libdbus-glib-1-2
         fi
 
+        # import public key
         curl --silent --show-error --location --fail --retry 3 "$FIREFOX_URL_BASE/KEY" | gpg --import
 
         # download shasum256

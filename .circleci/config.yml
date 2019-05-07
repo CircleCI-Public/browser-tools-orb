@@ -43,6 +43,11 @@ jobs:
         type: string
         default: latest
 
+      firefox-alpine-version:
+        type: enum
+        default: stable
+        enum: [stable, esr]
+
       geckodriver-version:
         type: string
         default: latest
@@ -121,7 +126,7 @@ workflows:
       - test:
           name: test-older-alpine-dev
           executor: ci-base
-          firefox-version: "66.0.3"
+          firefox-alpine-version: esr
           # geckodriver-version: v0.23.0
           filters: *integration-dev_filters
 
