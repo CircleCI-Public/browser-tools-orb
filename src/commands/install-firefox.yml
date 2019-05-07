@@ -84,11 +84,13 @@ steps:
         # alpine: install everything, then check version & halt
         elif cat /etc/issue | grep Alpine >> /dev/null 2>&1; then
           # https://stackoverflow.com/questions/51806403/installation-of-firefox-from-alpine-edge
+
+          $SUDO apk add --no-cache icu-libs
           if [[ <<parameters.alpine-version>> == "stable" ]]; then
-            apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing firefox
+            $SUDO apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing firefox
 
           elif [[ <<parameters.alpine-version>> == "esr" ]]; then
-            apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/community firefox-esr
+            $SUDO apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/community firefox-esr
           fi
 
           # $SUDO apk add --no-cache -q gtk+3.0-dev dbus-glib-dev libc6-compat libstdc++ libgcc libbsd-dev "$FIREFOX_PKG"
