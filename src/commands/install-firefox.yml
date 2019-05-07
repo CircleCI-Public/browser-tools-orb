@@ -40,9 +40,8 @@ steps:
       command: |
         if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
 
-        # only run this in non-Alpine environments:
-        if uname -a | grep Darwin >> /dev/null 2>&1 || cat /etc/issue | grep -v Alpine; then
-          # grab Firefox version
+        # FUNCTIONS
+        grab_firefox_version () {
           if [[ <<parameters.version>> == "latest" ]]; then
             # extract latest version from mozilla product details API
 
@@ -59,7 +58,11 @@ steps:
             echo "Selected version of Firefox is $FIREFOX_VERSION"
           fi
 
-          # check if Firefox needs to be installed
+          # create Firefox download URL base
+          FIREFOX_URL_BASE="https://archive.mozilla.org/pub/firefox/releases/$FIREFOX_VERSION"
+        }
+
+        installation_check () {
           if command -v firefox >> /dev/null 2>&1; then
             if firefox --version | grep "$FIREFOX_VERSION" >> /dev/null 2>&1; then
               echo "firefox $FIREFOX_VERSION is already installed"
@@ -69,13 +72,13 @@ steps:
               $SUDO rm -f $(command -v firefox)
             fi
           fi
+        }
 
-          # create Firefox download URL base
-          FIREFOX_URL_BASE="https://archive.mozilla.org/pub/firefox/releases/$FIREFOX_VERSION"
-        fi
-
-        # mac: install necessary packages, then continue
+        # mac: setup version, install packages, then continue
         if uname -a | grep Darwin >> /dev/null 2>&1; then
+          grab_firefox_version
+          installation_check
+
           HOMEBREW_NO_AUTO_UPDATE=1 brew install gnupg coreutils
 
         # alpine: install everything, then check version & halt
@@ -86,13 +89,13 @@ steps:
             FIREFOX_PKG=firefox-esr
           fi
 
-          $SUDO apk add --no-cache -q perl gnupg gtk+3.0-dev dbus-glib-dev libc6-compat libstdc++ libgcc libbsd-dev "$FIREFOX_PKG"
+          $SUDO apk add --no-cache -q gtk+3.0-dev dbus-glib-dev libc6-compat libstdc++ libgcc libbsd-dev "$FIREFOX_PKG"
 
           echo "$(firefox --version) has been installed to $(which firefox)"
 
           circleci step halt
 
-          # glib pango xorg-server dbus networkmanager
+          # perl gnupg glib pango xorg-server dbus networkmanager
 
           # add glibc compatibility layer
           # curl --output /etc/apk/keys/sgerrand.rsa.pub \
@@ -110,8 +113,11 @@ steps:
 
           # $SUDO apk add glibc.apk && rm -f glibc.apk
 
-        # debian/ubuntu: install necessary packages, then continue
+        # deb/ubuntu: setup version, install packages, then continue
         else
+          grab_firefox_version
+          installation_check
+
           $SUDO apt-get update && \
             $SUDO apt-get install -y libgtk-3-dev libdbus-glib-1-2
         fi
