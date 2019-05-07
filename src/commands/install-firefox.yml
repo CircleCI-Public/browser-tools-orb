@@ -64,7 +64,7 @@ steps:
           # $SUDO apk add --no-cache -q perl gnupg libstdc++ gtk+3.0 glib pango xorg-server dbus networkmanager
         else
           $SUDO apt-get update && \
-            $SUDO apt-get install -y libgtk-3-dev libdbus-glib1.0-cil-dev
+            $SUDO apt-get install -y libgtk-3-dev libdbus-glib-1-2
           # libc6-dev libpango1.0-dev xorg-dev libstdc++6 network-manager libdbus-glib2.0-cil-dev
         fi
 

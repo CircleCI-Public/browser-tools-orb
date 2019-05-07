@@ -28,6 +28,11 @@ executors:
     docker:
       - image: circleci/node:boron
 
+  cimg:
+    resource_class: small
+    docker:
+      - image: circleciimages/base
+
 jobs:
   test:
     parameters:
@@ -168,6 +173,19 @@ workflows:
       - test:
           name: test-older-ci-docker-dev
           executor: ci-docker
+          firefox-version: "62.0.2"
+          # geckodriver-version: v0.18.0
+          filters: *integration-dev_filters
+
+      # new ci-docker
+      - test:
+          name: test-latest-cimg-dev
+          executor: cimg
+          filters: *integration-dev_filters
+
+      - test:
+          name: test-older-cimg-dev
+          executor: cimg
           firefox-version: "62.0.2"
           # geckodriver-version: v0.18.0
           filters: *integration-dev_filters
