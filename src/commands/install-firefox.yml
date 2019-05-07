@@ -60,8 +60,8 @@ steps:
         if uname -a | grep Darwin >> /dev/null 2>&1; then
           HOMEBREW_NO_AUTO_UPDATE=1 brew install gnupg coreutils
         elif cat /etc/issue | grep Alpine >> /dev/null 2>&1; then
-          $SUDO apk add --no-cache -q perl gnupg gtk+3.0-dev dbus-glib-dev
-          # libstdc++ glib pango xorg-server dbus networkmanager
+          $SUDO apk add --no-cache -q perl gnupg gtk+3.0-dev dbus-glib-dev libc6-compat libstdc++ libgcc
+          # glib pango xorg-server dbus networkmanager
         else
           $SUDO apt-get update && \
             $SUDO apt-get install -y libgtk-3-dev libdbus-glib-1-2
