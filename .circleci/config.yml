@@ -113,17 +113,17 @@ workflows:
     jobs:
       # triggered by non-master branch commits
       # alpine
-      # - test:
-      #     name: test-latest-alpine-dev
-      #     executor: ci-base
-      #     filters: *integration-dev_filters
+      - test:
+          name: test-latest-alpine-dev
+          executor: ci-base
+          filters: *integration-dev_filters
 
-      # - test:
-      #     name: test-older-alpine-dev
-      #     executor: ci-base
-      #     firefox-version: "66.0.3"
-      #     # geckodriver-version: v0.23.0
-      #     filters: *integration-dev_filters
+      - test:
+          name: test-older-alpine-dev
+          executor: ci-base
+          firefox-version: "66.0.3"
+          # geckodriver-version: v0.23.0
+          filters: *integration-dev_filters
 
       # machine
       # - test:
@@ -152,43 +152,43 @@ workflows:
       #     filters: *integration-dev_filters
 
       # docker
-      - test:
-          name: test-latest-docker-dev
-          executor: docker
-          filters: *integration-dev_filters
+      # - test:
+      #     name: test-latest-docker-dev
+      #     executor: docker
+      #     filters: *integration-dev_filters
 
-      - test:
-          name: test-older-docker-dev
-          executor: docker
-          firefox-version: "57.0.3"
-          # geckodriver-version: v0.20.1
-          filters: *integration-dev_filters
+      # - test:
+      #     name: test-older-docker-dev
+      #     executor: docker
+      #     firefox-version: "57.0.3"
+      #     # geckodriver-version: v0.20.1
+      #     filters: *integration-dev_filters
 
       # ci-docker
-      - test:
-          name: test-latest-ci-docker-dev
-          executor: ci-docker
-          filters: *integration-dev_filters
+      # - test:
+      #     name: test-latest-ci-docker-dev
+      #     executor: ci-docker
+      #     filters: *integration-dev_filters
 
-      - test:
-          name: test-older-ci-docker-dev
-          executor: ci-docker
-          firefox-version: "62.0.2"
-          # geckodriver-version: v0.18.0
-          filters: *integration-dev_filters
+      # - test:
+      #     name: test-older-ci-docker-dev
+      #     executor: ci-docker
+      #     firefox-version: "62.0.2"
+      #     # geckodriver-version: v0.18.0
+      #     filters: *integration-dev_filters
 
       # new ci-docker
-      - test:
-          name: test-latest-cimg-dev
-          executor: cimg
-          filters: *integration-dev_filters
+      # - test:
+      #     name: test-latest-cimg-dev
+      #     executor: cimg
+      #     filters: *integration-dev_filters
 
-      - test:
-          name: test-older-cimg-dev
-          executor: cimg
-          firefox-version: "62.0.2"
-          # geckodriver-version: v0.18.0
-          filters: *integration-dev_filters
+      # - test:
+      #     name: test-older-cimg-dev
+      #     executor: cimg
+      #     firefox-version: "62.0.2"
+      #     # geckodriver-version: v0.18.0
+      #     filters: *integration-dev_filters
 
       # triggered by master branch commits
       - test:
