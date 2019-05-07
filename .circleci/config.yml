@@ -155,7 +155,7 @@ workflows:
       - test:
           name: test-older-docker-dev
           executor: docker
-          firefox-version: "j"
+          firefox-version: "57.0.3"
           # geckodriver-version: v0.20.1
           filters: *integration-dev_filters
 

@@ -134,7 +134,9 @@ steps:
         else
           $SUDO tar -xvjf "$FIREFOX_FILE_NAME.$FILE_EXT"
           $SUDO rm -f "$FIREFOX_FILE_NAME.$FILE_EXT"
-          $SUDO mv firefox <<parameters.install-dir>>
+          $SUDO mv firefox "<<parameters.install-dir>>/firefox-$FIREFOX_VERSION"
+          $SUDO chmod +x "<<parameters.install-dir>>/firefox-$FIREFOX_VERSION/firefox"
+          $SUDO ln -s "<<parameters.install-dir>>/firefox-$FIREFOX_VERSION/firefox" /usr/local/bin/firefox
         fi
 
         # verify version
