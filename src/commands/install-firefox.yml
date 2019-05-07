@@ -83,9 +83,11 @@ steps:
 
         # alpine: install everything, then check version & halt
         elif cat /etc/issue | grep Alpine >> /dev/null 2>&1; then
+
           # https://stackoverflow.com/questions/51806403/installation-of-firefox-from-alpine-edge
 
           $SUDO apk add --no-cache icu-libs
+
           if [[ <<parameters.alpine-version>> == "stable" ]]; then
             $SUDO apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing firefox
 
