@@ -88,8 +88,8 @@ steps:
           # https://wiki.alpinelinux.org/wiki/Include:Upgrading_to_Edge
 
           sed -i -e 's/v[[:digit:]]\.[[:digit:]]/edge/g' /etc/apk/repositories
-          $SUDO apk upgrade --update-cache --available
-          $SUDO apk add icu-libs
+          $SUDO apk upgrade --update-cache --available > /dev/null
+          $SUDO apk add icu-libs > /dev/null
 
           if [[ <<parameters.alpine-version>> == "stable" ]]; then
             FIREFOX_VERSION=$(curl \
@@ -98,7 +98,7 @@ steps:
 
             echo "Selected version of Firefox is: $FIREFOX_VERSION (Alpine APK)"
 
-            $SUDO apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing firefox
+            $SUDO apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing firefox > /dev/null
 
           elif [[ <<parameters.alpine-version>> == "esr" ]]; then
             FIREFOX_VERSION=$(curl \
@@ -107,18 +107,15 @@ steps:
 
             echo "Selected version of Firefox is: $FIREFOX_VERSION (Mozilla Extended Support Release, Alpine APK)"
 
-            $SUDO apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/community firefox-esr
+            $SUDO apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/community firefox-esr > /dev/null
           fi
-
-          # dont seem to need these if installing via APK
-          # $SUDO apk add --no-cache -q gtk+3.0-dev dbus-glib-dev libc6-compat libstdc++ libgcc libbsd-dev
 
           echo "$(firefox --version) has been installed to $(which firefox)"
 
           exit 0
 
           # dont seem to need these if installing via APK
-          # perl gnupg glib pango xorg-server dbus networkmanager
+          # $SUDO apk add --no-cache -q gtk+3.0-dev dbus-glib-dev libc6-compat libstdc++ libgcc libbsd-dev glib pango xorg-server dbus networkmanager
 
           # add glibc compatibility layer
           # curl --output /etc/apk/keys/sgerrand.rsa.pub \
