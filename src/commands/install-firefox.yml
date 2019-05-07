@@ -56,10 +56,13 @@ steps:
         FIREFOX_URL_BASE="https://archive.mozilla.org/pub/firefox/releases/$FIREFOX_VERSION"
 
         # import public key
+        # install necessary packages
         if uname -a | grep Darwin >> /dev/null 2>&1; then
           HOMEBREW_NO_AUTO_UPDATE=1 brew install gnupg coreutils
         elif cat /etc/issue | grep Alpine >> /dev/null 2>&1; then
-          $SUDO apk add -q perl gnupg
+          # $SUDO apk add --no-cache -q perl gnupg libstdc++ gtk+3.0 glib pango xorg-server dbus networkmanager
+        else
+          # $SUDO apt-get install -y libgtk-3-dev libc6-dev libpango1.0-dev xorg-dev libstdc++6 network-manager dbus
         fi
 
         curl --silent --show-error --location --fail --retry 3 "$FIREFOX_URL_BASE/KEY" | gpg --import
@@ -105,7 +108,7 @@ steps:
           echo "attempting to curl .asc from $FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.$FILE_EXT.asc"
 
           # only do this step if .asc file exists for this version
-          if [[ $(curl --silent --show-error --location --fail --retry 3 \
+          if [[ $(curl --silent --location --fail --retry 3 \
             "$FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.$FILE_EXT.asc") ]]; then
 
             curl --silent --show-error --location --fail --retry 3 \
@@ -121,7 +124,7 @@ steps:
         fi
 
         grep "$FIREFOX_FILE_NAME.$FILE_EXT" SHA256SUMS | sha256sum -c -
-        rm -rf SHA256SUMS
+        rm -f SHA256SUMS
 
         # setup firefox installation
         if uname -a | grep Darwin >> /dev/null 2>&1; then
@@ -129,16 +132,7 @@ steps:
         else
           $SUDO tar -xvjf "$FIREFOX_FILE_NAME.$FILE_EXT"
           $SUDO rm -f "$FIREFOX_FILE_NAME.$FILE_EXT"
-          $SUDO chmod +x firefox/firefox
           $SUDO mv firefox <<parameters.install-dir>>
-        fi
-
-        if uname -a | grep Darwin >> /dev/null 2>&1; then
-          echo "mac"
-        elif cat /etc/issue | grep Alpine >> /dev/null 2>&1; then
-          $SUDO apk add --no-cache libstdc++ gtk+3.0 glib pango xorg-server dbus networkmanager
-        else
-          $SUDO apt-get install -y libgtk-3-dev glibc libpango1.0-dev xorg-dev libstdc++6 network-manager dbus
         fi
 
         # verify version
