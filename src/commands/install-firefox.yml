@@ -60,27 +60,25 @@ steps:
         if uname -a | grep Darwin >> /dev/null 2>&1; then
           HOMEBREW_NO_AUTO_UPDATE=1 brew install gnupg coreutils
         elif cat /etc/issue | grep Alpine >> /dev/null 2>&1; then
-          $SUDO apk add --no-cache -q perl gnupg gtk+3.0-dev dbus-glib-dev libc6-compat libstdc++ libgcc
+          $SUDO apk add --no-cache -q perl gnupg gtk+3.0-dev dbus-glib-dev libc6-compat libstdc++ libgcc libbsd-dev
           # glib pango xorg-server dbus networkmanager
 
           # add glibc compatibility layer
-          curl --output /etc/apk/keys/sgerrand.rsa.pub \
+          # curl --output /etc/apk/keys/sgerrand.rsa.pub \
             --silent --show-error --location --fail --retry 3 \
             https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
 
-          GLIBC_URL_STRING=$(curl \
+          # GLIBC_URL_STRING=$(curl \
             --silent --show-error --location --fail --retry 3 \
             https://api.github.com/repos/sgerrand/alpine-pkg-glibc/releases/latest | jq '.assets[3].browser_download_url')
 
           # strip leading/trailing "
-          curl --output glibc.apk \
+          # curl --output glibc.apk \
             --silent --show-error --location --fail --retry 3 \
             "${GLIBC_URL_STRING:1:-1}"
 
-          $SUDO apk add glibc.apk && rm -f glibc.apk
+          # $SUDO apk add glibc.apk && rm -f glibc.apk
 
-          # symmlink musl & glibc libraries
-          $SUDO ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
         else
           $SUDO apt-get update && \
             $SUDO apt-get install -y libgtk-3-dev libdbus-glib-1-2
