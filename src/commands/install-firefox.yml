@@ -110,12 +110,14 @@ steps:
             $SUDO apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/community firefox-esr
           fi
 
-          # $SUDO apk add --no-cache -q gtk+3.0-dev dbus-glib-dev libc6-compat libstdc++ libgcc libbsd-dev "$FIREFOX_PKG"
+          # dont seem to need these if installing via APK
+          # $SUDO apk add --no-cache -q gtk+3.0-dev dbus-glib-dev libc6-compat libstdc++ libgcc libbsd-dev
 
           echo "$(firefox --version) has been installed to $(which firefox)"
 
           exit 0
 
+          # dont seem to need these if installing via APK
           # perl gnupg glib pango xorg-server dbus networkmanager
 
           # add glibc compatibility layer
