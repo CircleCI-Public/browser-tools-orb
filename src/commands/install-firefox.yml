@@ -92,9 +92,13 @@ steps:
           $SUDO apk add icu-libs
 
           if [[ <<parameters.alpine-version>> == "stable" ]]; then
+            echo "Selected version of Firefox: latest stable release (Alpine APK)"
+
             $SUDO apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing firefox
 
           elif [[ <<parameters.alpine-version>> == "esr" ]]; then
+            echo "Selected version of Firefox: Mozilla Extended Support Release (Alpine APK)"
+
             $SUDO apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/community firefox-esr
           fi
 
@@ -102,7 +106,7 @@ steps:
 
           echo "$(firefox --version) has been installed to $(which firefox)"
 
-          circleci step halt
+          exit 0
 
           # perl gnupg glib pango xorg-server dbus networkmanager
 
