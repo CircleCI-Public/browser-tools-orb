@@ -92,12 +92,20 @@ steps:
           $SUDO apk add icu-libs
 
           if [[ <<parameters.alpine-version>> == "stable" ]]; then
-            echo "Selected version of Firefox: latest stable release (Alpine APK)"
+            FIREFOX_VERSION=$(curl \
+              --silent --show-error --location --fail --retry 3 \
+              http://dl-cdn.alpinelinux.org/alpine/edge/testing/x86_64/ | grep firefox | sed -E 's%<a href="%%' | sed -E 's%.apk">firefox-.*.apk</a>.*%%')
+
+            echo "Selected version of Firefox is: $FIREFOX_VERSION (Alpine APK)"
 
             $SUDO apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing firefox
 
           elif [[ <<parameters.alpine-version>> == "esr" ]]; then
-            echo "Selected version of Firefox: Mozilla Extended Support Release (Alpine APK)"
+            FIREFOX_VERSION=$(curl \
+              --silent --show-error --location --fail --retry 3 \
+              http://dl-cdn.alpinelinux.org/alpine/edge/community/x86_64/ | grep firefox-esr | sed -E 's%<a href="%%' | sed -E 's%.apk">firefox-esr-.*.apk</a>.*%%')
+
+            echo "Selected version of Firefox is: $FIREFOX_VERSION (Mozilla Extended Support Release, Alpine APK)"
 
             $SUDO apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/community firefox-esr
           fi
