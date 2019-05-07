@@ -79,7 +79,7 @@ steps:
           grab_firefox_version
           installation_check
 
-          HOMEBREW_NO_AUTO_UPDATE=1 brew install gnupg coreutils
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install gnupg coreutils > /dev/null
 
         # alpine: install everything, then check version & halt
         elif cat /etc/issue | grep Alpine >> /dev/null 2>&1; then
@@ -138,12 +138,12 @@ steps:
           grab_firefox_version
           installation_check
 
-          $SUDO apt-get update && \
-            $SUDO apt-get install -y libgtk-3-dev libdbus-glib-1-2
+          $SUDO apt-get update > /dev/null && \
+            $SUDO apt-get install -y libgtk-3-dev libdbus-glib-1-2 > /dev/null
         fi
 
         # import public key
-        curl --silent --show-error --location --fail --retry 3 "$FIREFOX_URL_BASE/KEY" | gpg --import
+        curl --silent --show-error --location --fail --retry 3 "$FIREFOX_URL_BASE/KEY" | gpg --import > /dev/null
 
         # download shasum256
         curl -O --silent --show-error --location --fail --retry 3 "$FIREFOX_URL_BASE/SHA256SUMS.asc"

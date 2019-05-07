@@ -59,6 +59,7 @@ jobs:
 
       - browser-tools/install-firefox:
           version: <<parameters.firefox-version>>
+          alpine-version: <<parameters.firefox-alpine-version>>
 
 integration-dev_filters: &integration-dev_filters
   branches:
