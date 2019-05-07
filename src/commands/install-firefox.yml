@@ -30,9 +30,7 @@ parameters:
     type: string
     default: /usr/local/bin
     description: >
-      Directory in which to install Firefox. Note: directory-
-      selection is not supported for Alpine Linux-based execution
-      environments.
+      Directory in which to install Firefox
 
 steps:
   - run:
@@ -109,6 +107,8 @@ steps:
 
             $SUDO apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/community firefox-esr > /dev/null
           fi
+
+          $SUDO ln -s "$(which firefox)" <<parameters.install-dir>>/firefox
 
           echo "$(firefox --version) has been installed to $(which firefox)"
 

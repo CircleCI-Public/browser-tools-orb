@@ -145,17 +145,17 @@ workflows:
           filters: *integration-dev_filters
 
       # mac
-      # - test:
-      #     name: test-latest-mac-dev
-      #     executor: macos
-      #     filters: *integration-dev_filters
+      - test:
+          name: test-latest-mac-dev
+          executor: macos
+          filters: *integration-dev_filters
 
-      # - test:
-      #     name: test-older-mac-dev
-      #     executor: macos
-      #     firefox-version: "64.0"
-      #     # geckodriver-version: v0.21.0
-      #     filters: *integration-dev_filters
+      - test:
+          name: test-older-mac-dev
+          executor: macos
+          firefox-version: "64.0"
+          # geckodriver-version: v0.21.0
+          filters: *integration-dev_filters
 
       # docker
       - test:
