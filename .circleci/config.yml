@@ -126,17 +126,17 @@ workflows:
       #     filters: *integration-dev_filters
 
       # machine
-      - test:
-          name: test-latest-machine-dev
-          executor: machine
-          filters: *integration-dev_filters
+      # - test:
+      #     name: test-latest-machine-dev
+      #     executor: machine
+      #     filters: *integration-dev_filters
 
-      - test:
-          name: test-older-machine-dev
-          executor: machine
-          firefox-version: "65.0.1"
-          # geckodriver-version: v0.22.0
-          filters: *integration-dev_filters
+      # - test:
+      #     name: test-older-machine-dev
+      #     executor: machine
+      #     firefox-version: "65.0.1"
+      #     # geckodriver-version: v0.22.0
+      #     filters: *integration-dev_filters
 
       # mac
       # - test:
