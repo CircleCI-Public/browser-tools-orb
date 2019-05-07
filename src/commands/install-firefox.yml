@@ -85,7 +85,7 @@ steps:
         elif cat /etc/issue | grep Alpine >> /dev/null 2>&1; then
           if [[ <<parameters.alpine-version>> == "stable" ]]; then
             FIREFOX_PKG=firefox
-          elif [[ <<parameters.alpine-version>> == "esr" ]]
+          elif [[ <<parameters.alpine-version>> == "esr" ]]; then
             FIREFOX_PKG=firefox-esr
           fi
 
