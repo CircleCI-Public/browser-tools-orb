@@ -80,7 +80,7 @@ steps:
           $SUDO apk add glibc.apk && rm -f glibc.apk
 
           # symmlink musl & glibc libraries
-          $SUDO mkdir /lib64 && $SUDO ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
+          $SUDO ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
         else
           $SUDO apt-get update && \
             $SUDO apt-get install -y libgtk-3-dev libdbus-glib-1-2
