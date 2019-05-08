@@ -186,6 +186,7 @@ steps:
           hdiutil eject /Volumes/Firefox > /dev/null
           $SUDO rm -f "$FIREFOX_FILE_NAME.$FILE_EXT"
 
+          touch <<parameters.install-dir>>/firefox || true
           cat \<< EOF > <<parameters.install-dir>>/firefox
           #!/bin/bash
 
@@ -193,7 +194,7 @@ steps:
 
           EOF
 
-          $SUDO chmod +x firefox
+          $SUDO chmod +x <<parameters.install-dir>>/firefox
 
           # verify version
           echo "$(firefox --version) has been installed in the /Applications directory"
