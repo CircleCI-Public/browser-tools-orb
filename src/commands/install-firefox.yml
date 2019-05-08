@@ -184,16 +184,26 @@ steps:
           $SUDO cp -R /Volumes/Firefox/Firefox.app /Applications
 
           hdiutil eject /Volumes/Firefox > /dev/null
-          # $SUDO rm -f "$FIREFOX_FILE_NAME.$FILE_EXT"
+          $SUDO rm -f "$FIREFOX_FILE_NAME.$FILE_EXT"
 
-          $SUDO ln -s /Applications/Firefox.app/Contents/MacOS/firefox /usr/local/bin/firefox
+          cat \<< EOF > <<parameters.install-dir>>/firefox
+          #!/bin/bash
+
+          /Applications/Firefox.app/Contents/MacOS/firefox
+          EOF
+
+          $SUDO chmod +x firefox
+
+          # verify version
+          echo "$(firefox --version) has been installed in the /Applications directory"
+          echo "A shortcut has also been created at $(which firefox)"
         else
           $SUDO tar -xjf "$FIREFOX_FILE_NAME.$FILE_EXT"
           $SUDO rm -f "$FIREFOX_FILE_NAME.$FILE_EXT"
           $SUDO mv firefox "<<parameters.install-dir>>/firefox-$FIREFOX_VERSION"
           $SUDO chmod +x "<<parameters.install-dir>>/firefox-$FIREFOX_VERSION/firefox"
           $SUDO ln -s "<<parameters.install-dir>>/firefox-$FIREFOX_VERSION/firefox" /usr/local/bin/firefox
-        fi
 
-        # verify version
-        echo "$(firefox --version) has been installed to $(which firefox)"
+          # verify version
+          echo "$(firefox --version) has been installed to $(which firefox)"
+        fi
