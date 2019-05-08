@@ -135,7 +135,7 @@ workflows:
           executor: ci-base
           filters: *integration-dev_filters
 
-      # - test:
+      - test:
           name: test-older-alpine-dev
           executor: ci-base
           firefox-alpine-version: esr
@@ -148,7 +148,7 @@ workflows:
           executor: machine
           filters: *integration-dev_filters
 
-      # - test:
+      - test:
           name: test-older-machine-dev
           executor: machine
           firefox-version: "65.0.1"
@@ -174,7 +174,7 @@ workflows:
           executor: docker
           filters: *integration-dev_filters
 
-      # - test:
+      - test:
           name: test-older-docker-dev
           executor: docker
           firefox-version: "57.0.3"
@@ -187,7 +187,7 @@ workflows:
           executor: ci-docker
           filters: *integration-dev_filters
 
-      # - test:
+      - test:
           name: test-older-ci-docker-dev
           executor: ci-docker
           firefox-version: "62.0.2"
@@ -214,7 +214,7 @@ workflows:
           executor: ci-base
           filters: *integration-master_filters
 
-      # - test:
+      - test:
           name: test-older-alpine-master
           executor: ci-base
           firefox-alpine-version: esr
@@ -227,7 +227,7 @@ workflows:
           executor: machine
           filters: *integration-master_filters
 
-      # - test:
+      - test:
           name: test-older-machine-master
           executor: machine
           firefox-version: "65.0.1"
@@ -253,7 +253,7 @@ workflows:
           executor: docker
           filters: *integration-master_filters
 
-      # - test:
+      - test:
           name: test-older-docker-master
           executor: docker
           firefox-version: "57.0.3"
@@ -266,7 +266,7 @@ workflows:
           executor: ci-docker
           filters: *integration-master_filters
 
-      # - test:
+      - test:
           name: test-older-ci-docker-master
           executor: ci-docker
           firefox-version: "62.0.2"
