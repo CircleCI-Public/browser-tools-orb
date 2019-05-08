@@ -186,7 +186,7 @@ steps:
           hdiutil eject /Volumes/Firefox > /dev/null
           $SUDO rm -f "$FIREFOX_FILE_NAME.$FILE_EXT"
 
-          $SUDO ln -s /Applications/Firefox.app/Firefox.app/Contents/MacOS/firefox /usr/local/bin/firefox
+          $SUDO ln -s /Applications/Firefox.app/Contents/MacOS/firefox /usr/local/bin/firefox
         else
           $SUDO tar -xjf "$FIREFOX_FILE_NAME.$FILE_EXT"
           $SUDO rm -f "$FIREFOX_FILE_NAME.$FILE_EXT"
