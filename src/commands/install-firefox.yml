@@ -187,7 +187,7 @@ steps:
           $SUDO rm -f "$FIREFOX_FILE_NAME.$FILE_EXT"
 
           $SUDO echo -e "#\!/bin/bash\n" > <<parameters.install-dir>>/firefox
-          perl -i -pe 's|#\\\|#|' <<parameters.install-dir>>/firefox
+          perl -i -pe "s|#\\\|#|g" <<parameters.install-dir>>/firefox
           $SUDO echo "/Applications/Firefox.app/Contents/MacOS/firefox" >> <<parameters.install-dir>>/firefox
 
           $SUDO chmod +x <<parameters.install-dir>>/firefox
