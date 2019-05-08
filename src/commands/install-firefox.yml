@@ -188,7 +188,7 @@ steps:
 
           echo -e "#\!/bin/bash\n" > firefox
           perl -i -pe "s|#\\\|#|g" firefox
-          echo "/Applications/Firefox.app/Contents/MacOS/firefox" >> firefox
+          echo -e "/Applications/Firefox.app/Contents/MacOS/firefox \"\$@\"" >> firefox
 
           $SUDO mv firefox <<parameters.install-dir>>
           $SUDO chmod +x <<parameters.install-dir>>/firefox
