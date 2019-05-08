@@ -180,7 +180,13 @@ steps:
 
         # setup firefox installation
         if uname -a | grep Darwin >> /dev/null 2>&1; then
-          hdiutil attach "$FIREFOX_FILE_NAME.$FILE_EXT"
+          hdiutil attach "$FIREFOX_FILE_NAME.$FILE_EXT" > /dev/null
+          $SUDO cp -R /Volumes/Firefox/Firefox.app /Applications
+
+          hdiutil eject "$FIREFOX_FILE_NAME.$FILE_EXT" > /dev/null
+          $SUDO rm -f "$FIREFOX_FILE_NAME.$FILE_EXT"
+
+          $SUDO ln -s /Applications/Firefox.app/Firefox.app/Contents/MacOS/firefox /usr/local/bin/firefox
         else
           $SUDO tar -xjf "$FIREFOX_FILE_NAME.$FILE_EXT"
           $SUDO rm -f "$FIREFOX_FILE_NAME.$FILE_EXT"
