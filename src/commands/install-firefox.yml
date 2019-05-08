@@ -183,7 +183,7 @@ steps:
           hdiutil attach "$FIREFOX_FILE_NAME.$FILE_EXT" > /dev/null
           $SUDO cp -R /Volumes/Firefox/Firefox.app /Applications
 
-          hdiutil eject "$FIREFOX_FILE_NAME.$FILE_EXT" > /dev/null
+          hdiutil eject /Volumes/Firefox > /dev/null
           $SUDO rm -f "$FIREFOX_FILE_NAME.$FILE_EXT"
 
           $SUDO ln -s /Applications/Firefox.app/Firefox.app/Contents/MacOS/firefox /usr/local/bin/firefox
