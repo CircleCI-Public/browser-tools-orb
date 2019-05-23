@@ -1,37 +1,9 @@
 version: 2.1
 
 orbs:
-  orb-tools: circleci/orb-tools@8.9.0
+  orb-tools: circleci/orb-tools@8.10.0
   browser-tools: circleci/browser-tools@dev:alpha
   jq: circleci/jq@1.8.0
-
-executors:
-  ci-base:
-    resource_class: small
-    docker:
-      - image: cibuilds/base
-
-  machine:
-    machine: true
-
-  macos:
-    macos:
-      xcode: "10.2.0"
-
-  docker:
-    resource_class: small
-    docker:
-      - image: node
-
-  ci-docker:
-    resource_class: small
-    docker:
-      - image: circleci/node:boron
-
-  cimg:
-    resource_class: small
-    docker:
-      - image: circleciimages/base
 
 jobs:
   test:
@@ -132,12 +104,12 @@ workflows:
       # alpine
       - test:
           name: test-latest-alpine-dev
-          executor: ci-base
+          executor: orb-tools/alpine
           filters: *integration-dev_filters
 
       - test:
           name: test-older-alpine-dev
-          executor: ci-base
+          executor: orb-tools/alpine
           firefox-alpine-version: esr
           # geckodriver-version: v0.23.0
           filters: *integration-dev_filters
@@ -145,12 +117,12 @@ workflows:
       # machine
       - test:
           name: test-latest-machine-dev
-          executor: machine
+          executor: orb-tools/machine
           filters: *integration-dev_filters
 
       - test:
           name: test-older-machine-dev
-          executor: machine
+          executor: orb-tools/machine
           firefox-version: "65.0.1"
           # geckodriver-version: v0.22.0
           filters: *integration-dev_filters
@@ -158,12 +130,12 @@ workflows:
       # mac
       - test:
           name: test-latest-mac-dev
-          executor: macos
+          executor: orb-tools/macos
           filters: *integration-dev_filters
 
       - test:
           name: test-older-mac-dev
-          executor: macos
+          executor: orb-tools/macos
           firefox-version: "64.0"
           # geckodriver-version: v0.21.0
           filters: *integration-dev_filters
@@ -171,12 +143,12 @@ workflows:
       # docker
       - test:
           name: test-latest-docker-dev
-          executor: docker
+          executor: orb-tools/node
           filters: *integration-dev_filters
 
       - test:
           name: test-older-docker-dev
-          executor: docker
+          executor: orb-tools/node
           firefox-version: "57.0.3"
           # geckodriver-version: v0.20.1
           filters: *integration-dev_filters
@@ -184,12 +156,12 @@ workflows:
       # ci-docker
       - test:
           name: test-latest-ci-docker-dev
-          executor: ci-docker
+          executor: orb-tools/node-cci
           filters: *integration-dev_filters
 
       - test:
           name: test-older-ci-docker-dev
-          executor: ci-docker
+          executor: orb-tools/node-cci
           firefox-version: "62.0.2"
           # geckodriver-version: v0.18.0
           filters: *integration-dev_filters
@@ -197,12 +169,12 @@ workflows:
       # new ci-docker
       - test:
           name: test-latest-cimg-dev
-          executor: cimg
+          executor: orb-tools/ubuntu
           filters: *integration-dev_filters
 
       - test:
           name: test-older-cimg-dev
-          executor: cimg
+          executor: orb-tools/ubuntu
           firefox-version: "62.0.2"
           # geckodriver-version: v0.18.0
           filters: *integration-dev_filters
@@ -211,12 +183,12 @@ workflows:
       # alpine
       - test:
           name: test-latest-alpine-master
-          executor: ci-base
+          executor: orb-tools/alpine
           filters: *integration-master_filters
 
       - test:
           name: test-older-alpine-master
-          executor: ci-base
+          executor: orb-tools/alpine
           firefox-alpine-version: esr
           # geckodriver-version: v0.23.0
           filters: *integration-master_filters
@@ -224,12 +196,12 @@ workflows:
       # machine
       - test:
           name: test-latest-machine-master
-          executor: machine
+          executor: orb-tools/machine
           filters: *integration-master_filters
 
       - test:
           name: test-older-machine-master
-          executor: machine
+          executor: orb-tools/machine
           firefox-version: "65.0.1"
           # geckodriver-version: v0.22.0
           filters: *integration-master_filters
@@ -237,12 +209,12 @@ workflows:
       # mac
       - test:
           name: test-latest-mac-master
-          executor: macos
+          executor: orb-tools/macos
           filters: *integration-master_filters
 
       - test:
           name: test-older-mac-master
-          executor: macos
+          executor: orb-tools/macos
           firefox-version: "64.0"
           # geckodriver-version: v0.21.0
           filters: *integration-master_filters
@@ -250,12 +222,12 @@ workflows:
       # docker
       - test:
           name: test-latest-docker-master
-          executor: docker
+          executor: orb-tools/node
           filters: *integration-master_filters
 
       - test:
           name: test-older-docker-master
-          executor: docker
+          executor: orb-tools/node
           firefox-version: "57.0.3"
           # geckodriver-version: v0.20.1
           filters: *integration-master_filters
@@ -263,12 +235,12 @@ workflows:
       # ci-docker
       - test:
           name: test-latest-ci-docker-master
-          executor: ci-docker
+          executor: orb-tools/node-cci
           filters: *integration-master_filters
 
       - test:
           name: test-older-ci-docker-master
-          executor: ci-docker
+          executor: orb-tools/node-cci
           firefox-version: "62.0.2"
           # geckodriver-version: v0.18.0
           filters: *integration-master_filters
@@ -276,12 +248,12 @@ workflows:
       # new ci-docker
       - test:
           name: test-latest-cimg-master
-          executor: cimg
+          executor: orb-tools/ubuntu
           filters: *integration-master_filters
 
       - test:
           name: test-older-cimg-master
-          executor: cimg
+          executor: orb-tools/ubuntu
           firefox-version: "62.0.2"
           # geckodriver-version: v0.18.0
           filters: *integration-master_filters
