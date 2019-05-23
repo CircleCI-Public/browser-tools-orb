@@ -18,34 +18,56 @@ steps:
       command: |
         if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
 
-        $SUDO apt-get install -y jq
+        # FUNCTIONS
+        grab_geckodriver_version () {
+          if [[ <<parameters.version>> == "latest" ]]; then
+            # extract latest version from github releases API
+            GECKODRIVER_VERSION_STRING=$(curl \
+              https://api.github.com/repos/mozilla/geckodriver/releases/latest | jq '.tag_name')
 
-        if [[ <<parameters.version>> == "latest" ]]; then
-          # extract latest version from github releases API
-          GECKODRIVER_VERSION_STRING=$(curl \
-            https://api.github.com/repos/mozilla/geckodriver/releases/latest | jq '.tag_name')
+            # strip leading/trailing "
+            temp="${GECKODRIVER_VERSION_STRING%\"}"
+            GECKODRIVER_VERSION="${temp#\"}"
+          else
+            GECKODRIVER_VERSION=<<parameters.version>>
+          fi
 
-          # strip leading/trailing "
-          temp="${GECKODRIVER_VERSION_STRING%\"}"
-          GECKODRIVER_VERSION="${temp#\"}"
-        else
-          GECKODRIVER_VERSION=<<parameters.version>>
+          echo "Selected version of Geckodriver is: $GECKODRIVER_VERSION"
+        }
+
+        installation_check () {
+          if command -v geckodriver >> /dev/null 2>&1; then
+            if geckodriver --version | grep "$GECKODRIVER_VERSION" >> /dev/null 2>&1; then
+              echo "Geckodriver $GECKODRIVER_VERSION is already installed"
+              exit 0
+            else
+              echo "A different version of Geckodriver is installed ($(geckodriver --version)); removing it"
+              $SUDO rm -f $(command -v geckodriver)
+            fi
+          else
+            echo "Geckodriver is not currently installed; installing it"
+          fi
+        }
+
+        grab_geckodriver_version
+        installation_check
+
+        if false; then
+          # get download URL
+          GECKODRIVER_URL=$(curl \
+            "https://api.github.com/repos/mozilla/geckodriver/releases/tags/$GECKODRIVER_VERSION" | \
+            jq -r ".assets[] | select(.name | test(\"linux64\")) | .browser_download_url")
+
+          # download geckodriver
+          curl --silent --show-error --location --fail --retry 3 --output "geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz" "$GECKODRIVER_URL"
+
+          # setup geckodriver installation
+          tar xf "geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz"
+          rm -rf "geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz"
+
+          $SUDO mv geckodriver /usr/local/bin/geckodriver
+          $SUDO chmod +x /usr/local/bin/geckodriver
+
+          # verify version
+          geckodriver --version
         fi
-
-        # get download URL
-        GECKODRIVER_URL=$(curl \
-          "https://api.github.com/repos/mozilla/geckodriver/releases/tags/$GECKODRIVER_VERSION" | \
-          jq -r ".assets[] | select(.name | test(\"linux64\")) | .browser_download_url")
-
-        # download geckodriver
-        curl --silent --show-error --location --fail --retry 3 --output "geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz" "$GECKODRIVER_URL"
-
-        # setup geckodriver installation
-        tar xf "geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz"
-        rm -rf "geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz"
-
-        $SUDO mv geckodriver /usr/local/bin/geckodriver
-        $SUDO chmod +x /usr/local/bin/geckodriver
-
-        # verify version
-        geckodriver --version
