@@ -9,8 +9,16 @@ parameters:
     description: >
       Version of Geckodriver to install, defaults to latest release. To
       install an older release, specify a full semantic version tag,
-      e.g., `v0.23.0`. For a list of releases, see the following link:
+      e.g., `v0.23.0`. For a list of releases, and a Firefox/Geckodriver
+      version compatibility table, see the following links:
       https://github.com/mozilla/geckodriver/releases
+      https://firefox-source-docs.mozilla.org/testing/geckodriver/Support.html
+
+  install-dir:
+    type: string
+    default: /usr/local/bin
+    description: >
+      Directory in which to install Geckodriver
 
 steps:
   - run:
@@ -52,22 +60,27 @@ steps:
         grab_geckodriver_version
         installation_check
 
-        if false; then
-          # get download URL
-          GECKODRIVER_URL=$(curl \
-            "https://api.github.com/repos/mozilla/geckodriver/releases/tags/$GECKODRIVER_VERSION" | \
-            jq -r ".assets[] | select(.name | test(\"linux64\")) | .browser_download_url")
-
-          # download geckodriver
-          curl --silent --show-error --location --fail --retry 3 --output "geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz" "$GECKODRIVER_URL"
-
-          # setup geckodriver installation
-          tar xf "geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz"
-          rm -rf "geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz"
-
-          $SUDO mv geckodriver /usr/local/bin/geckodriver
-          $SUDO chmod +x /usr/local/bin/geckodriver
-
-          # verify version
-          geckodriver --version
+        if uname -a | grep Darwin >> /dev/null 2>&1; then
+          PLATFORM=macos
+        else
+          PLATFORM=linux64
         fi
+
+        # get download URL
+        GECKODRIVER_URL=$(curl \
+          --silent --show-error --location --fail --retry 3 \
+          "https://api.github.com/repos/mozilla/geckodriver/releases/tags/$GECKODRIVER_VERSION" | \
+          jq -r ".assets[] | select(.name | test(\"$PLATFORM\")) | .browser_download_url")
+
+        # download geckodriver
+        curl --silent --show-error --location --fail --retry 3 --output "geckodriver-$GECKODRIVER_VERSION-$PLATFORM.tar.gz" "$GECKODRIVER_URL"
+
+        # setup geckodriver installation
+        tar xf "geckodriver-$GECKODRIVER_VERSION-$PLATFORM.tar.gz"
+        rm -rf "geckodriver-$GECKODRIVER_VERSION-$PLATFORM.tar.gz"
+
+        $SUDO mv geckodriver <<parameters.install-dir>>
+        $SUDO chmod +x <<parameters.install-dir>>/geckodriver
+
+        # verify version
+        geckodriver --version
