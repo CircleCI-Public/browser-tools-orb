@@ -9,7 +9,8 @@ parameters:
     type: boolean
     default: false
     description: >
-      If there is an existing installation of Google Chrome, replace it with the latest stable release
+      If there is an existing installation of Google Chrome, replace it
+      with the latest stable release
 
 steps:
   - run:
@@ -35,7 +36,8 @@ steps:
 
             <<#parameters.replace-existing>>echo "$(chromium-browser --version)is currently installed; replacing it"
 
-            $SUDO rm -f "$(command -v chromium-browser)"<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(chromium-browser --version)is already installed to $(which chromium-browser)"
+            $SUDO apk del chromium > /dev/null 2>&1 || true
+            $SUDO rm -f "$(command -v chromium-browser)" > /dev/null 2>&1 <</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(chromium-browser --version)is already installed to $(which chromium-browser)"
 
             exit 0<</parameters.replace-existing>>
 
@@ -47,7 +49,8 @@ steps:
 
             <<#parameters.replace-existing>>echo "$(google-chrome --version)is currently installed; replacing it"
 
-            $SUDO rm -f "$(command -v google-chrome)"<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(google-chrome --version)is already installed to $(which google-chrome)"
+            $SUDO apt-get --purge remove google-chrome-stable > dev/null 2>&1
+            $SUDO rm -f "$(command -v google-chrome)" > dev/null 2>&1<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(google-chrome --version)is already installed to $(which google-chrome)"
 
             exit 0<</parameters.replace-existing>>
 
