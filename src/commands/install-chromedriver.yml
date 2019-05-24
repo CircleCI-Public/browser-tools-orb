@@ -11,15 +11,29 @@ steps:
       command: |
         if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
 
-        determine_chrome_version () {
-          CHROME_VERSION="$(google-chrome --version || chromium-browser --version || /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)"
+        # determine_chrome_version
+        if uname -a | grep Darwin > /dev/null 2>&1; then
 
-          CHROME_VERSION_STRING="$(echo $CHROME_VERSION | sed 's/^Google Chrome //' | sed 's/^Chromium //')"
+          CHROME_VERSION="$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)"
 
-          echo "Installed version of Google Chrome is $CHROME_VERSION_STRING"
-        }
+        elif cat /etc/issue | grep Alpine > /dev/null 2>&1; then
 
-        determine_chrome_version
+          CHROME_VERSION="$(chromium-browser --version)"
+        else
+          CHROME_VERSION="$(google-chrome --version)"
+        fi
+
+        CHROME_VERSION_STRING="$(echo $CHROME_VERSION | sed 's/^Google Chrome //' | sed 's/^Chromium //')"
+
+        echo "Installed version of Google Chrome is $CHROME_VERSION_STRING"
+
+        # determine chromedriver release
+        CHROMEDRIVER_RELEASE="${CHROME_VERSION_STRING%%.*}"
+
+        CHROMEDRIVER_VERSION=$(curl --silent --show-error --location --fail --retry 3 \
+          "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROMEDRIVER_RELEASE")
+
+        echo "Chromedriver $CHROMEDRIVER_VERSION will be installed"
 
         if false; then
           # determine chromedriver release
