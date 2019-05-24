@@ -24,7 +24,9 @@ steps:
 
           <<#parameters.replace-existing>>echo "$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)is currently installed; replacing it"
 
-            $SUDO rm -rf /Applications/Google\ Chrome.app<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)is already installed"
+            HOMEBREW_NO_AUTO_UPDATE=1 brew cask uninstall google-chrome > /dev/null 2>&1 || true
+
+            $SUDO rm -rf /Applications/Google\ Chrome.app > /dev/null 2>&1 || true<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)is already installed"
 
             exit 0<</parameters.replace-existing>>
 
@@ -49,8 +51,8 @@ steps:
 
             <<#parameters.replace-existing>>echo "$(google-chrome --version)is currently installed; replacing it"
 
-            $SUDO apt-get --purge remove google-chrome-stable > /dev/null 2>&1
-            $SUDO rm -f "$(command -v google-chrome)" > /dev/null 2>&1<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(google-chrome --version)is already installed to $(which google-chrome)"
+            $SUDO apt-get --purge remove google-chrome-stable > /dev/null 2>&1 || true
+            $SUDO rm -f "$(command -v google-chrome)" > /dev/null 2>&1 || true<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(google-chrome --version)is already installed to $(which google-chrome)"
 
             exit 0<</parameters.replace-existing>>
 
