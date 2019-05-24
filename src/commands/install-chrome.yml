@@ -15,14 +15,20 @@ steps:
             if command -v chromium-browser >> /dev/null 2>&1; then
               echo "Google Chrome (via Chromium) is already installed"
               exit 0
+            else
+              echo "Google Chrome (via Chromium) is not currently installed; installing it"
             fi
           else
             if command -v google-chrome >> /dev/null 2>&1; then
               echo "Google Chrome is already installed"
               exit 0
+            else
+              echo "Google Chrome is not currently installed; installing it"
             fi
           fi
         }
+
+        installation_check
 
         if false; then
           # download chrome
