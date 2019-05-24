@@ -24,19 +24,24 @@ jobs:
         type: string
         default: latest
 
+      replace-existing-chrome:
+        type: boolean
+        default: false
+
     executor: <<parameters.executor>>
 
     steps:
       - jq/install
 
-      # - browser-tools/install-firefox:
-      #     version: <<parameters.firefox-version>>
-      #     alpine-version: <<parameters.firefox-alpine-version>>
+      - browser-tools/install-firefox:
+          version: <<parameters.firefox-version>>
+          alpine-version: <<parameters.firefox-alpine-version>>
 
-      # - browser-tools/install-geckodriver:
-      #     version: <<parameters.geckodriver-version>>
+      - browser-tools/install-geckodriver:
+          version: <<parameters.geckodriver-version>>
 
-      - browser-tools/install-chrome
+      - browser-tools/install-chrome:
+          replace-existing: <<parameters.replace-existing-chrome>>
 
 integration-dev_filters: &integration-dev_filters
   branches:
@@ -123,6 +128,7 @@ workflows:
       - test:
           name: test-latest-machine-dev
           executor: orb-tools/machine
+          replace-existing-chrome: true
           filters: *integration-dev_filters
 
       - test:
@@ -202,6 +208,7 @@ workflows:
       - test:
           name: test-latest-machine-master
           executor: orb-tools/machine
+          replace-existing-chrome: true
           filters: *integration-master_filters
 
       - test:
