@@ -4,11 +4,12 @@ description: >
   maintain a public archive of previous releases. Supports Debian/Ubuntu
   Linux, Alpine Linux (via Chromium), and macOS environments.
 
-replace-existing:
-  type: boolean
-  default: false
-  description: >
-    If there is an existing installation of Google Chrome, replace it with the latest stable release
+parameters:
+  replace-existing:
+    type: boolean
+    default: false
+    description: >
+      If there is an existing installation of Google Chrome, replace it with the latest stable release
 
 steps:
   - run:
