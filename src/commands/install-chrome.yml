@@ -11,7 +11,7 @@ steps:
         if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
 
         installation_check () {
-          if cat /etc/issue | grep Alpine >> /dev/null 2>&1; then
+          if cat /etc/issue >> /dev/null 2>&1 | grep Alpine >> /dev/null 2>&1; then
             if command -v chromium-browser >> /dev/null 2>&1; then
               echo "Google Chrome (via Chromium) is already installed"
               exit 0
@@ -30,7 +30,31 @@ steps:
 
         installation_check
 
-        if false; then
+        if uname -a | grep Darwin >> /dev/null 2>&1; then
+          HOMEBREW_NO_AUTO_UPDATE=1 brew cask install google-chrome > /dev/null
+
+          # https://developers.google.com/web/updates/2017/04/headless-chrome
+          alias google-chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
+
+          # verify installation
+          google-chrome --version
+        elif cat /etc/issue | grep Alpine >> /dev/null 2>&1; then
+          echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories
+          echo @edge http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories
+
+          apk add --no-cache \
+            chromium@edge \
+            harfbuzz@edge \
+            nss@edge \
+            freetype@edge \
+            ttf-freefont@edge
+
+          rm -rf /var/cache/*
+          mkdir /var/cache/apk
+
+          # verify installation
+          chromium-browser --version
+        else
           # download chrome
           curl --silent --show-error --location --fail --retry 3 \
             --output google-chrome-stable_current_amd64.deb \
@@ -44,6 +68,6 @@ steps:
           $SUDO sed -i 's|HERE/chrome"|HERE/chrome" --disable-setuid-sandbox --no-sandbox|g' \
               "/opt/google/chrome/google-chrome"
 
-          # verify version
+          # verify installation
           google-chrome --version
         fi
