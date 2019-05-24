@@ -20,9 +20,9 @@ steps:
 
         # installation check
         if uname -a | grep Darwin > /dev/null 2>&1; then
-          if ls /Applications | grep "Google Chrome"; then
+          if ls /Applications | grep "Google Chrome" > /dev/null 2>&1; then
 
-          <<#parameters.replace-existing>>echo "$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)is currently installed; replacing it"
+            <<#parameters.replace-existing>>echo "$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)is currently installed; replacing it"
 
             HOMEBREW_NO_AUTO_UPDATE=1 brew cask uninstall google-chrome > /dev/null 2>&1 || true
 
@@ -65,10 +65,6 @@ steps:
         if uname -a | grep Darwin > /dev/null 2>&1; then
           brew update > /dev/null && \
             HOMEBREW_NO_AUTO_UPDATE=1 brew cask install google-chrome > /dev/null
-
-          # https://developers.google.com/web/updates/2017/04/headless-chrome
-
-          # alias google-chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
 
           echo -e "#\!/bin/bash\n" > google-chrome
           perl -i -pe "s|#\\\|#|g" google-chrome
