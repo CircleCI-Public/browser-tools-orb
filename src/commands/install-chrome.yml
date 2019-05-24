@@ -17,48 +17,46 @@ steps:
       command: |
         if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
 
-        installation_check () {
-          if uname -a | grep Darwin > /dev/null 2>&1; then
-            if ls /Applications | grep "Google Chrome"; then
+        # installation check
+        if uname -a | grep Darwin > /dev/null 2>&1; then
+          if ls /Applications | grep "Google Chrome"; then
 
-            <<#parameters.replace-existing>>echo "$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)is currently installed; replacing it"
+          <<#parameters.replace-existing>>echo "$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)is currently installed; replacing it"
 
-              $SUDO rm -rf /Applications/Google\ Chrome.app<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)is already installed"
+            $SUDO rm -rf /Applications/Google\ Chrome.app<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)is already installed"
 
-              exit 0<</parameters.replace-existing>>
+            exit 0<</parameters.replace-existing>>
 
-            else
-              echo "Google Chrome is not currently installed; installing it"
-            fi
-          elif cat /etc/issue | grep Alpine > /dev/null 2>&1; then
-            if command -v chromium-browser > /dev/null 2>&1; then
-
-              <<#parameters.replace-existing>>echo "$(chromium-browser --version)is currently installed; replacing it"
-
-              $SUDO rm -f $(command -v chromium-browser)"<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(chromium-browser --version)is already installed to $(which chromium-browser)"
-
-              exit 0<</parameters.replace-existing>>
-
-            else
-              echo "Google Chrome (via Chromium) is not currently installed; installing it"
-            fi
           else
-            if command -v google-chrome > /dev/null 2>&1; then
-
-              <<#parameters.replace-existing>>echo "$(google-chrome --version)is currently installed; replacing it"
-
-              $SUDO rm -f $(command -v google-chrome)"<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(google-chrome --version)is already installed to $(which google-chrome)"
-
-              exit 0<</parameters.replace-existing>>
-
-            else
-              echo "Google Chrome is not currently installed; installing it"
-            fi
+            echo "Google Chrome is not currently installed; installing it"
           fi
-        }
+        elif cat /etc/issue | grep Alpine > /dev/null 2>&1; then
+          if command -v chromium-browser > /dev/null 2>&1; then
 
-        installation_check
+            <<#parameters.replace-existing>>echo "$(chromium-browser --version)is currently installed; replacing it"
 
+            $SUDO rm -f "$(command -v chromium-browser)"<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(chromium-browser --version)is already installed to $(which chromium-browser)"
+
+            exit 0<</parameters.replace-existing>>
+
+          else
+            echo "Google Chrome (via Chromium) is not currently installed; installing it"
+          fi
+        else
+          if command -v google-chrome > /dev/null 2>&1; then
+
+            <<#parameters.replace-existing>>echo "$(google-chrome --version)is currently installed; replacing it"
+
+            $SUDO rm -f "$(command -v google-chrome)"<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(google-chrome --version)is already installed to $(which google-chrome)"
+
+            exit 0<</parameters.replace-existing>>
+
+          else
+            echo "Google Chrome is not currently installed; installing it"
+          fi
+        fi
+
+        # install chrome
         if uname -a | grep Darwin > /dev/null 2>&1; then
           brew update > /dev/null && \
             HOMEBREW_NO_AUTO_UPDATE=1 brew cask install google-chrome > /dev/null
