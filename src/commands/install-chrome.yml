@@ -63,8 +63,8 @@ steps:
 
         # install chrome
         if uname -a | grep Darwin > /dev/null 2>&1; then
-          brew update > /dev/null && \
-            HOMEBREW_NO_AUTO_UPDATE=1 brew cask install google-chrome > /dev/null
+          brew update > /dev/null 2>&1 && \
+            HOMEBREW_NO_AUTO_UPDATE=1 brew cask install google-chrome > /dev/null 2>&1
 
           echo -e "#\!/bin/bash\n" > google-chrome
           perl -i -pe "s|#\\\|#|g" google-chrome
@@ -88,7 +88,7 @@ steps:
             nss@edge \
             freetype@edge \
             ttf-freefont@edge \
-            > /dev/null
+            > /dev/null 2>&1
 
           rm -rf /var/cache/*
           mkdir /var/cache/apk
@@ -101,10 +101,16 @@ steps:
             --output google-chrome-stable_current_amd64.deb \
             https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 
-          $SUDO apt-get update > /dev/null 2>&1 && $SUDO apt-get install -y apt-utils fonts-liberation libappindicator3-1 libasound2 libatk-bridge2.0-0 libatk1.0-0 libatspi2.0-0 libcairo2 libcups2 libdbus-1-3 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0 libxcomposite1 libxcursor1 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 lsb-release xdg-utils > /dev/null 2>&1
+          $SUDO apt-get update > /dev/null 2>&1 && $SUDO apt-get install -y \
+            apt-utils fonts-liberation libappindicator3-1 libasound2 libatk-bridge2.0-0 \
+            libatk1.0-0 libatspi2.0-0 libcairo2 libcups2 libdbus-1-3 libgdk-pixbuf2.0-0 \
+            libglib2.0-0 libgtk-3-0 libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0 \
+            libxcomposite1 libxcursor1 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 \
+            lsb-release xdg-utils \
+            > /dev/null 2>&1
 
           # setup chrome installation
-          $SUDO dpkg -i google-chrome-stable_current_amd64.deb > /dev/null
+          $SUDO dpkg -i google-chrome-stable_current_amd64.deb > /dev/null 2>&1
 
           rm -rf google-chrome-stable_current_amd64.deb
 

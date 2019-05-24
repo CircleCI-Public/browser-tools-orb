@@ -43,6 +43,8 @@ jobs:
       - browser-tools/install-chrome:
           replace-existing: <<parameters.replace-existing-chrome>>
 
+      - browser-tools/install-chromedriver
+
 integration-dev_filters: &integration-dev_filters
   branches:
     ignore: /.*/
