@@ -1,6 +1,6 @@
 description: >
   Install Mozilla's Geckodriver WebDriver proxy, for use in browser
-  testing with Firefox. Requirements: apt-get, curl, tar
+  testing with Firefox. Requirements: curl, tar
 
 parameters:
   version:
@@ -73,7 +73,9 @@ steps:
           jq -r ".assets[] | select(.name | test(\"$PLATFORM\")) | .browser_download_url")
 
         # download geckodriver
-        curl --silent --show-error --location --fail --retry 3 --output "geckodriver-$GECKODRIVER_VERSION-$PLATFORM.tar.gz" "$GECKODRIVER_URL"
+        curl --silent --show-error --location --fail --retry 3 \
+          --output "geckodriver-$GECKODRIVER_VERSION-$PLATFORM.tar.gz" \
+          "$GECKODRIVER_URL"
 
         # setup geckodriver installation
         tar xf "geckodriver-$GECKODRIVER_VERSION-$PLATFORM.tar.gz"

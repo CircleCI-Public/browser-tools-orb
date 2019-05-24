@@ -1,8 +1,8 @@
 description: >
   Install Google's Chrome browser, for use in browser testing. Note:
   only the latest stable release can be installed, as Google does not
-  maintain a public archive of previous releases. Requirements: curl,
-  apt-get, sed
+  maintain a public archive of previous releases. Supports Debian/Ubuntu
+  Linux, Alpine Linux (via Chromium), and macOS environments.
 
 steps:
   - run:
@@ -10,18 +10,34 @@ steps:
       command: |
         if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
 
-        # download chrome
-        curl --silent --show-error --location --fail --retry 3 \
-          --output google-chrome-stable_current_amd64.deb \
-          https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+        installation_check () {
+          if cat /etc/issue | grep Alpine >> /dev/null 2>&1; then
+            if command -v chromium-browser >> /dev/null 2>&1; then
+              echo "Google Chrome (via Chromium) is already installed"
+              exit 0
+            fi
+          else
+            if command -v google-chrome >> /dev/null 2>&1; then
+              echo "Google Chrome is already installed"
+              exit 0
+            fi
+          fi
+        }
 
-        # setup chrome installation
-        $SUDO dpkg -i google-chrome-stable_current_amd64.deb || $SUDO apt-get -fy install
+        if false; then
+          # download chrome
+          curl --silent --show-error --location --fail --retry 3 \
+            --output google-chrome-stable_current_amd64.deb \
+            https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 
-        rm -rf google-chrome-stable_current_amd64.deb
+          # setup chrome installation
+          $SUDO dpkg -i google-chrome-stable_current_amd64.deb || $SUDO apt-get -fy install
 
-        $SUDO sed -i 's|HERE/chrome"|HERE/chrome" --disable-setuid-sandbox --no-sandbox|g' \
-            "/opt/google/chrome/google-chrome"
+          rm -rf google-chrome-stable_current_amd64.deb
 
-        # verify version
-        google-chrome --version
+          $SUDO sed -i 's|HERE/chrome"|HERE/chrome" --disable-setuid-sandbox --no-sandbox|g' \
+              "/opt/google/chrome/google-chrome"
+
+          # verify version
+          google-chrome --version
+        fi

@@ -36,6 +36,8 @@ jobs:
       - browser-tools/install-geckodriver:
           version: <<parameters.geckodriver-version>>
 
+      - browser-tools/install-chrome
+
 integration-dev_filters: &integration-dev_filters
   branches:
     ignore: /.*/
