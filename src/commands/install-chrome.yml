@@ -49,8 +49,8 @@ steps:
 
             <<#parameters.replace-existing>>echo "$(google-chrome --version)is currently installed; replacing it"
 
-            $SUDO apt-get --purge remove google-chrome-stable > dev/null 2>&1
-            $SUDO rm -f "$(command -v google-chrome)" > dev/null 2>&1<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(google-chrome --version)is already installed to $(which google-chrome)"
+            $SUDO apt-get --purge remove google-chrome-stable > /dev/null 2>&1
+            $SUDO rm -f "$(command -v google-chrome)" > /dev/null 2>&1<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(google-chrome --version)is already installed to $(which google-chrome)"
 
             exit 0<</parameters.replace-existing>>
 
