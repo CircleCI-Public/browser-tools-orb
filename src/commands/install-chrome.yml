@@ -13,14 +13,14 @@ steps:
         installation_check () {
           if cat /etc/issue >> /dev/null 2>&1 | grep Alpine >> /dev/null 2>&1; then
             if command -v chromium-browser >> /dev/null 2>&1; then
-              echo "Google Chrome (via Chromium) ($(chromium-browser --version)) is already installed"
+              echo "Google Chrome (via Chromium) ($(chromium-browser --version)) is already installed to $(which chromium-browser)"
               exit 0
             else
               echo "Google Chrome (via Chromium) is not currently installed; installing it"
             fi
           else
             if command -v google-chrome >> /dev/null 2>&1; then
-              echo "$(google-chrome --version)is already installed"
+              echo "$(google-chrome --version)is already installed to $(which google-chrome)"
               exit 0
             else
               echo "Google Chrome is not currently installed; installing it"
@@ -31,7 +31,8 @@ steps:
         installation_check
 
         if uname -a | grep Darwin >> /dev/null 2>&1; then
-          brew cask install google-chrome >> /dev/null
+          brew update >> /dev/null && \
+            HOMEBREW_NO_AUTO_UPDATE=1 cask install google-chrome >> /dev/null
 
           # https://developers.google.com/web/updates/2017/04/headless-chrome
 
@@ -45,7 +46,7 @@ steps:
           $SUDO chmod +x /usr/local/bin/google-chrome
 
           # verify version
-          echo "$(google-chrome --version) has been installed in the /Applications directory"
+          echo "$(google-chrome --version)has been installed in the /Applications directory"
           echo "A shortcut has also been created at $(which google-chrome)"
         elif cat /etc/issue | grep Alpine >> /dev/null 2>&1; then
           # https://github.com/Zenika/alpine-chrome/blob/master/Dockerfile
@@ -75,10 +76,10 @@ steps:
           $SUDO apt-get update >> /dev/null && $SUDO apt-get install -y fonts-liberation libappindicator3-1 libasound2 libatk-bridge2.0-0 libatk1.0-0 libatspi2.0-0 libcairo2 libcups2 libdbus-1-3 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0 libxcomposite1 libxcursor1 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 lsb-release xdg-utils >> /dev/null
 
           # setup chrome installation
-          $SUDO dpkg -i google-chrome-stable_current_amd64.deb # || $SUDO apt-get -fy install
+          $SUDO dpkg -i google-chrome-stable_current_amd64.deb >> /dev/null
 
           rm -rf google-chrome-stable_current_amd64.deb
 
           # verify installation
-          echo "$(google-chrome --version) has been installed to $(which google-chrome)"
+          echo "$(google-chrome --version)has been installed to $(which google-chrome)"
         fi
