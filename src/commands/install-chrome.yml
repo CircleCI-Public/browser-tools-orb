@@ -38,8 +38,8 @@ steps:
 
             <<#parameters.replace-existing>>echo "$(chromium-browser --version)is currently installed; replacing it"
 
-            $SUDO apk del chromium > /dev/null 2>&1 || true
-            $SUDO rm -f "$(command -v chromium-browser)" > /dev/null 2>&1 <</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(chromium-browser --version)is already installed to $(which chromium-browser)"
+            $SUDO apk del --force-broken-world chromium > /dev/null 2>&1 || true
+            $SUDO rm -f "$(command -v chromium-browser)" > /dev/null 2>&1 || true<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(chromium-browser --version)is already installed to $(which chromium-browser)"
 
             exit 0<</parameters.replace-existing>>
 
@@ -51,7 +51,7 @@ steps:
 
             <<#parameters.replace-existing>>echo "$(google-chrome --version)is currently installed; replacing it"
 
-            $SUDO apt-get --purge remove google-chrome-stable > /dev/null 2>&1 || true
+            $SUDO apt-get -y --purge remove google-chrome-stable > /dev/null 2>&1 || true
             $SUDO rm -f "$(command -v google-chrome)" > /dev/null 2>&1 || true<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(google-chrome --version)is already installed to $(which google-chrome)"
 
             exit 0<</parameters.replace-existing>>
