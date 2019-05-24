@@ -115,6 +115,8 @@ workflows:
       - test:
           name: test-latest-alpine-dev
           executor: orb-tools/alpine
+          pre-steps: [browser-tools/install-chrome]
+          replace-existing-chrome: true
           filters: *integration-dev_filters
 
       - test:
@@ -142,6 +144,8 @@ workflows:
       - test:
           name: test-latest-mac-dev
           executor: orb-tools/macos
+          pre-steps: [browser-tools/install-chrome]
+          replace-existing-chrome: true
           filters: *integration-dev_filters
 
       - test:
@@ -155,6 +159,8 @@ workflows:
       - test:
           name: test-latest-docker-dev
           executor: orb-tools/node
+          pre-steps: [browser-tools/install-chrome]
+          replace-existing-chrome: true
           filters: *integration-dev_filters
 
       - test:
@@ -167,7 +173,10 @@ workflows:
       # ci-docker
       - test:
           name: test-latest-ci-docker-dev
-          executor: orb-tools/node-cci
+          executor:
+            name: orb-tools/node-cci
+            tag: boron-browsers
+          replace-existing-chrome: true
           filters: *integration-dev_filters
 
       - test:
@@ -181,6 +190,8 @@ workflows:
       - test:
           name: test-latest-cimg-dev
           executor: orb-tools/ubuntu
+          pre-steps: [browser-tools/install-chrome]
+          replace-existing-chrome: true
           filters: *integration-dev_filters
 
       - test:
@@ -195,6 +206,8 @@ workflows:
       - test:
           name: test-latest-alpine-master
           executor: orb-tools/alpine
+          pre-steps: [browser-tools/install-chrome]
+          replace-existing-chrome: true
           filters: *integration-master_filters
 
       - test:
@@ -222,6 +235,8 @@ workflows:
       - test:
           name: test-latest-mac-master
           executor: orb-tools/macos
+          pre-steps: [browser-tools/install-chrome]
+          replace-existing-chrome: true
           filters: *integration-master_filters
 
       - test:
@@ -235,6 +250,8 @@ workflows:
       - test:
           name: test-latest-docker-master
           executor: orb-tools/node
+          pre-steps: [browser-tools/install-chrome]
+          replace-existing-chrome: true
           filters: *integration-master_filters
 
       - test:
@@ -247,7 +264,10 @@ workflows:
       # ci-docker
       - test:
           name: test-latest-ci-docker-master
-          executor: orb-tools/node-cci
+          executor:
+            name: orb-tools/node-cci
+            tag: boron-browsers
+          replace-existing-chrome: true
           filters: *integration-master_filters
 
       - test:
@@ -261,6 +281,8 @@ workflows:
       - test:
           name: test-latest-cimg-master
           executor: orb-tools/ubuntu
+          pre-steps: [browser-tools/install-chrome]
+          replace-existing-chrome: true
           filters: *integration-master_filters
 
       - test:
