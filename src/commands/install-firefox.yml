@@ -77,7 +77,7 @@ steps:
           grab_firefox_version
           installation_check
 
-          HOMEBREW_NO_AUTO_UPDATE=1 brew install gnupg coreutils > /dev/null
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install gnupg coreutils >> /dev/null
 
         # alpine: install everything, then check version & halt
         elif cat /etc/issue | grep Alpine >> /dev/null 2>&1; then
@@ -86,8 +86,8 @@ steps:
           # https://wiki.alpinelinux.org/wiki/Include:Upgrading_to_Edge
 
           sed -i -e 's/v[[:digit:]]\.[[:digit:]]/edge/g' /etc/apk/repositories
-          $SUDO apk upgrade --update-cache --available > /dev/null
-          $SUDO apk add icu-libs > /dev/null
+          $SUDO apk upgrade --update-cache --available >> /dev/null
+          $SUDO apk add icu-libs >> /dev/null
 
           if [[ <<parameters.alpine-version>> == "stable" ]]; then
             FIREFOX_VERSION=$(curl \
@@ -96,7 +96,7 @@ steps:
 
             echo "Selected version of Firefox is: $FIREFOX_VERSION (Alpine APK)"
 
-            $SUDO apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing firefox > /dev/null
+            $SUDO apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing firefox >> /dev/null
 
           elif [[ <<parameters.alpine-version>> == "esr" ]]; then
             FIREFOX_VERSION=$(curl \
@@ -105,7 +105,7 @@ steps:
 
             echo "Selected version of Firefox is: $FIREFOX_VERSION (Mozilla Extended Support Release, Alpine APK)"
 
-            $SUDO apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/community firefox-esr > /dev/null
+            $SUDO apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/community firefox-esr >> /dev/null
           fi
 
           $SUDO ln -s "$(which firefox)" <<parameters.install-dir>>/firefox
@@ -119,12 +119,12 @@ steps:
           grab_firefox_version
           installation_check
 
-          $SUDO apt-get update > /dev/null && \
-            $SUDO apt-get install -y libgtk-3-dev libdbus-glib-1-2 > /dev/null
+          $SUDO apt-get update >> /dev/null && \
+            $SUDO apt-get install -y libgtk-3-dev libdbus-glib-1-2 >> /dev/null
         fi
 
         # import public key
-        curl --silent --show-error --location --fail --retry 3 "$FIREFOX_URL_BASE/KEY" | gpg --import > /dev/null
+        curl --silent --show-error --location --fail --retry 3 "$FIREFOX_URL_BASE/KEY" | gpg --import >> /dev/null
 
         # download shasum256
         curl -O --silent --show-error --location --fail --retry 3 "$FIREFOX_URL_BASE/SHA256SUMS.asc"
@@ -180,10 +180,10 @@ steps:
 
         # setup firefox installation
         if uname -a | grep Darwin >> /dev/null 2>&1; then
-          hdiutil attach "$FIREFOX_FILE_NAME.$FILE_EXT" > /dev/null
+          hdiutil attach "$FIREFOX_FILE_NAME.$FILE_EXT" >> /dev/null
           $SUDO cp -R /Volumes/Firefox/Firefox.app /Applications
 
-          hdiutil eject /Volumes/Firefox > /dev/null
+          hdiutil eject /Volumes/Firefox >> /dev/null
           $SUDO rm -f "$FIREFOX_FILE_NAME.$FILE_EXT"
 
           echo -e "#\!/bin/bash\n" > firefox

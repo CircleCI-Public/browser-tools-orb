@@ -13,14 +13,14 @@ steps:
         installation_check () {
           if cat /etc/issue >> /dev/null 2>&1 | grep Alpine >> /dev/null 2>&1; then
             if command -v chromium-browser >> /dev/null 2>&1; then
-              echo "Google Chrome (via Chromium) is already installed"
+              echo "Google Chrome (via Chromium) ($(chromium-browser --version)) is already installed"
               exit 0
             else
               echo "Google Chrome (via Chromium) is not currently installed; installing it"
             fi
           else
             if command -v google-chrome >> /dev/null 2>&1; then
-              echo "Google Chrome is already installed"
+              echo "Google Chrome ($(google-chrome --version)) is already installed"
               exit 0
             else
               echo "Google Chrome is not currently installed; installing it"
@@ -31,7 +31,7 @@ steps:
         installation_check
 
         if uname -a | grep Darwin >> /dev/null 2>&1; then
-          HOMEBREW_NO_AUTO_UPDATE=1 brew cask install google-chrome > /dev/null
+          brew cask install google-chrome >> /dev/null
 
           # https://developers.google.com/web/updates/2017/04/headless-chrome
           alias google-chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
@@ -39,6 +39,8 @@ steps:
           # verify installation
           google-chrome --version
         elif cat /etc/issue | grep Alpine >> /dev/null 2>&1; then
+          # https://github.com/Zenika/alpine-chrome/blob/master/Dockerfile
+
           echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories
           echo @edge http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories
 
@@ -47,7 +49,8 @@ steps:
             harfbuzz@edge \
             nss@edge \
             freetype@edge \
-            ttf-freefont@edge
+            ttf-freefont@edge \
+            >> /dev/null
 
           rm -rf /var/cache/*
           mkdir /var/cache/apk
@@ -61,12 +64,9 @@ steps:
             https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 
           # setup chrome installation
-          $SUDO dpkg -i google-chrome-stable_current_amd64.deb || $SUDO apt-get -fy install
+          $SUDO dpkg -i google-chrome-stable_current_amd64.deb # || $SUDO apt-get -fy install
 
           rm -rf google-chrome-stable_current_amd64.deb
-
-          $SUDO sed -i 's|HERE/chrome"|HERE/chrome" --disable-setuid-sandbox --no-sandbox|g' \
-              "/opt/google/chrome/google-chrome"
 
           # verify installation
           google-chrome --version
