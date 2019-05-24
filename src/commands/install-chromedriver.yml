@@ -30,6 +30,8 @@ steps:
         # determine chromedriver release
         CHROMEDRIVER_RELEASE="${CHROME_VERSION_STRING%%.*}"
 
+        echo "Corresponding Chromedriver release is $CHROMEDRIVER_RELEASE"
+
         CHROMEDRIVER_VERSION=$(curl --silent --show-error --location --fail --retry 3 \
           "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROMEDRIVER_RELEASE")
 
