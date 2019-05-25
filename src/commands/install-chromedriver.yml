@@ -22,95 +22,99 @@ steps:
         if uname -a | grep Darwin > /dev/null 2>&1; then
           CHROME_VERSION="$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)"
           PLATFORM=mac64
-
+          download_install
         elif cat /etc/issue | grep Alpine > /dev/null 2>&1; then
-          CHROME_VERSION="$(chromium-browser --version)"
-          PLATFORM=linux64
-          apk add libc6-compat > /dev/null
+          apk update > /dev/null 2>&1 && \
+            apk add --no-cache chromium-chromedriver > /dev/null
 
+          # verify version
+          echo "$(chromedriver --version) has been installed to $(which chromedriver)"
         else
           CHROME_VERSION="$(google-chrome --version)"
           PLATFORM=linux64
+          download_install
         fi
 
-        CHROME_VERSION_STRING="$(echo $CHROME_VERSION | sed 's/^Google Chrome //' | sed 's/^Chromium //')"
+        download_install () {
+          CHROME_VERSION_STRING="$(echo $CHROME_VERSION | sed 's/^Google Chrome //' | sed 's/^Chromium //')"
 
-        echo "Installed version of Google Chrome/Chromium is $CHROME_VERSION_STRING"
+          echo "Installed version of Google Chrome/Chromium is $CHROME_VERSION_STRING"
 
-        # determine chromedriver release
-        CHROMEDRIVER_RELEASE="${CHROME_VERSION_STRING%%.*}"
+          # determine chromedriver release
+          CHROMEDRIVER_RELEASE="${CHROME_VERSION_STRING%%.*}"
 
-        let CHROME_RELEASE=$CHROMEDRIVER_RELEASE
+          let CHROME_RELEASE=$CHROMEDRIVER_RELEASE
 
-        if [[ $CHROME_RELEASE -lt 70 ]]; then
-          # https://sites.google.com/a/chromium.org/chromedriver/downloads
-          # https://chromedriver.storage.googleapis.com/2.40/notes.txt
+          if [[ $CHROME_RELEASE -lt 70 ]]; then
+            # https://sites.google.com/a/chromium.org/chromedriver/downloads
+            # https://chromedriver.storage.googleapis.com/2.40/notes.txt
 
-          case $CHROME_RELEASE in
-          69)
-            CHROMEDRIVER_VERSION="2.44";;
-          68)
-            CHROMEDRIVER_VERSION="2.42";;
-          67)
-            CHROMEDRIVER_VERSION="2.41";;
-          66)
-            CHROMEDRIVER_VERSION="2.40";;
-          65)
-            CHROMEDRIVER_VERSION="2.38";;
-          64)
-            CHROMEDRIVER_VERSION="2.37";;
-          63)
-            CHROMEDRIVER_VERSION="2.36";;
-          62)
-            CHROMEDRIVER_VERSION="2.35";;
-          61)
-            CHROMEDRIVER_VERSION="2.34";;
-          60)
-            CHROMEDRIVER_VERSION="2.33";;
-          59)
-            CHROMEDRIVER_VERSION="2.32";;
-          58)
-            CHROMEDRIVER_VERSION="2.31";;
-          [56-57])
-            CHROMEDRIVER_VERSION="2.29";;
-          55)
-            CHROMEDRIVER_VERSION="2.28";;
-          54)
-            CHROMEDRIVER_VERSION="2.27";;
-          53)
-            CHROMEDRIVER_VERSION="2.26";;
-          52)
-            CHROMEDRIVER_VERSION="2.24";;
-          51)
-            CHROMEDRIVER_VERSION="2.23";;
-          [49-50])
-            CHROMEDRIVER_VERSION="2.22";;
-          [46-48])
-            CHROMEDRIVER_VERSION="2.21";;
-          [43-45])
-            CHROMEDRIVER_VERSION="2.20";;
-          *)
-            echo "Sorry, Google Chrome/Chromium version 43 or newer is required to use Chromedriver"
-            exit 1;;
-          esac
-        else
-          CHROMEDRIVER_VERSION=$(curl --silent --show-error --location --fail --retry 3 \
-            "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROMEDRIVER_RELEASE")
-        fi
+            case $CHROME_RELEASE in
+            69)
+              CHROMEDRIVER_VERSION="2.44";;
+            68)
+              CHROMEDRIVER_VERSION="2.42";;
+            67)
+              CHROMEDRIVER_VERSION="2.41";;
+            66)
+              CHROMEDRIVER_VERSION="2.40";;
+            65)
+              CHROMEDRIVER_VERSION="2.38";;
+            64)
+              CHROMEDRIVER_VERSION="2.37";;
+            63)
+              CHROMEDRIVER_VERSION="2.36";;
+            62)
+              CHROMEDRIVER_VERSION="2.35";;
+            61)
+              CHROMEDRIVER_VERSION="2.34";;
+            60)
+              CHROMEDRIVER_VERSION="2.33";;
+            59)
+              CHROMEDRIVER_VERSION="2.32";;
+            58)
+              CHROMEDRIVER_VERSION="2.31";;
+            [56-57])
+              CHROMEDRIVER_VERSION="2.29";;
+            55)
+              CHROMEDRIVER_VERSION="2.28";;
+            54)
+              CHROMEDRIVER_VERSION="2.27";;
+            53)
+              CHROMEDRIVER_VERSION="2.26";;
+            52)
+              CHROMEDRIVER_VERSION="2.24";;
+            51)
+              CHROMEDRIVER_VERSION="2.23";;
+            [49-50])
+              CHROMEDRIVER_VERSION="2.22";;
+            [46-48])
+              CHROMEDRIVER_VERSION="2.21";;
+            [43-45])
+              CHROMEDRIVER_VERSION="2.20";;
+            *)
+              echo "Sorry, Google Chrome/Chromium version 43 or newer is required to use Chromedriver"
+              exit 1;;
+            esac
+          else
+            CHROMEDRIVER_VERSION=$(curl --silent --show-error --location --fail --retry 3 \
+              "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROMEDRIVER_RELEASE")
+          fi
 
-        echo "Chromedriver $CHROMEDRIVER_VERSION will be installed"
+          echo "Chromedriver $CHROMEDRIVER_VERSION will be installed"
 
-        # download chromedriver
-        curl --silent --show-error --location --fail --retry 3 \
-          --output chromedriver_$PLATFORM.zip \
-          "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_$PLATFORM.zip"
+          # download chromedriver
+          curl --silent --show-error --location --fail --retry 3 \
+            --output chromedriver_$PLATFORM.zip \
+            "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_$PLATFORM.zip"
 
-        # setup chromedriver installation
-        unzip "chromedriver_$PLATFORM.zip" > /dev/null 2>&1
-        rm -rf "chromedriver_$PLATFORM.zip"
+          # setup chromedriver installation
+          unzip "chromedriver_$PLATFORM.zip" > /dev/null 2>&1
+          rm -rf "chromedriver_$PLATFORM.zip"
 
-        $SUDO mv chromedriver <<parameters.install-dir>>
-        $SUDO chmod +x <<parameters.install-dir>>/chromedriver
+          $SUDO mv chromedriver <<parameters.install-dir>>
+          $SUDO chmod +x <<parameters.install-dir>>/chromedriver
 
-        # verify version
-        echo "$(chromedriver --version) has been installed to $(which chromedriver)"
+          # verify version
+          echo "$(chromedriver --version) has been installed to $(which chromedriver)"
+        }
