@@ -5,6 +5,13 @@ description: >
   https://sites.google.com/a/chromium.org/chromedriver/downloads/version-selection
   Requirements: sed, curl, unzip
 
+parameters:
+  install-dir:
+    type: string
+    default: /usr/local/bin
+    description: >
+      Directory in which to install Chromedriver
+
 steps:
   - run:
       name: Install Chromedriver
@@ -98,11 +105,11 @@ steps:
           "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_$PLATFORM.zip"
 
         # setup chromedriver installation
-        unzip "chromedriver_$PLATFORM.zip"
+        unzip "chromedriver_$PLATFORM.zip" > /dev/null 2>&1
         rm -rf "chromedriver_$PLATFORM.zip"
 
-        $SUDO mv chromedriver /usr/local/bin/chromedriver
-        $SUDO chmod +x /usr/local/bin/chromedriver
+        $SUDO mv chromedriver <<parameters.install-dir>>
+        $SUDO chmod +x <<parameters.install-dir>>/chromedriver
 
         # verify version
-        echo "$(chromedriver --version)has been installed to $(which chromedriver)"
+        echo "$(chromedriver --version) has been installed to $(which chromedriver)"

@@ -87,6 +87,12 @@ parameters:
       of Chrome; for details, see the following information:
       https://sites.google.com/a/chromium.org/chromedriver/downloads/version-selection
 
+  chromedriver-install-dir:
+    type: string
+    default: /usr/local/bin
+    description: >
+      Directory in which to install Chromedriver
+
 steps:
   - when:
       condition: <<parameters.install-firefox>>
@@ -112,4 +118,5 @@ steps:
   - when:
       condition: <<parameters.install-chromedriver>>
       steps:
-        - install-chromedriver
+        - install-chromedriver:
+            install-dir: <<parameters.chromedriver-install-dir>>
