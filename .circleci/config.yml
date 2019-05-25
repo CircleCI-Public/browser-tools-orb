@@ -33,12 +33,12 @@ jobs:
     steps:
       - jq/install
 
-      # - browser-tools/install-firefox:
-      #     version: <<parameters.firefox-version>>
-      #     alpine-version: <<parameters.firefox-alpine-version>>
+      - browser-tools/install-firefox:
+          version: <<parameters.firefox-version>>
+          alpine-version: <<parameters.firefox-alpine-version>>
 
-      # - browser-tools/install-geckodriver:
-      #     version: <<parameters.geckodriver-version>>
+      - browser-tools/install-geckodriver:
+          version: <<parameters.geckodriver-version>>
 
       - browser-tools/install-chrome:
           replace-existing: <<parameters.replace-existing-chrome>>

@@ -86,8 +86,8 @@ steps:
           # https://wiki.alpinelinux.org/wiki/Include:Upgrading_to_Edge
 
           sed -i -e 's/v[[:digit:]]\.[[:digit:]]/edge/g' /etc/apk/repositories
-          $SUDO apk upgrade --update-cache --available > /dev/null
-          $SUDO apk add icu-libs > /dev/null
+          apk upgrade --update-cache --available > /dev/null
+          apk add icu-libs > /dev/null
 
           if [[ <<parameters.alpine-version>> == "stable" ]]; then
             FIREFOX_VERSION=$(curl \
@@ -96,7 +96,7 @@ steps:
 
             echo "Selected version of Firefox is: $FIREFOX_VERSION (Alpine APK)"
 
-            $SUDO apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing firefox > /dev/null
+            apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing firefox > /dev/null
 
           elif [[ <<parameters.alpine-version>> == "esr" ]]; then
             FIREFOX_VERSION=$(curl \
@@ -105,7 +105,7 @@ steps:
 
             echo "Selected version of Firefox is: $FIREFOX_VERSION (Mozilla Extended Support Release, Alpine APK)"
 
-            $SUDO apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/community firefox-esr > /dev/null
+            apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/community firefox-esr > /dev/null
           fi
 
           $SUDO ln -s "$(which firefox)" <<parameters.install-dir>>/firefox

@@ -26,6 +26,7 @@ steps:
         elif cat /etc/issue | grep Alpine > /dev/null 2>&1; then
           CHROME_VERSION="$(chromium-browser --version)"
           PLATFORM=linux64
+          apk add libc6-compat > /dev/null
 
         else
           CHROME_VERSION="$(google-chrome --version)"
