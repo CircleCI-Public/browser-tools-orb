@@ -1,0 +1,89 @@
+description: >
+  Install Mozilla's Geckodriver WebDriver proxy, for use in browser
+  testing with Firefox. Requirements: curl, tar
+
+parameters:
+  version:
+    type: string
+    default: latest
+    description: >
+      Version of Geckodriver to install, defaults to latest release. To
+      install an older release, specify a full semantic version tag,
+      e.g., `v0.23.0`. For a list of releases, and a Firefox/Geckodriver
+      version compatibility table, see the following links:
+      https://github.com/mozilla/geckodriver/releases
+      https://firefox-source-docs.mozilla.org/testing/geckodriver/Support.html
+
+  install-dir:
+    type: string
+    default: /usr/local/bin
+    description: >
+      Directory in which to install Geckodriver
+
+steps:
+  - run:
+      name: Install Geckodriver
+      command: |
+        if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
+
+        # FUNCTIONS
+        grab_geckodriver_version () {
+          if [[ <<parameters.version>> == "latest" ]]; then
+            # extract latest version from github releases API
+            GECKODRIVER_VERSION_STRING=$(curl \
+              https://api.github.com/repos/mozilla/geckodriver/releases/latest | jq '.tag_name')
+
+            # strip leading/trailing "
+            temp="${GECKODRIVER_VERSION_STRING%\"}"
+            GECKODRIVER_VERSION="${temp#\"}"
+          else
+            GECKODRIVER_VERSION=<<parameters.version>>
+          fi
+
+          echo "Selected version of Geckodriver is: $GECKODRIVER_VERSION"
+        }
+
+        installation_check () {
+          if command -v geckodriver >> /dev/null 2>&1; then
+            if geckodriver --version | grep "$GECKODRIVER_VERSION" >> /dev/null 2>&1; then
+              echo "Geckodriver $GECKODRIVER_VERSION is already installed"
+              exit 0
+            else
+              echo "A different version of Geckodriver is installed ($(geckodriver --version)); removing it"
+              $SUDO rm -f $(command -v geckodriver)
+            fi
+          else
+            echo "Geckodriver is not currently installed; installing it"
+          fi
+        }
+
+        grab_geckodriver_version
+        installation_check
+
+        if uname -a | grep Darwin >> /dev/null 2>&1; then
+          PLATFORM=macos
+        else
+          PLATFORM=linux64
+        fi
+
+        # get download URL
+        GECKODRIVER_URL=$(curl \
+          --silent --show-error --location --fail --retry 3 \
+          "https://api.github.com/repos/mozilla/geckodriver/releases/tags/$GECKODRIVER_VERSION" | \
+          jq -r ".assets[] | select(.name | test(\"$PLATFORM\")) | .browser_download_url")
+
+        # download geckodriver
+        curl --silent --show-error --location --fail --retry 3 \
+          --output "geckodriver-$GECKODRIVER_VERSION-$PLATFORM.tar.gz" \
+          "$GECKODRIVER_URL"
+
+        # setup geckodriver installation
+        tar xf "geckodriver-$GECKODRIVER_VERSION-$PLATFORM.tar.gz"
+        rm -rf "geckodriver-$GECKODRIVER_VERSION-$PLATFORM.tar.gz"
+
+        $SUDO mv geckodriver <<parameters.install-dir>>
+        $SUDO chmod +x <<parameters.install-dir>>/geckodriver
+
+        # verify version
+        echo "Geckodriver has been installed to $(which geckodriver)"
+        geckodriver --version

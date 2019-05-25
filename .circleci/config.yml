@@ -1,0 +1,425 @@
+version: 2.1
+
+orbs:
+  orb-tools: circleci/orb-tools@8.13.0
+  browser-tools: circleci/browser-tools@dev:alpha
+  jq: circleci/jq@1.8.0
+
+jobs:
+  test:
+    parameters:
+      executor:
+        type: executor
+
+      firefox-version:
+        type: string
+        default: latest
+
+      firefox-alpine-version:
+        type: enum
+        default: stable
+        enum: [stable, esr]
+
+      geckodriver-version:
+        type: string
+        default: latest
+
+      replace-existing-chrome:
+        type: boolean
+        default: false
+
+      test-browser-tools-command:
+        type: boolean
+        default: false
+
+    executor: <<parameters.executor>>
+
+    steps:
+      - jq/install
+
+      - when:
+          condition: <<parameters.test-browser-tools-command>>
+          steps:
+            - browser-tools/install-browser-tools:
+                firefox-version: <<parameters.firefox-version>>
+                firefox-alpine-version: <<parameters.firefox-alpine-version>>
+                geckodriver-version: <<parameters.geckodriver-version>>
+                replace-existing-chrome: <<parameters.replace-existing-chrome>>
+
+      - unless:
+          condition: <<parameters.test-browser-tools-command>>
+          steps:
+            - browser-tools/install-firefox:
+                version: <<parameters.firefox-version>>
+                alpine-version: <<parameters.firefox-alpine-version>>
+
+            - browser-tools/install-geckodriver:
+                version: <<parameters.geckodriver-version>>
+
+            - browser-tools/install-chrome:
+                replace-existing: <<parameters.replace-existing-chrome>>
+
+            - browser-tools/install-chromedriver
+
+integration-dev_filters: &integration-dev_filters
+  branches:
+    ignore: /.*/
+  tags:
+    only: /integration-.*/
+
+integration-master_filters: &integration-master_filters
+  branches:
+    ignore: /.*/
+  tags:
+    only: /master-.*/
+
+prod-deploy_requires: &prod-deploy_requires
+  [
+    latest-alpine-master,
+    older-alpine-master,
+    latest-machine-master,
+    older-machine-master,
+    latest-mac-master,
+    older-mac-master,
+    latest-docker-master,
+    older-docker-master,
+    latest-ci-docker-master,
+    older-ci-docker-master,
+    latest-cimg-master,
+    older-cimg-master,
+    browser-tools-command-alpine-master,
+    browser-tools-command-machine-master,
+    browser-tools-command-mac-master,
+    browser-tools-command-docker-master,
+    browser-tools-command-ci-docker-master,
+    browser-tools-command-cimg-master
+  ]
+
+workflows:
+  lint_pack-validate_publish-dev:
+    jobs:
+      - orb-tools/lint
+
+      - orb-tools/pack:
+          requires:
+            - orb-tools/lint
+
+      - orb-tools/publish-dev:
+          orb-name: circleci/browser-tools
+          context: orb-publishing
+          requires:
+            - orb-tools/pack
+
+      - orb-tools/trigger-integration-workflow:
+          name: trigger-integration-dev
+          context: orb-publishing
+          ssh-fingerprints: d5:f2:f8:4b:91:76:27:e6:09:2b:ad:06:ac:8f:fa:3e
+          requires:
+            - orb-tools/publish-dev
+          filters:
+            branches:
+              ignore: master
+
+      - orb-tools/trigger-integration-workflow:
+          name: trigger-integration-master
+          context: orb-publishing
+          cleanup-tags: true
+          ssh-fingerprints: d5:f2:f8:4b:91:76:27:e6:09:2b:ad:06:ac:8f:fa:3e
+          tag: master
+          requires:
+            - orb-tools/publish-dev
+          filters:
+            branches:
+              only: master
+
+  integration-tests_prod-release:
+    jobs:
+      # triggered by non-master branch commits
+      # alpine
+      - test:
+          name: latest-alpine-dev
+          executor: orb-tools/alpine
+          pre-steps: [browser-tools/install-chrome]
+          replace-existing-chrome: true
+          filters: *integration-dev_filters
+
+      - test:
+          name: older-alpine-dev
+          executor: orb-tools/alpine
+          firefox-alpine-version: esr
+          geckodriver-version: v0.23.0
+          filters: *integration-dev_filters
+
+      - test:
+          name: browser-tools-command-alpine-dev
+          executor: orb-tools/alpine
+          test-browser-tools-command: true
+          filters: *integration-dev_filters
+
+      # machine
+      - test:
+          name: latest-machine-dev
+          executor: orb-tools/machine
+          replace-existing-chrome: true
+          filters: *integration-dev_filters
+
+      - test:
+          name: older-machine-dev
+          executor: orb-tools/machine
+          firefox-version: "65.0.1"
+          geckodriver-version: v0.22.0
+          filters: *integration-dev_filters
+
+      - test:
+          name: browser-tools-command-machine-dev
+          executor: orb-tools/machine
+          test-browser-tools-command: true
+          filters: *integration-dev_filters
+
+      # mac
+      - test:
+          name: latest-mac-dev
+          executor: orb-tools/macos
+          pre-steps: [browser-tools/install-chrome]
+          replace-existing-chrome: true
+          filters: *integration-dev_filters
+
+      - test:
+          name: older-mac-dev
+          executor: orb-tools/macos
+          firefox-version: "64.0"
+          geckodriver-version: v0.21.0
+          filters: *integration-dev_filters
+
+      - test:
+          name: browser-tools-command-mac-dev
+          executor: orb-tools/macos
+          test-browser-tools-command: true
+          filters: *integration-dev_filters
+
+      # docker
+      - test:
+          name: latest-docker-dev
+          executor: orb-tools/node
+          pre-steps: [browser-tools/install-chrome]
+          replace-existing-chrome: true
+          filters: *integration-dev_filters
+
+      - test:
+          name: older-docker-dev
+          executor: orb-tools/node
+          firefox-version: "57.0.3"
+          geckodriver-version: v0.20.1
+          filters: *integration-dev_filters
+
+      - test:
+          name: browser-tools-command-docker-dev
+          executor: orb-tools/node
+          test-browser-tools-command: true
+          filters: *integration-dev_filters
+
+      # ci-docker
+      - test:
+          name: latest-ci-docker-dev
+          executor:
+            name: orb-tools/node-cci
+            tag: boron-browsers
+          replace-existing-chrome: true
+          filters: *integration-dev_filters
+
+      - test:
+          name: older-ci-docker-dev
+          executor: orb-tools/node-cci
+          firefox-version: "62.0.2"
+          geckodriver-version: v0.18.0
+          filters: *integration-dev_filters
+
+      - test:
+          name: browser-tools-command-ci-docker-dev
+          executor: orb-tools/node-cci
+          test-browser-tools-command: true
+          filters: *integration-dev_filters
+
+      # new ci-docker
+      - test:
+          name: latest-cimg-dev
+          executor: orb-tools/ubuntu
+          pre-steps: [browser-tools/install-chrome]
+          replace-existing-chrome: true
+          filters: *integration-dev_filters
+
+      - test:
+          name: older-cimg-dev
+          executor: orb-tools/ubuntu
+          firefox-version: "62.0.2"
+          geckodriver-version: v0.18.0
+          filters: *integration-dev_filters
+
+      - test:
+          name: browser-tools-command-cimg-dev
+          executor: orb-tools/ubuntu
+          test-browser-tools-command: true
+          filters: *integration-dev_filters
+
+      # triggered by master branch commits
+      # alpine
+      - test:
+          name: latest-alpine-master
+          executor: orb-tools/alpine
+          pre-steps: [browser-tools/install-chrome]
+          replace-existing-chrome: true
+          filters: *integration-master_filters
+
+      - test:
+          name: older-alpine-master
+          executor: orb-tools/alpine
+          firefox-alpine-version: esr
+          geckodriver-version: v0.23.0
+          filters: *integration-master_filters
+
+      - test:
+          name: browser-tools-command-alpine-master
+          executor: orb-tools/alpine
+          test-browser-tools-command: true
+          filters: *integration-master_filters
+
+      # machine
+      - test:
+          name: latest-machine-master
+          executor: orb-tools/machine
+          replace-existing-chrome: true
+          filters: *integration-master_filters
+
+      - test:
+          name: older-machine-master
+          executor: orb-tools/machine
+          firefox-version: "65.0.1"
+          geckodriver-version: v0.22.0
+          filters: *integration-master_filters
+
+      - test:
+          name: browser-tools-command-machine-master
+          executor: orb-tools/machine
+          test-browser-tools-command: true
+          filters: *integration-master_filters
+
+      # mac
+      - test:
+          name: latest-mac-master
+          executor: orb-tools/macos
+          pre-steps: [browser-tools/install-chrome]
+          replace-existing-chrome: true
+          filters: *integration-master_filters
+
+      - test:
+          name: older-mac-master
+          executor: orb-tools/macos
+          firefox-version: "64.0"
+          geckodriver-version: v0.21.0
+          filters: *integration-master_filters
+
+      - test:
+          name: browser-tools-command-mac-master
+          executor: orb-tools/macos
+          test-browser-tools-command: true
+          filters: *integration-master_filters
+
+      # docker
+      - test:
+          name: latest-docker-master
+          executor: orb-tools/node
+          pre-steps: [browser-tools/install-chrome]
+          replace-existing-chrome: true
+          filters: *integration-master_filters
+
+      - test:
+          name: older-docker-master
+          executor: orb-tools/node
+          firefox-version: "57.0.3"
+          geckodriver-version: v0.20.1
+          filters: *integration-master_filters
+
+      - test:
+          name: browser-tools-command-docker-master
+          executor: orb-tools/node
+          test-browser-tools-command: true
+          filters: *integration-master_filters
+
+      # ci-docker
+      - test:
+          name: latest-ci-docker-master
+          executor:
+            name: orb-tools/node-cci
+            tag: boron-browsers
+          replace-existing-chrome: true
+          filters: *integration-master_filters
+
+      - test:
+          name: older-ci-docker-master
+          executor: orb-tools/node-cci
+          firefox-version: "62.0.2"
+          geckodriver-version: v0.18.0
+          filters: *integration-master_filters
+
+      - test:
+          name: browser-tools-command-ci-docker-master
+          executor: orb-tools/node-cci
+          test-browser-tools-command: true
+          filters: *integration-master_filters
+
+      # new ci-docker
+      - test:
+          name: latest-cimg-master
+          executor: orb-tools/ubuntu
+          pre-steps: [browser-tools/install-chrome]
+          replace-existing-chrome: true
+          filters: *integration-master_filters
+
+      - test:
+          name: older-cimg-master
+          executor: orb-tools/ubuntu
+          firefox-version: "62.0.2"
+          geckodriver-version: v0.18.0
+          filters: *integration-master_filters
+
+      - test:
+          name: browser-tools-command-cimg-master
+          executor: orb-tools/ubuntu
+          test-browser-tools-command: true
+          filters: *integration-master_filters
+
+      # patch, minor, or major publishing
+      - orb-tools/dev-promote-prod:
+          name: dev-promote-patch
+          context: orb-publishing
+          orb-name: circleci/browser-tools
+          requires: *prod-deploy_requires
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /master-patch.*/
+
+      - orb-tools/dev-promote-prod:
+          name: dev-promote-minor
+          context: orb-publishing
+          orb-name: circleci/browser-tools
+          release: minor
+          requires: *prod-deploy_requires
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /master-minor.*/
+
+      - orb-tools/dev-promote-prod:
+          name: dev-promote-major
+          context: orb-publishing
+          orb-name: circleci/browser-tools
+          release: major
+          requires: *prod-deploy_requires
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /master-major.*/
