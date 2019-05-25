@@ -101,6 +101,17 @@ steps:
             "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROMEDRIVER_RELEASE")
         fi
 
+        # installation check
+        if command -v chromedriver > /dev/null 2>&1; then
+          if chromedriver --version | grep "$CHROMEDRIVER_VERSION" > /dev/null 2>&1; then
+            echo "Chromedriver $CHROMEDRIVER_VERSION is already installed"
+            exit 0
+          else
+            echo "A different version of Chromedriver is installed ($(chromedriver --version)); removing it"
+            $SUDO rm -f $(command -v chromedriver)
+          fi
+        fi
+
         echo "Chromedriver $CHROMEDRIVER_VERSION will be installed"
 
         # download chromedriver

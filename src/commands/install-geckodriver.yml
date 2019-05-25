@@ -85,4 +85,5 @@ steps:
         $SUDO chmod +x <<parameters.install-dir>>/geckodriver
 
         # verify version
+        echo "Geckodriver has been installed to $(which geckodriver)"
         geckodriver --version
