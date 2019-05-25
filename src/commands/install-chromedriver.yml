@@ -32,7 +32,7 @@ steps:
 
         let CHROME_RELEASE=$CHROMEDRIVER_RELEASE
 
-        if [[ $CHROME_RELEASE -lt 70]]; then
+        if [[ $CHROME_RELEASE -lt 70 ]]; then
           # https://sites.google.com/a/chromium.org/chromedriver/downloads
           # https://chromedriver.storage.googleapis.com/2.40/notes.txt
           case $CHROME_RELEASE in
