@@ -13,14 +13,16 @@ steps:
 
         # determine_chrome_version
         if uname -a | grep Darwin > /dev/null 2>&1; then
-
           CHROME_VERSION="$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)"
+          PLATFORM=mac64
 
         elif cat /etc/issue | grep Alpine > /dev/null 2>&1; then
-
           CHROME_VERSION="$(chromium-browser --version)"
+          PLATFORM=linux64
+
         else
           CHROME_VERSION="$(google-chrome --version)"
+          PLATFORM=linux64
         fi
 
         CHROME_VERSION_STRING="$(echo $CHROME_VERSION | sed 's/^Google Chrome //' | sed 's/^Chromium //')"
@@ -35,6 +37,7 @@ steps:
         if [[ $CHROME_RELEASE -lt 70 ]]; then
           # https://sites.google.com/a/chromium.org/chromedriver/downloads
           # https://chromedriver.storage.googleapis.com/2.40/notes.txt
+
           case $CHROME_RELEASE in
           69)
             CHROMEDRIVER_VERSION="2.44";;
@@ -89,19 +92,17 @@ steps:
 
         echo "Chromedriver $CHROMEDRIVER_VERSION will be installed"
 
-        if false; then
-          # download chromedriver
-          curl --silent --show-error --location --fail --retry 3 \
-            --output chromedriver_linux64.zip \
-            "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
+        # download chromedriver
+        curl --silent --show-error --location --fail --retry 3 \
+          --output chromedriver_$PLATFORM.zip \
+          "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_$PLATFORM.zip"
 
-          # setup chromedriver installation
-          unzip chromedriver_linux64.zip
-          rm -rf chromedriver_linux64.zip
+        # setup chromedriver installation
+        unzip "chromedriver_$PLATFORM.zip"
+        rm -rf "chromedriver_$PLATFORM.zip"
 
-          sudo mv chromedriver /usr/local/bin/chromedriver
-          sudo chmod +x /usr/local/bin/chromedriver
+        $SUDO mv chromedriver /usr/local/bin/chromedriver
+        $SUDO chmod +x /usr/local/bin/chromedriver
 
-          # verify version
-          chromedriver --version
-        fi
+        # verify version
+        echo "$(chromedriver --version)has been installed to $(which chromedriver)"
