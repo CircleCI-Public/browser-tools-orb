@@ -95,26 +95,34 @@ steps:
           apk upgrade --update-cache --available<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
           apk add icu-libs<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
 
-          if [[ <<parameters.alpine-version>> == "stable" ]]; then
+          if [[ "<<parameters.alpine-version>>" == "stable" ]]; then
             FIREFOX_VERSION=$(curl \
               --silent --show-error --location --fail --retry 3 \
-              http://dl-cdn.alpinelinux.org/alpine/edge/testing/x86_64/ | grep firefox | sed -E 's%<a href="%%' | sed -E 's%.apk">firefox-.*.apk</a>.*%%')
+              http://dl-cdn.alpinelinux.org/alpine/edge/testing/x86_64/ | grep firefox | \
+              sed -E 's%<a href="%%' | sed -E 's%.apk">firefox-.*.apk</a>.*%%' | \
+              sed -E 's/firefox-//' | sed -E 's/-.*//')
 
             echo "Selected version of Firefox is: $FIREFOX_VERSION (Alpine APK)"
 
-            apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing firefox<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
+            apk --no-cache add \
+              --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
+              firefox<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
 
-          elif [[ <<parameters.alpine-version>> == "esr" ]]; then
+          elif [[ "<<parameters.alpine-version>>" == "esr" ]]; then
             FIREFOX_VERSION=$(curl \
               --silent --show-error --location --fail --retry 3 \
-              http://dl-cdn.alpinelinux.org/alpine/edge/community/x86_64/ | grep firefox-esr | sed -E 's%<a href="%%' | sed -E 's%.apk">firefox-esr-.*.apk</a>.*%%')
+              http://dl-cdn.alpinelinux.org/alpine/edge/community/x86_64/ | grep firefox-esr | \
+              sed -E 's%<a href="%%' | sed -E 's%.apk">firefox-esr-.*.apk</a>.*%%' | \
+              sed -E 's/firefox-//' | sed -E 's/-.*//')
 
             echo "Selected version of Firefox is: $FIREFOX_VERSION (Mozilla Extended Support Release, Alpine APK)"
 
-            apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/community firefox-esr > /dev/null
+            apk --no-cache add \
+              --repository http://dl-cdn.alpinelinux.org/alpine/edge/community \
+              firefox-esr > /dev/null
           fi
 
-          $SUDO ln -s "$(which firefox)" <<parameters.install-dir>>/firefox
+          ln -s "$(which firefox)" <<parameters.install-dir>>/firefox
 
           # test/verify version
           if firefox --version | grep "$FIREFOX_VERSION"<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
@@ -135,7 +143,7 @@ steps:
               bzip2 \
               dbus-glib-devel \
               gtk3-devel \
-              libXtst \
+              libXt-devel \
               perl \
               which \
              <<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
