@@ -32,6 +32,12 @@ parameters:
     description: >
       Directory in which to install Firefox
 
+  debug:
+    type: boolean
+    default: false
+    description: >
+      Extra output for orb developers
+
 steps:
   - run:
       name: Install Firefox
@@ -61,8 +67,8 @@ steps:
         }
 
         installation_check () {
-          if command -v firefox > /dev/null 2>&1; then
-            if firefox --version | grep "$FIREFOX_VERSION" > /dev/null 2>&1; then
+          if command -v firefox<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+            if firefox --version | grep "$FIREFOX_VERSION"<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
               echo "firefox $FIREFOX_VERSION is already installed"
               exit 0
             else
@@ -73,21 +79,21 @@ steps:
         }
 
         # mac: setup version, install packages, then continue
-        if uname -a | grep Darwin > /dev/null 2>&1; then
+        if uname -a | grep Darwin<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
           grab_firefox_version
           installation_check
 
-          HOMEBREW_NO_AUTO_UPDATE=1 brew install gnupg coreutils > /dev/null
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install gnupg coreutils<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
 
         # alpine: install everything, then check version & halt
-        elif cat /etc/issue | grep Alpine > /dev/null 2>&1; then
+        elif cat /etc/issue | grep Alpine<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
 
           # https://stackoverflow.com/questions/51806403/installation-of-firefox-from-alpine-edge
           # https://wiki.alpinelinux.org/wiki/Include:Upgrading_to_Edge
 
           sed -i -e 's/v[[:digit:]]\.[[:digit:]]/edge/g' /etc/apk/repositories
-          apk upgrade --update-cache --available > /dev/null
-          apk add icu-libs > /dev/null
+          apk upgrade --update-cache --available<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
+          apk add icu-libs<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
 
           if [[ <<parameters.alpine-version>> == "stable" ]]; then
             FIREFOX_VERSION=$(curl \
@@ -96,7 +102,7 @@ steps:
 
             echo "Selected version of Firefox is: $FIREFOX_VERSION (Alpine APK)"
 
-            apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing firefox > /dev/null
+            apk --no-cache add --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing firefox<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
 
           elif [[ <<parameters.alpine-version>> == "esr" ]]; then
             FIREFOX_VERSION=$(curl \
@@ -114,17 +120,25 @@ steps:
 
           exit 0
 
-        # deb/ubuntu: setup version, install packages, then continue
+        # deb/ubuntu/other linux: setup version, install packages, then continue
         else
           grab_firefox_version
           installation_check
 
-          $SUDO apt-get update > /dev/null && \
-            $SUDO apt-get install -y libgtk-3-dev libdbus-glib-1-2 > /dev/null
+          if command -v yum<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+            $SUDO yum install -y \
+              perl \
+              gtk3-devel \
+              dbus-glib-devel \
+             <<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
+          else
+            $SUDO apt-get update > /dev/null 2>&1 && \
+              $SUDO apt-get install -y libgtk-3-dev libdbus-glib-1-2<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
+          fi
         fi
 
         # import public key
-        curl --silent --show-error --location --fail --retry 3 "$FIREFOX_URL_BASE/KEY" | gpg --import > /dev/null
+        curl --silent --show-error --location --fail --retry 3 "$FIREFOX_URL_BASE/KEY" | gpg --import<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
 
         # download shasum256
         curl -O --silent --show-error --location --fail --retry 3 "$FIREFOX_URL_BASE/SHA256SUMS.asc"
@@ -135,7 +149,7 @@ steps:
         rm -f SHA256SUMS.asc
 
         # setup firefox download
-        if uname -a | grep Darwin > /dev/null 2>&1; then
+        if uname -a | grep Darwin<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
           FIREFOX_FILE="Firefox%20$FIREFOX_VERSION"
           PLATFORM=mac
           FILE_EXT=dmg
@@ -154,7 +168,7 @@ steps:
           --output "$FIREFOX_FILE_NAME.$FILE_EXT" \
           "$FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.$FILE_EXT"
 
-        if uname -a | grep Darwin > /dev/null 2>&1; then
+        if uname -a | grep Darwin<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
           echo "No PGP data for macOS Firefox releases; skipping PGP verification"
 
           perl -i -pe "s&mac/en-US/Firefox $FIREFOX_VERSION&mac-en-US-Firefox%20$FIREFOX_VERSION&g" SHA256SUMS
@@ -179,11 +193,11 @@ steps:
         rm -f SHA256SUMS
 
         # setup firefox installation
-        if uname -a | grep Darwin > /dev/null 2>&1; then
-          hdiutil attach "$FIREFOX_FILE_NAME.$FILE_EXT" > /dev/null
+        if uname -a | grep Darwin<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+          hdiutil attach "$FIREFOX_FILE_NAME.$FILE_EXT"<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
           $SUDO cp -R /Volumes/Firefox/Firefox.app /Applications
 
-          hdiutil eject /Volumes/Firefox > /dev/null
+          hdiutil eject /Volumes/Firefox<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
           $SUDO rm -f "$FIREFOX_FILE_NAME.$FILE_EXT"
 
           echo -e "#\!/bin/bash\n" > firefox
@@ -205,4 +219,12 @@ steps:
 
           # verify version
           echo "$(firefox --version) has been installed to $(which firefox)"
+        fi
+
+        # test/verify version
+        if firefox --version | grep "$FIREFOX_VERSION"<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+          echo "Firefox $(firefox --version) has been installed to $(which firefox)"
+        else
+          echo "Something went wrong; the specified version of Firefox could not be installed"
+          exit 1
         fi
