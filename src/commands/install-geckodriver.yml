@@ -93,3 +93,14 @@ steps:
         # verify version
         echo "Geckodriver has been installed to $(which geckodriver)"
         geckodriver --version
+
+        # test/verify version
+
+        GECKODRIVER_VERSION_NUM="$(echo $GECKODRIVER_VERSION | sed -E 's/v//')"
+
+        if geckodriver --version | grep "$GECKODRIVER_VERSION_NUM"<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+          echo "$(geckodriver --version) has been installed to $(which geckodriver)"
+        else
+          echo "Something went wrong; the specified version of Geckodriver could not be installed"
+          exit 1
+        fi
