@@ -127,6 +127,7 @@ steps:
 
           if command -v yum<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
             $SUDO yum install -y \
+              bzip2 \
               perl \
               gtk3-devel \
               dbus-glib-devel \
@@ -219,12 +220,4 @@ steps:
 
           # verify version
           echo "$(firefox --version) has been installed to $(which firefox)"
-        fi
-
-        # test/verify version
-        if firefox --version | grep "$FIREFOX_VERSION"<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
-          echo "Firefox $(firefox --version) has been installed to $(which firefox)"
-        else
-          echo "Something went wrong; the specified version of Firefox could not be installed"
-          exit 1
         fi
