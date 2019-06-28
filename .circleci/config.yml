@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  orb-tools: circleci/orb-tools@8.13.0
+  orb-tools: circleci/orb-tools@8.27.1
   browser-tools: circleci/browser-tools@dev:alpha
   jq: circleci/jq@1.8.0
 
@@ -28,38 +28,16 @@ jobs:
         type: boolean
         default: false
 
-      test-browser-tools-command:
-        type: boolean
-        default: false
-
     executor: <<parameters.executor>>
 
     steps:
       - jq/install
 
-      - when:
-          condition: <<parameters.test-browser-tools-command>>
-          steps:
-            - browser-tools/install-browser-tools:
-                firefox-version: <<parameters.firefox-version>>
-                firefox-alpine-version: <<parameters.firefox-alpine-version>>
-                geckodriver-version: <<parameters.geckodriver-version>>
-                replace-existing-chrome: <<parameters.replace-existing-chrome>>
-
-      - unless:
-          condition: <<parameters.test-browser-tools-command>>
-          steps:
-            - browser-tools/install-firefox:
-                version: <<parameters.firefox-version>>
-                alpine-version: <<parameters.firefox-alpine-version>>
-
-            - browser-tools/install-geckodriver:
-                version: <<parameters.geckodriver-version>>
-
-            - browser-tools/install-chrome:
-                replace-existing: <<parameters.replace-existing-chrome>>
-
-            - browser-tools/install-chromedriver
+      - browser-tools/install-browser-tools:
+          firefox-version: <<parameters.firefox-version>>
+          firefox-alpine-version: <<parameters.firefox-alpine-version>>
+          geckodriver-version: <<parameters.geckodriver-version>>
+          replace-existing-chrome: <<parameters.replace-existing-chrome>>
 
 integration-dev_filters: &integration-dev_filters
   branches:
@@ -87,12 +65,8 @@ prod-deploy_requires: &prod-deploy_requires
     older-ci-docker-master,
     latest-cimg-master,
     older-cimg-master,
-    browser-tools-command-alpine-master,
-    browser-tools-command-machine-master,
-    browser-tools-command-mac-master,
-    browser-tools-command-docker-master,
-    browser-tools-command-ci-docker-master,
-    browser-tools-command-cimg-master
+    latest-oracle-master,
+    older-oracle-master,
   ]
 
 workflows:
@@ -101,21 +75,18 @@ workflows:
       - orb-tools/lint
 
       - orb-tools/pack:
-          requires:
-            - orb-tools/lint
+          requires: [orb-tools/lint]
 
       - orb-tools/publish-dev:
           orb-name: circleci/browser-tools
           context: orb-publishing
-          requires:
-            - orb-tools/pack
+          requires: [orb-tools/pack]
 
       - orb-tools/trigger-integration-workflow:
           name: trigger-integration-dev
           context: orb-publishing
           ssh-fingerprints: d5:f2:f8:4b:91:76:27:e6:09:2b:ad:06:ac:8f:fa:3e
-          requires:
-            - orb-tools/publish-dev
+          requires: [orb-tools/publish-dev]
           filters:
             branches:
               ignore: master
@@ -126,8 +97,7 @@ workflows:
           cleanup-tags: true
           ssh-fingerprints: d5:f2:f8:4b:91:76:27:e6:09:2b:ad:06:ac:8f:fa:3e
           tag: master
-          requires:
-            - orb-tools/publish-dev
+          requires: [orb-tools/publish-dev]
           filters:
             branches:
               only: master
@@ -139,7 +109,6 @@ workflows:
       - test:
           name: latest-alpine-dev
           executor: orb-tools/alpine
-          pre-steps: [browser-tools/install-chrome]
           replace-existing-chrome: true
           filters: *integration-dev_filters
 
@@ -148,12 +117,6 @@ workflows:
           executor: orb-tools/alpine
           firefox-alpine-version: esr
           geckodriver-version: v0.23.0
-          filters: *integration-dev_filters
-
-      - test:
-          name: browser-tools-command-alpine-dev
-          executor: orb-tools/alpine
-          test-browser-tools-command: true
           filters: *integration-dev_filters
 
       # machine
@@ -170,17 +133,10 @@ workflows:
           geckodriver-version: v0.22.0
           filters: *integration-dev_filters
 
-      - test:
-          name: browser-tools-command-machine-dev
-          executor: orb-tools/machine
-          test-browser-tools-command: true
-          filters: *integration-dev_filters
-
       # mac
       - test:
           name: latest-mac-dev
           executor: orb-tools/macos
-          pre-steps: [browser-tools/install-chrome]
           replace-existing-chrome: true
           filters: *integration-dev_filters
 
@@ -191,17 +147,10 @@ workflows:
           geckodriver-version: v0.21.0
           filters: *integration-dev_filters
 
-      - test:
-          name: browser-tools-command-mac-dev
-          executor: orb-tools/macos
-          test-browser-tools-command: true
-          filters: *integration-dev_filters
-
       # docker
       - test:
           name: latest-docker-dev
           executor: orb-tools/node
-          pre-steps: [browser-tools/install-chrome]
           replace-existing-chrome: true
           filters: *integration-dev_filters
 
@@ -210,12 +159,6 @@ workflows:
           executor: orb-tools/node
           firefox-version: "57.0.3"
           geckodriver-version: v0.20.1
-          filters: *integration-dev_filters
-
-      - test:
-          name: browser-tools-command-docker-dev
-          executor: orb-tools/node
-          test-browser-tools-command: true
           filters: *integration-dev_filters
 
       # ci-docker
@@ -234,17 +177,10 @@ workflows:
           geckodriver-version: v0.18.0
           filters: *integration-dev_filters
 
-      - test:
-          name: browser-tools-command-ci-docker-dev
-          executor: orb-tools/node-cci
-          test-browser-tools-command: true
-          filters: *integration-dev_filters
-
       # new ci-docker
       - test:
           name: latest-cimg-dev
           executor: orb-tools/ubuntu
-          pre-steps: [browser-tools/install-chrome]
           replace-existing-chrome: true
           filters: *integration-dev_filters
 
@@ -255,10 +191,18 @@ workflows:
           geckodriver-version: v0.18.0
           filters: *integration-dev_filters
 
+      # oracle
       - test:
-          name: browser-tools-command-cimg-dev
-          executor: orb-tools/ubuntu
-          test-browser-tools-command: true
+          name: latest-oracle-dev
+          executor: orb-tools/oracle
+          replace-existing-chrome: true
+          filters: *integration-dev_filters
+
+      - test:
+          name: older-oracle-dev
+          executor: orb-tools/oracle
+          firefox-version: "62.0.2"
+          geckodriver-version: v0.18.0
           filters: *integration-dev_filters
 
       # triggered by master branch commits
@@ -266,7 +210,6 @@ workflows:
       - test:
           name: latest-alpine-master
           executor: orb-tools/alpine
-          pre-steps: [browser-tools/install-chrome]
           replace-existing-chrome: true
           filters: *integration-master_filters
 
@@ -275,12 +218,6 @@ workflows:
           executor: orb-tools/alpine
           firefox-alpine-version: esr
           geckodriver-version: v0.23.0
-          filters: *integration-master_filters
-
-      - test:
-          name: browser-tools-command-alpine-master
-          executor: orb-tools/alpine
-          test-browser-tools-command: true
           filters: *integration-master_filters
 
       # machine
@@ -297,17 +234,10 @@ workflows:
           geckodriver-version: v0.22.0
           filters: *integration-master_filters
 
-      - test:
-          name: browser-tools-command-machine-master
-          executor: orb-tools/machine
-          test-browser-tools-command: true
-          filters: *integration-master_filters
-
       # mac
       - test:
           name: latest-mac-master
           executor: orb-tools/macos
-          pre-steps: [browser-tools/install-chrome]
           replace-existing-chrome: true
           filters: *integration-master_filters
 
@@ -318,17 +248,10 @@ workflows:
           geckodriver-version: v0.21.0
           filters: *integration-master_filters
 
-      - test:
-          name: browser-tools-command-mac-master
-          executor: orb-tools/macos
-          test-browser-tools-command: true
-          filters: *integration-master_filters
-
       # docker
       - test:
           name: latest-docker-master
           executor: orb-tools/node
-          pre-steps: [browser-tools/install-chrome]
           replace-existing-chrome: true
           filters: *integration-master_filters
 
@@ -337,12 +260,6 @@ workflows:
           executor: orb-tools/node
           firefox-version: "57.0.3"
           geckodriver-version: v0.20.1
-          filters: *integration-master_filters
-
-      - test:
-          name: browser-tools-command-docker-master
-          executor: orb-tools/node
-          test-browser-tools-command: true
           filters: *integration-master_filters
 
       # ci-docker
@@ -361,17 +278,10 @@ workflows:
           geckodriver-version: v0.18.0
           filters: *integration-master_filters
 
-      - test:
-          name: browser-tools-command-ci-docker-master
-          executor: orb-tools/node-cci
-          test-browser-tools-command: true
-          filters: *integration-master_filters
-
       # new ci-docker
       - test:
           name: latest-cimg-master
           executor: orb-tools/ubuntu
-          pre-steps: [browser-tools/install-chrome]
           replace-existing-chrome: true
           filters: *integration-master_filters
 
@@ -382,10 +292,18 @@ workflows:
           geckodriver-version: v0.18.0
           filters: *integration-master_filters
 
+      # oracle
       - test:
-          name: browser-tools-command-cimg-master
-          executor: orb-tools/ubuntu
-          test-browser-tools-command: true
+          name: latest-oracle-master
+          executor: orb-tools/oracle
+          replace-existing-chrome: true
+          filters: *integration-master_filters
+
+      - test:
+          name: older-oracle-master
+          executor: orb-tools/oracle
+          firefox-version: "62.0.2"
+          geckodriver-version: v0.18.0
           filters: *integration-master_filters
 
       # patch, minor, or major publishing
