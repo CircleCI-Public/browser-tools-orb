@@ -12,6 +12,12 @@ parameters:
       If there is an existing installation of Google Chrome, replace it
       with the latest stable release
 
+  debug:
+    type: boolean
+    default: false
+    description: >
+      Extra output for orb developers
+
 steps:
   - run:
       name: Install Google Chrome

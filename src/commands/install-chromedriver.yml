@@ -12,6 +12,12 @@ parameters:
     description: >
       Directory in which to install ChromeDriver
 
+  debug:
+    type: boolean
+    default: false
+    description: >
+      Extra output for orb developers
+
 steps:
   - run:
       name: Install ChromeDriver

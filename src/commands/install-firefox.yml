@@ -112,8 +112,8 @@ steps:
             FIREFOX_VERSION=$(curl \
               --silent --show-error --location --fail --retry 3 \
               http://dl-cdn.alpinelinux.org/alpine/edge/community/x86_64/ | grep firefox-esr | \
-              sed -E 's%<a href="%%' | sed -E 's%.apk">firefox-esr-.*.apk</a>.*%%' | \
-              sed -E 's/firefox-//' | sed -E 's/-.*//')
+              sed -E 's|.*="||' | sed -E 's|.apk".*||' | \
+              sed -E 's|firefox-esr-||' | sed -E 's|-.*||')
 
             echo "Selected version of Firefox is: $FIREFOX_VERSION (Mozilla Extended Support Release, Alpine APK)"
 

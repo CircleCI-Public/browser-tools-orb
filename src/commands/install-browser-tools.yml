@@ -93,6 +93,12 @@ parameters:
     description: >
       Directory in which to install Chromedriver
 
+  debug:
+    type: boolean
+    default: false
+    description: >
+      Extra output for orb developers
+
 steps:
   - when:
       condition: <<parameters.install-firefox>>
@@ -101,6 +107,7 @@ steps:
             version: <<parameters.firefox-version>>
             alpine-version: <<parameters.firefox-alpine-version>>
             install-dir: <<parameters.firefox-install-dir>>
+            debug: <<parameters.debug>>
 
   - when:
       condition: <<parameters.install-geckodriver>>
@@ -108,15 +115,18 @@ steps:
         - install-geckodriver:
             version: <<parameters.geckodriver-version>>
             install-dir: <<parameters.geckodriver-install-dir>>
+            debug: <<parameters.debug>>
 
   - when:
       condition: <<parameters.install-chrome>>
       steps:
         - install-chrome:
             replace-existing: <<parameters.replace-existing-chrome>>
+            debug: <<parameters.debug>>
 
   - when:
       condition: <<parameters.install-chromedriver>>
       steps:
         - install-chromedriver:
             install-dir: <<parameters.chromedriver-install-dir>>
+            debug: <<parameters.debug>>

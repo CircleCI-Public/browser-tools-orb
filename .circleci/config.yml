@@ -37,6 +37,9 @@ jobs:
           firefox-version: <<parameters.firefox-version>>
           firefox-alpine-version: <<parameters.firefox-alpine-version>>
           geckodriver-version: <<parameters.geckodriver-version>>
+          debug: false
+          install-chrome: false
+          install-chromedriver: false
           replace-existing-chrome: <<parameters.replace-existing-chrome>>
 
 integration-dev_filters: &integration-dev_filters
