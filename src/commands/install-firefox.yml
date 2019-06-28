@@ -116,9 +116,14 @@ steps:
 
           $SUDO ln -s "$(which firefox)" <<parameters.install-dir>>/firefox
 
-          echo "$(firefox --version) has been installed to $(which firefox)"
-
-          exit 0
+          # test/verify version
+          if firefox --version | grep "$FIREFOX_VERSION"<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+            echo "$(firefox --version) has been installed to $(which firefox)"
+            exit 0
+          else
+            echo "Something went wrong; the specified version of Firefox could not be installed"
+            exit 1
+          fi
 
         # deb/ubuntu/other linux: setup version, install packages, then continue
         else
@@ -128,9 +133,10 @@ steps:
           if command -v yum<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
             $SUDO yum install -y \
               bzip2 \
-              perl \
-              gtk3-devel \
               dbus-glib-devel \
+              gtk3-devel \
+              libXtst \
+              perl \
               which \
              <<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
           else
@@ -209,9 +215,15 @@ steps:
           $SUDO mv firefox <<parameters.install-dir>>
           $SUDO chmod +x <<parameters.install-dir>>/firefox
 
-          # verify version
-          echo "$(firefox --version) has been installed in the /Applications directory"
-          echo "A shortcut has also been created at $(which firefox)"
+          # test/verify version
+          if firefox --version | grep "$FIREFOX_VERSION"<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+            echo "$(firefox --version) has been installed in the /Applications directory"
+            echo "A shortcut has also been created at $(which firefox)"
+          else
+            echo "Something went wrong; the specified version of Firefox could not be installed"
+            exit 1
+          fi
+
         else
           $SUDO tar -xjf "$FIREFOX_FILE_NAME.$FILE_EXT"
           $SUDO rm -f "$FIREFOX_FILE_NAME.$FILE_EXT"
@@ -219,6 +231,11 @@ steps:
           $SUDO chmod +x "<<parameters.install-dir>>/firefox-$FIREFOX_VERSION/firefox"
           $SUDO ln -s "<<parameters.install-dir>>/firefox-$FIREFOX_VERSION/firefox" /usr/local/bin/firefox
 
-          # verify version
-          echo "$(firefox --version) has been installed to $(which firefox)"
+          # test/verify version
+          if firefox --version | grep "$FIREFOX_VERSION"<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+            echo "$(firefox --version) has been installed to $(which firefox)"
+          else
+            echo "Something went wrong; the specified version of Firefox could not be installed"
+            exit 1
+          fi
         fi
