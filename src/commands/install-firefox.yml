@@ -131,6 +131,7 @@ steps:
               perl \
               gtk3-devel \
               dbus-glib-devel \
+              which \
              <<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
           else
             $SUDO apt-get update > /dev/null 2>&1 && \
