@@ -127,21 +127,28 @@ steps:
         elif command -v yum<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
           # download chrome
           curl --silent --show-error --location --fail --retry 3 \
-            --output "google-chrome-stable_current_x86_64.rpm" \
-            "https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm"
+            --output google-chrome-stable_current_x86_64.rpm \
+            https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
 
-          $SUDO yum localinstall -y "google-chrome-stable_current_x86_64.rpm"<<^parameters.debug>> \
+          curl --silent --show-error --location --fail --retry 3 \
+            --output liberation-fonts.rpm \
+            http://mirror.centos.org/centos/7/os/x86_64/Packages/liberation-fonts-1.07.2-16.el7.noarch.rpm
+
+          $SUDO yum localinstall -y liberation-fonts.rpm<<^parameters.debug>> \
+            > /dev/null 2>&1<</parameters.debug>>
+
+          $SUDO yum localinstall -y google-chrome-stable_current_x86_64.rpm<<^parameters.debug>> \
             > /dev/null 2>&1<</parameters.debug>>
 
           $SUDO yum upgrade -y google-chrome-stable<<^parameters.debug>> \
             > /dev/null 2>&1<</parameters.debug>>
 
-          rm -rf "google-chrome-stable_current_x86_64.rpm"
+          rm -rf google-chrome-stable_current_x86_64.rpm liberation-fonts.rpm
         else
           # download chrome
           curl --silent --show-error --location --fail --retry 3 \
-            --output "google-chrome-stable_current_amd64.deb" \
-            "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+            --output google-chrome-stable_current_amd64.deb \
+            https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 
           $SUDO apt-get update<<^parameters.debug>> \
           > /dev/null 2>&1<</parameters.debug>> && \
@@ -176,10 +183,10 @@ steps:
 
           # setup chrome installation
           $SUDO dpkg -i \
-            "google-chrome-stable_current_amd64.deb"<<^parameters.debug>> \
+            google-chrome-stable_current_amd64.deb<<^parameters.debug>> \
             > /dev/null 2>&1<</parameters.debug>>
 
-          rm -rf "google-chrome-stable_current_amd64.deb"
+          rm -rf google-chrome-stable_current_amd64.deb
         fi
 
         # test/verify installation
