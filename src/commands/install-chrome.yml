@@ -35,7 +35,6 @@ steps:
             $SUDO rm -rf /Applications/Google\ Chrome.app<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>> || true<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)is already installed"
 
             exit 0<</parameters.replace-existing>>
-
           else
             echo "Google Chrome is not currently installed; installing it"
           fi
@@ -52,16 +51,28 @@ steps:
           else
             echo "Google Chrome (via Chromium) is not currently installed; installing it"
           fi
+        elif command -v yum<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+          if command -v google-chrome<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+            <<#parameters.replace-existing>>echo "$(google-chrome --version)is currently installed; replacing it"
+
+            $SUDO yum remove -y google-chrome-stable<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>> || true
+
+            $SUDO rm -f "$(command -v google-chrome)"<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>> || true<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(google-chrome --version)is already installed to $(which google-chrome)"
+
+            exit 0<</parameters.replace-existing>>
+          else
+            echo "Google Chrome is not currently installed; installing it"
+          fi
         else
           if command -v google-chrome<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
 
             <<#parameters.replace-existing>>echo "$(google-chrome --version)is currently installed; replacing it"
 
             $SUDO apt-get -y --purge remove google-chrome-stable<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>> || true
+
             $SUDO rm -f "$(command -v google-chrome)"<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>> || true<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(google-chrome --version)is already installed to $(which google-chrome)"
 
             exit 0<</parameters.replace-existing>>
-
           else
             echo "Google Chrome is not currently installed; installing it"
           fi
@@ -111,11 +122,36 @@ steps:
             echo "Something went wrong; Google Chrome could not be installed"
             exit 1
           fi
-        else
+        elif command -v yum<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+          if cat /proc/version | grep amd64<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+            ARCH=amd64
+          elif cat /proc/version | grep x86_64<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+            ARCH=x86_64
+          fi
+
           # download chrome
           curl --silent --show-error --location --fail --retry 3 \
-            --output google-chrome-stable_current_amd64.deb \
-            https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+            --output "google-chrome-stable_current_$ARCH.rpm" \
+            "https://dl.google.com/linux/direct/google-chrome-stable_current_$ARCH.rpm"
+
+          $SUDO yum localinstall -y "google-chrome-stable_current_$ARCH.rpm"<<^parameters.debug>> \
+            > /dev/null 2>&1<</parameters.debug>>
+
+          $SUDO yum upgrade -y google-chrome-stable<<^parameters.debug>> \
+            > /dev/null 2>&1<</parameters.debug>>
+
+          rm -rf "google-chrome-stable_current_$ARCH.rpm"
+        else
+          if cat /proc/version | grep amd64<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+            ARCH=amd64
+          elif cat /proc/version | grep x86_64<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+            ARCH=x86_64
+          fi
+
+          # download chrome
+          curl --silent --show-error --location --fail --retry 3 \
+            --output "google-chrome-stable_current_$ARCH.deb" \
+            "https://dl.google.com/linux/direct/google-chrome-stable_current_$ARCH.deb"
 
           $SUDO apt-get update<<^parameters.debug>> \
           > /dev/null 2>&1<</parameters.debug>> && \
@@ -150,16 +186,16 @@ steps:
 
           # setup chrome installation
           $SUDO dpkg -i \
-            google-chrome-stable_current_amd64.deb<<^parameters.debug>> \
+            "google-chrome-stable_current_$ARCH.deb"<<^parameters.debug>> \
             > /dev/null 2>&1<</parameters.debug>>
 
-          rm -rf google-chrome-stable_current_amd64.deb
+          rm -rf "google-chrome-stable_current_$ARCH.deb"
+        fi
 
-          # test/verify installation
-          if google-chrome --version<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
-            echo "$(google-chrome --version) has been installed to $(which google-chrome)"
-          else
-            echo "Something went wrong; Google Chrome could not be installed"
-            exit 1
-          fi
+        # test/verify installation
+        if google-chrome --version<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+          echo "$(google-chrome --version) has been installed to $(which google-chrome)"
+        else
+          echo "Something went wrong; Google Chrome could not be installed"
+          exit 1
         fi

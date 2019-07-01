@@ -10,7 +10,8 @@ parameters:
     type: string
     default: /usr/local/bin
     description: >
-      Directory in which to install ChromeDriver
+      Directory in which to install ChromeDriver (directory selection
+      not supported on Alpine Linux)
 
   debug:
     type: boolean
@@ -25,12 +26,12 @@ steps:
         if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
 
         # determine_chrome_version
-        if uname -a | grep Darwin > /dev/null 2>&1; then
+        if uname -a | grep Darwin<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
           CHROME_VERSION="$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)"
           PLATFORM=mac64
 
-        elif cat /etc/issue | grep Alpine > /dev/null 2>&1; then
-          apk update > /dev/null 2>&1 && \
+        elif cat /etc/issue | grep Alpine<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+          apk update<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>> && \
             apk add --no-cache chromium-chromedriver > /dev/null
 
           # verify version
@@ -44,7 +45,8 @@ steps:
 
         CHROME_VERSION_STRING="$(echo $CHROME_VERSION | sed 's/^Google Chrome //' | sed 's/^Chromium //')"
 
-        echo "Installed version of Google Chrome/Chromium is $CHROME_VERSION_STRING"
+        # print Chrome version
+        echo "Installed version of Google Chrome is $CHROME_VERSION_STRING"
 
         # determine chromedriver release
         CHROMEDRIVER_RELEASE="${CHROME_VERSION_STRING%%.*}"
@@ -108,8 +110,8 @@ steps:
         fi
 
         # installation check
-        if command -v chromedriver > /dev/null 2>&1; then
-          if chromedriver --version | grep "$CHROMEDRIVER_VERSION" > /dev/null 2>&1; then
+        if command -v chromedriver<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+          if chromedriver --version | grep "$CHROMEDRIVER_VERSION"<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
             echo "ChromeDriver $CHROMEDRIVER_VERSION is already installed"
             exit 0
           else
@@ -126,11 +128,16 @@ steps:
           "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_$PLATFORM.zip"
 
         # setup chromedriver installation
-        unzip "chromedriver_$PLATFORM.zip" > /dev/null 2>&1
+        unzip "chromedriver_$PLATFORM.zip"<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
         rm -rf "chromedriver_$PLATFORM.zip"
 
         $SUDO mv chromedriver <<parameters.install-dir>>
         $SUDO chmod +x <<parameters.install-dir>>/chromedriver
 
-        # verify version
-        echo "$(chromedriver --version) has been installed to $(which chromedriver)"
+        # test/verify version
+        if chromedriver --version | grep "$CHROMEDRIVER_VERSION"<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+          echo "$(chromedriver --version) has been installed to $(which chromedriver)"
+        else
+          echo "Something went wrong; ChromeDriver could not be installed"
+          exit 1
+        fi
