@@ -140,9 +140,6 @@ steps:
           $SUDO yum localinstall -y google-chrome-stable_current_x86_64.rpm<<^parameters.debug>> \
             > /dev/null 2>&1<</parameters.debug>>
 
-          $SUDO yum upgrade -y google-chrome-stable<<^parameters.debug>> \
-            > /dev/null 2>&1<</parameters.debug>>
-
           rm -rf google-chrome-stable_current_x86_64.rpm liberation-fonts.rpm
         else
           # download chrome
