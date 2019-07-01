@@ -94,6 +94,7 @@ steps:
           if google-chrome --version<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
             echo "$(google-chrome --version)has been installed in the /Applications directory"
             echo "A shortcut has also been created at $(which google-chrome)"
+            exit 0
           else
             echo "Something went wrong; Google Chrome could not be installed"
             exit 1
@@ -118,40 +119,29 @@ steps:
           # test/verify installation
           if chromium-browser --version<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
             echo "$(chromium-browser --version)has been installed to $(which chromium-browser)"
+            exit 0
           else
-            echo "Something went wrong; Google Chrome could not be installed"
+            echo "Something went wrong; Chromium could not be installed"
             exit 1
           fi
         elif command -v yum<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
-          if cat /proc/version | grep amd64<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
-            ARCH=amd64
-          elif cat /proc/version | grep x86_64<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
-            ARCH=x86_64
-          fi
-
           # download chrome
           curl --silent --show-error --location --fail --retry 3 \
-            --output "google-chrome-stable_current_$ARCH.rpm" \
-            "https://dl.google.com/linux/direct/google-chrome-stable_current_$ARCH.rpm"
+            --output "google-chrome-stable_current_x86_64.rpm" \
+            "https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm"
 
-          $SUDO yum localinstall -y "google-chrome-stable_current_$ARCH.rpm"<<^parameters.debug>> \
+          $SUDO yum localinstall -y "google-chrome-stable_current_x86_64.rpm"<<^parameters.debug>> \
             > /dev/null 2>&1<</parameters.debug>>
 
           $SUDO yum upgrade -y google-chrome-stable<<^parameters.debug>> \
             > /dev/null 2>&1<</parameters.debug>>
 
-          rm -rf "google-chrome-stable_current_$ARCH.rpm"
+          rm -rf "google-chrome-stable_current_x86_64.rpm"
         else
-          if cat /proc/version | grep amd64<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
-            ARCH=amd64
-          elif cat /proc/version | grep x86_64<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
-            ARCH=x86_64
-          fi
-
           # download chrome
           curl --silent --show-error --location --fail --retry 3 \
-            --output "google-chrome-stable_current_$ARCH.deb" \
-            "https://dl.google.com/linux/direct/google-chrome-stable_current_$ARCH.deb"
+            --output "google-chrome-stable_current_amd64.deb" \
+            "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
 
           $SUDO apt-get update<<^parameters.debug>> \
           > /dev/null 2>&1<</parameters.debug>> && \
@@ -186,10 +176,10 @@ steps:
 
           # setup chrome installation
           $SUDO dpkg -i \
-            "google-chrome-stable_current_$ARCH.deb"<<^parameters.debug>> \
+            "google-chrome-stable_current_amd64.deb"<<^parameters.debug>> \
             > /dev/null 2>&1<</parameters.debug>>
 
-          rm -rf "google-chrome-stable_current_$ARCH.deb"
+          rm -rf "google-chrome-stable_current_amd64.deb"
         fi
 
         # test/verify installation
