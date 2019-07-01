@@ -3,7 +3,3 @@ version: 2.1
 description: >
   Install a variety of tools for browser testing. View this orb's
   source: https://github.com/CircleCI-Public/browser-tools-orb
-
-orbs:
-  docker: circleci/docker@0.1.0
-  jq: circleci/jq@1.6.1
