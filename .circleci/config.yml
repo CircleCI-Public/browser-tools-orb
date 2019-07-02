@@ -115,7 +115,6 @@ workflows:
           name: latest-alpine-dev
           executor: orb-tools/alpine
           replace-existing-chrome: true
-          debug: true
           filters: *integration-dev_filters
 
       - test:
@@ -123,7 +122,6 @@ workflows:
           executor: orb-tools/alpine
           firefox-alpine-version: esr
           geckodriver-version: v0.23.0
-          debug: true
           filters: *integration-dev_filters
 
       # machine
