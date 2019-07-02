@@ -94,7 +94,7 @@ steps:
           <<#parameters.debug>>echo "Old /etc/apk/repositories:"
           cat /etc/apk/repositories<</parameters.debug>>
 
-          if command -v perl<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+          if ! command -v perl<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
             apk add perl<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
           fi
 
