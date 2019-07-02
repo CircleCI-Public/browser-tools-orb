@@ -94,7 +94,7 @@ steps:
           <<#parameters.debug>>echo "Old /etc/apk/repositories:"
           cat /etc/apk/repositories<</parameters.debug>>
 
-          sed -i -e 's/v[[:digit:]]\.[[:digit:]]/edge/g' /etc/apk/repositories
+          perl -i -pe 's|v[0-9]+\.[0-9]+?(\.[0-9]+)|edge|g' /etc/apk/repositories
 
           <<#parameters.debug>>echo "New /etc/apk/repositories:"
           cat /etc/apk/repositories<</parameters.debug>>
