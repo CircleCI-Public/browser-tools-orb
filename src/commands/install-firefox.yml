@@ -91,8 +91,23 @@ steps:
           # https://stackoverflow.com/questions/51806403/installation-of-firefox-from-alpine-edge
           # https://wiki.alpinelinux.org/wiki/Include:Upgrading_to_Edge
 
-          sed -i -e 's/v[[:digit:]]\.[[:digit:]]/edge/g' /etc/apk/repositories
+          <<#parameters.debug>>echo "Old /etc/apk/repositories:"
+          cat /etc/apk/repositories<</parameters.debug>>
+
+          if ! command -v perl<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+            apk add perl<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
+          fi
+
+          perl -i -pe 's|v([0-9]+){0,1}(.[0-9]+){0,1}(.[0-9]+)|edge|g' \
+            /etc/apk/repositories
+
+          <<#parameters.debug>>echo "New /etc/apk/repositories:"
+          cat /etc/apk/repositories<</parameters.debug>>
+
+          <<#parameters.debug>>echo "Running apk upgrade..."<</parameters.debug>>
           apk upgrade --update-cache --available<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
+
+          <<#parameters.debug>>echo "Running apk add icu-libs..."<</parameters.debug>>
           apk add icu-libs<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
 
           if [[ "<<parameters.alpine-version>>" == "stable" ]]; then
