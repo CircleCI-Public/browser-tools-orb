@@ -3,29 +3,3 @@ version: 2.1
 description: >
   Install a variety of tools for browser testing. View this orb's
   source: https://github.com/CircleCI-Public/browser-tools-orb
-  
-examples:
-  install-latest-chrome:
-    description: |
-      "Example job that installs the latest version of Google Chrome"
-    usage:
-      version: 2.1
-      orbs:
-        browser-tools: circleci/browser-tools@0.1.3
-      workflows:
-        main:
-          jobs:
-            - browser-tools/install-chrome
-  install-firefox-and-geckodriver:
-    description: |
-      "Example job that installs specific versions of Firefox and Geckodriver"
-    usage:
-      version: 2.1
-      orbs:
-         browser-tools: circleci/browser-tools@0.1.3
-      workflows:
-        main:
-          jobs:
-            - browser-tools/install-browser-tools:
-                firefox-version: 70.0b10
-                geckodriver-version: v0.23.0

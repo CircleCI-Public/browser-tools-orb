@@ -1,0 +1,10 @@
+description: |
+  "Example job that installs the latest version of Google Chrome"
+usage:
+  version: 2.1
+  orbs:
+    browser-tools: circleci/browser-tools@0.1.3
+  workflows:
+    main:
+      jobs:
+        - browser-tools/install-chrome
