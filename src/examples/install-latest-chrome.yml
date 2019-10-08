@@ -1,5 +1,6 @@
-description: |
-  "Example job that installs the latest version of Google Chrome"
+description: >
+  Example job that installs the latest version of Google Chrome
+
 usage:
   version: 2.1
   orbs:

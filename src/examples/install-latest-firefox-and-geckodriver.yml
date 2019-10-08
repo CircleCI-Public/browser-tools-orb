@@ -1,5 +1,6 @@
-description: |
-  "Example job that installs specific versions of Firefox and Geckodriver"
+description: >
+  Example job that installs specific versions of Firefox and Geckodriver
+
 usage:
   version: 2.1
   orbs:
