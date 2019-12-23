@@ -131,13 +131,15 @@ workflows:
           name: latest-machine-dev
           executor: orb-tools/machine
           replace-existing-chrome: true
+          debug: true
           filters: *integration-dev_filters
 
       - test:
           name: older-machine-dev
           executor: orb-tools/machine
-          firefox-version: "65.0.1"
+          firefox-version: "68.0esr"
           geckodriver-version: v0.22.0
+          debug: true
           filters: *integration-dev_filters
 
       # mac
@@ -145,13 +147,15 @@ workflows:
           name: latest-mac-dev
           executor: orb-tools/macos
           replace-existing-chrome: true
+          debug: true
           filters: *integration-dev_filters
 
       - test:
           name: older-mac-dev
           executor: orb-tools/macos
-          firefox-version: "64.0"
+          firefox-version: "68.3.0esr"
           geckodriver-version: v0.21.0
+          debug: true
           filters: *integration-dev_filters
 
       # docker
@@ -159,13 +163,15 @@ workflows:
           name: latest-docker-dev
           executor: orb-tools/node
           replace-existing-chrome: true
+          debug: true
           filters: *integration-dev_filters
 
       - test:
           name: older-docker-dev
           executor: orb-tools/node
-          firefox-version: "57.0.3"
+          firefox-version: "60.1.0esr"
           geckodriver-version: v0.20.1
+          debug: true
           filters: *integration-dev_filters
 
       # ci-docker
@@ -175,13 +181,15 @@ workflows:
             name: orb-tools/node-cci
             tag: boron-browsers
           replace-existing-chrome: true
+          debug: true
           filters: *integration-dev_filters
 
       - test:
           name: older-ci-docker-dev
           executor: orb-tools/node-cci
-          firefox-version: "62.0.2"
+          firefox-version: "60.0.2esr"
           geckodriver-version: v0.18.0
+          debug: true
           filters: *integration-dev_filters
 
       # new ci-docker
@@ -189,13 +197,15 @@ workflows:
           name: latest-cimg-dev
           executor: orb-tools/ubuntu
           replace-existing-chrome: true
+          debug: true
           filters: *integration-dev_filters
 
       - test:
           name: older-cimg-dev
           executor: orb-tools/ubuntu
-          firefox-version: "62.0.2"
+          firefox-version: "52.0.1esr"
           geckodriver-version: v0.18.0
+          debug: true
           filters: *integration-dev_filters
 
       # oracle
@@ -208,8 +218,9 @@ workflows:
       - test:
           name: older-oracle-dev
           executor: orb-tools/oracle
-          firefox-version: "62.0.2"
+          firefox-version: "45.5.0esr"
           geckodriver-version: v0.18.0
+          debug: true
           filters: *integration-dev_filters
 
       # triggered by master branch commits
@@ -218,6 +229,7 @@ workflows:
           name: latest-alpine-master
           executor: orb-tools/alpine
           replace-existing-chrome: true
+          debug: true
           filters: *integration-master_filters
 
       - test:
@@ -225,6 +237,7 @@ workflows:
           executor: orb-tools/alpine
           firefox-alpine-version: esr
           geckodriver-version: v0.23.0
+          debug: true
           filters: *integration-master_filters
 
       # machine
@@ -232,13 +245,15 @@ workflows:
           name: latest-machine-master
           executor: orb-tools/machine
           replace-existing-chrome: true
+          debug: true
           filters: *integration-master_filters
 
       - test:
           name: older-machine-master
           executor: orb-tools/machine
-          firefox-version: "65.0.1"
+          firefox-version: "52.0.1esr"
           geckodriver-version: v0.22.0
+          debug: true
           filters: *integration-master_filters
 
       # mac
@@ -246,6 +261,7 @@ workflows:
           name: latest-mac-master
           executor: orb-tools/macos
           replace-existing-chrome: true
+          debug: true
           filters: *integration-master_filters
 
       - test:
@@ -253,6 +269,7 @@ workflows:
           executor: orb-tools/macos
           firefox-version: "64.0"
           geckodriver-version: v0.21.0
+          debug: true
           filters: *integration-master_filters
 
       # docker
@@ -260,6 +277,7 @@ workflows:
           name: latest-docker-master
           executor: orb-tools/node
           replace-existing-chrome: true
+          debug: true
           filters: *integration-master_filters
 
       - test:
@@ -267,6 +285,7 @@ workflows:
           executor: orb-tools/node
           firefox-version: "57.0.3"
           geckodriver-version: v0.20.1
+          debug: true
           filters: *integration-master_filters
 
       # ci-docker
@@ -276,6 +295,7 @@ workflows:
             name: orb-tools/node-cci
             tag: boron-browsers
           replace-existing-chrome: true
+          debug: true
           filters: *integration-master_filters
 
       - test:
@@ -283,6 +303,7 @@ workflows:
           executor: orb-tools/node-cci
           firefox-version: "62.0.2"
           geckodriver-version: v0.18.0
+          debug: true
           filters: *integration-master_filters
 
       # new ci-docker
@@ -290,6 +311,7 @@ workflows:
           name: latest-cimg-master
           executor: orb-tools/ubuntu
           replace-existing-chrome: true
+          debug: true
           filters: *integration-master_filters
 
       - test:
@@ -297,6 +319,7 @@ workflows:
           executor: orb-tools/ubuntu
           firefox-version: "62.0.2"
           geckodriver-version: v0.18.0
+          debug: true
           filters: *integration-master_filters
 
       # oracle
@@ -304,6 +327,7 @@ workflows:
           name: latest-oracle-master
           executor: orb-tools/oracle
           replace-existing-chrome: true
+          debug: true
           filters: *integration-master_filters
 
       - test:
@@ -311,6 +335,7 @@ workflows:
           executor: orb-tools/oracle
           firefox-version: "62.0.2"
           geckodriver-version: v0.18.0
+          debug: true
           filters: *integration-master_filters
 
       # patch, minor, or major publishing
