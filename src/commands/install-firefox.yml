@@ -9,11 +9,11 @@ parameters:
     description: >
       Version of Firefox to install, defaults to the latest stable release.
       To install an older release, specify a full semantic version number,
-      ESR or otherwise, e.g., 66.0.3, 52.0.1esr, 53.0, etc. Note: 
-      version-selection is not supported for Alpine Linux-based execution 
-      environments, as Mozilla's Firefox binaries are not compiled to run on 
-      Alpine. Use the `alpine-version` parameter to select from a limited 
-      number of Alpine-based Firefox packages. Otherwise, for a full list of 
+      ESR or otherwise, e.g., 66.0.3, 52.0.1esr, 53.0, etc. Note:
+      version-selection is not supported for Alpine Linux-based execution
+      environments, as Mozilla's Firefox binaries are not compiled to run on
+      Alpine. Use the `alpine-version` parameter to select from a limited
+      number of Alpine-based Firefox packages. Otherwise, for a full list of
       releases, see: https://archive.mozilla.org/pub/firefox/releases/
 
   alpine-version:
