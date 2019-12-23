@@ -164,20 +164,20 @@ steps:
              <<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
           else
             $SUDO apt-get update > /dev/null 2>&1 && \
-              $SUDO apt-get install -y libgtk-3-dev libdbus-glib-1-2<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
+              $SUDO apt-get install -y libxt6 libgtk-3-dev libdbus-glib-1-2<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
           fi
         fi
 
         # import public key
         curl --silent --show-error --location --fail --retry 3 "$FIREFOX_URL_BASE/KEY" | gpg --import<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
 
-        # download shasum256
-        curl -O --silent --show-error --location --fail --retry 3 "$FIREFOX_URL_BASE/SHA256SUMS.asc"
-        curl -O --silent --show-error --location --fail --retry 3 "$FIREFOX_URL_BASE/SHA256SUMS"
+        # download shasums
+        curl -O --silent --show-error --location --fail --retry 3 "$FIREFOX_URL_BASE/SHA256SUMS.asc" || curl -O --silent --show-error --location --fail --retry 3 "$FIREFOX_URL_BASE/SHA512SUMS.asc"
+        curl -O --silent --show-error --location --fail --retry 3 "$FIREFOX_URL_BASE/SHA256SUMS" || curl -O --silent --show-error --location --fail --retry 3 "$FIREFOX_URL_BASE/SHA512SUMS"
 
-        # verify shasum256
-        gpg --verify SHA256SUMS.asc SHA256SUMS
-        rm -f SHA256SUMS.asc
+        # verify shasums
+        gpg --verify SHA256SUMS.asc SHA256SUMS || gpg --verify SHA512SUMS.asc SHA512SUMS
+        rm -f SHA256SUMS.asc || rm -f SHA512SUMS.asc
 
         # setup firefox download
         if uname -a | grep Darwin<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
