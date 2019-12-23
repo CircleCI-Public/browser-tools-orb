@@ -153,7 +153,7 @@ workflows:
       - test:
           name: older-mac-dev
           executor: orb-tools/macos
-          firefox-version: "68.3esr"
+          firefox-version: "68.3.0esr"
           geckodriver-version: v0.21.0
           debug: true
           filters: *integration-dev_filters
