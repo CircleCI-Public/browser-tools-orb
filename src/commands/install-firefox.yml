@@ -158,6 +158,7 @@ steps:
               alsa-lib \
               bzip2 \
               dbus-glib-devel \
+              gtk2-devel \
               gtk3-devel \
               libXt-devel \
               perl \
