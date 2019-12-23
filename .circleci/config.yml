@@ -237,7 +237,7 @@ workflows:
       - test:
           name: older-machine-master
           executor: orb-tools/machine
-          firefox-version: "65.0.1"
+          firefox-version: "52.0.1esr"
           geckodriver-version: v0.22.0
           filters: *integration-master_filters
 
