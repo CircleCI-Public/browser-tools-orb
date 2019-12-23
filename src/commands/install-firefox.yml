@@ -255,7 +255,7 @@ steps:
           $SUDO ln -s "<<parameters.install-dir>>/firefox-$FIREFOX_VERSION/firefox" /usr/local/bin/firefox
 
           # test/verify version
-          if firefox --version | grep "$FIREFOX_VERSION"<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+          if echo "$(firefox --version)esr" | grep "$FIREFOX_VERSION"<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
             echo "$(firefox --version) has been installed to $(which firefox)"
           else
             echo "Something went wrong; the specified version of Firefox could not be installed"

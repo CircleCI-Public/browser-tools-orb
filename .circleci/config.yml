@@ -136,7 +136,7 @@ workflows:
       - test:
           name: older-machine-dev
           executor: orb-tools/machine
-          firefox-version: "65.0.1"
+          firefox-version: "68.0esr"
           geckodriver-version: v0.22.0
           filters: *integration-dev_filters
 
@@ -150,7 +150,7 @@ workflows:
       - test:
           name: older-mac-dev
           executor: orb-tools/macos
-          firefox-version: "64.0"
+          firefox-version: "68.3esr"
           geckodriver-version: v0.21.0
           filters: *integration-dev_filters
 
@@ -164,7 +164,7 @@ workflows:
       - test:
           name: older-docker-dev
           executor: orb-tools/node
-          firefox-version: "57.0.3"
+          firefox-version: "60.1.0esr"
           geckodriver-version: v0.20.1
           filters: *integration-dev_filters
 
@@ -180,7 +180,7 @@ workflows:
       - test:
           name: older-ci-docker-dev
           executor: orb-tools/node-cci
-          firefox-version: "62.0.2"
+          firefox-version: "60.0.2esr"
           geckodriver-version: v0.18.0
           filters: *integration-dev_filters
 
@@ -194,7 +194,7 @@ workflows:
       - test:
           name: older-cimg-dev
           executor: orb-tools/ubuntu
-          firefox-version: "62.0.2"
+          firefox-version: "52.0.1esr"
           geckodriver-version: v0.18.0
           filters: *integration-dev_filters
 
@@ -208,7 +208,7 @@ workflows:
       - test:
           name: older-oracle-dev
           executor: orb-tools/oracle
-          firefox-version: "62.0.2"
+          firefox-version: "45.5.0esr"
           geckodriver-version: v0.18.0
           filters: *integration-dev_filters
 
