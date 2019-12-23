@@ -203,6 +203,7 @@ steps:
           echo "No PGP data for macOS Firefox releases; skipping PGP verification"
 
           perl -i -pe "s&mac/en-US/Firefox $FIREFOX_VERSION&mac-en-US-Firefox%20$FIREFOX_VERSION&g" SHA256SUMS
+          perl -i -pe "s&mac/en-US/Firefox $FIREFOX_VERSION&mac-en-US-Firefox%20$FIREFOX_VERSION&g" SHA512SUMS
         else
           # only do this step if .asc file exists for this version
           if [[ $(curl --silent --location --fail --retry 3 \
@@ -218,6 +219,7 @@ steps:
           fi
 
           perl -i -pe "s%linux-x86_64/en-US/firefox%linux-x86_64-en-US-firefox%g" SHA256SUMS
+          perl -i -pe "s%linux-x86_64/en-US/firefox%linux-x86_64-en-US-firefox%g" SHA512SUMS
         fi
 
         grep "$FIREFOX_FILE_NAME.$FILE_EXT" SHA256SUMS | sha256sum -c - || \
