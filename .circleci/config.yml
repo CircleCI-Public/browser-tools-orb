@@ -2,7 +2,7 @@ version: 2.1
 # add your orb below, to be used in integration tests (note: a @dev:alpha
 # release must exist.);
 orbs:
-  browser-tools: circleci/browser-tools@<pipeline.parameters.dev-orb-version>>
+  browser-tools: circleci/browser-tools@<<pipeline.parameters.dev-orb-version>>
   orb-tools: circleci/orb-tools@9.1
   jq: circleci/jq@2.0
 
