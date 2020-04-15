@@ -1,26 +1,11 @@
 version: 2.1
-
-# Integration tests
-integration_tests: &integration_tests
-  [
-    docker-cimg,
-    test-macos,
-    test-machine-16,
-    test-alpine
-
-  ]
-orb_prep_jobs: &orb_prep_jobs
-  [
-    orb-tools/lint,
-    orb-tools/shellcheck,
-    orb-tools/pack
-  ]
 # add your orb below, to be used in integration tests (note: a @dev:alpha
 # release must exist.);
 orbs:
   browser-tools: circleci/browser-tools@<pipeline.parameters.dev-orb-version>>
   orb-tools: circleci/orb-tools@9.1
   jq: circleci/jq@2.0
+
 executors:
   docker-cimg:
     docker:
@@ -85,7 +70,10 @@ workflows:
       - orb-tools/publish-dev:
           orb-name: circleci/browser-tools
           context: orb-publishing
-          requires: *orb_prep_jobs
+          requires:
+            - orb-tools/lint
+            - orb-tools/shellcheck
+            - orb-tools/pack
       # trigger an integration workflow to test the
       # dev:${CIRCLE_SHA1:0:7} version of your orb
       - orb-tools/trigger-integration-tests-workflow:
@@ -129,7 +117,11 @@ workflows:
           fail-if-semver-not-indicated: true
           publish-version-tag: true
           ssh-fingerprints: d5:f2:f8:4b:91:76:27:e6:09:2b:ad:06:ac:8f:fa:3e
-          requires: *integration-tests
+          requires:
+            - docker-cimg
+            - test-macos
+            - test-machine-16
+            - test-alpine
           filters:
             branches:
               only: master
