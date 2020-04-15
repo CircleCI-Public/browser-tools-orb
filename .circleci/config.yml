@@ -115,7 +115,7 @@ workflows:
           publish-version-tag: true
           ssh-fingerprints: d5:f2:f8:4b:91:76:27:e6:09:2b:ad:06:ac:8f:fa:3e
           requires:
-            - docker-cimg
+            - test-docker
             - test-macos
             - test-machine-16
             - test-alpine
