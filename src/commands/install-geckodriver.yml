@@ -36,8 +36,7 @@ steps:
         grab_geckodriver_version () {
           if [[ <<parameters.version>> == "latest" ]]; then
             # extract latest version from github releases API
-            GECKODRIVER_VERSION_STRING=$(curl \
-              https://api.github.com/repos/mozilla/geckodriver/releases/latest | jq '.tag_name')
+            GECKODRIVER_VERSION_STRING=$(curl -Ls -o /dev/null -w %{url_effective} "https://github.com/mozilla/geckodriver/releases/latest" | sed 's:.*/::')
 
             # strip leading/trailing "
             temp="${GECKODRIVER_VERSION_STRING%\"}"
