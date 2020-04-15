@@ -40,7 +40,7 @@ steps:
 
         # FUNCTIONS
         grab_firefox_version () {
-          if [[ <<parameters.version>> == "latest" ]]; then
+          if [[ "<<parameters.version>>" == "latest" ]]; then
             # extract latest version from mozilla product details API
 
             FIREFOX_VERSION_STRING=$(curl \
@@ -52,7 +52,7 @@ steps:
             FIREFOX_VERSION="${temp#\"}"
             echo "Latest stable version of Firefox is $FIREFOX_VERSION"
           else
-            FIREFOX_VERSION=<<parameters.version>>
+            FIREFOX_VERSION="<<parameters.version>>"
             echo "Selected version of Firefox is $FIREFOX_VERSION"
           fi
 

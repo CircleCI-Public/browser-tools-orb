@@ -62,7 +62,7 @@ workflows:
     jobs:
       - orb-tools/lint
       - orb-tools/shellcheck:
-          exclude: "SC1009"
+          exclude: "SC1009,SC1073"
       - orb-tools/pack
       - orb-tools/publish-dev:
           orb-name: circleci/browser-tools
