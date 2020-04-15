@@ -65,7 +65,8 @@ workflows:
     unless: << pipeline.parameters.run-integration-tests >>
     jobs:
       - orb-tools/lint
-      - orb-tools/shellcheck
+      - orb-tools/shellcheck:
+          exclude: "SC1009"
       - orb-tools/pack
       - orb-tools/publish-dev:
           orb-name: circleci/browser-tools
