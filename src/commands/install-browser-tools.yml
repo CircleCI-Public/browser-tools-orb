@@ -93,11 +93,6 @@ parameters:
     description: >
       Directory in which to install Chromedriver
 
-  debug:
-    type: boolean
-    default: false
-    description: >
-      Extra output for orb developers
 
 steps:
   - when:

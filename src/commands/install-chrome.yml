@@ -12,12 +12,6 @@ parameters:
       If there is an existing installation of Google Chrome, replace it
       with the latest stable release?
 
-  debug:
-    type: boolean
-    default: false
-    description: >
-      Extra output for orb developers
-
 steps:
   - run:
       name: Install Google Chrome
@@ -25,52 +19,52 @@ steps:
         if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
 
         # installation check
-        if uname -a | grep Darwin<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
-          if ls /Applications | grep "Google Chrome"<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+        if uname -a | grep Darwin > /dev/null 2>&1; then
+          if ls /Applications | grep "Google Chrome" > /dev/null 2>&1; then
 
             <<#parameters.replace-existing>>echo "$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)is currently installed; replacing it"
 
-            HOMEBREW_NO_AUTO_UPDATE=1 brew cask uninstall google-chrome<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>> || true
+            HOMEBREW_NO_AUTO_UPDATE=1 brew cask uninstall google-chrome > /dev/null 2>&1 || true
 
-            $SUDO rm -rf /Applications/Google\ Chrome.app<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>> || true<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)is already installed"
+            $SUDO rm -rf /Applications/Google\ Chrome.app > /dev/null 2>&1 || true<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)is already installed"
 
             exit 0<</parameters.replace-existing>>
           else
             echo "Google Chrome is not currently installed; installing it"
           fi
-        elif cat /etc/issue | grep Alpine<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
-          if command -v chromium-browser<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+        elif cat /etc/issue | grep Alpine > /dev/null 2>&1; then
+          if command -v chromium-browser > /dev/null 2>&1; then
 
             <<#parameters.replace-existing>>echo "$(chromium-browser --version)is currently installed; replacing it"
 
-            $SUDO apk del --force-broken-world chromium<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>> || true
-            $SUDO rm -f "$(command -v chromium-browser)"<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>> || true<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(chromium-browser --version)is already installed to $(which chromium-browser)"
+            $SUDO apk del --force-broken-world chromium > /dev/null 2>&1 || true
+            $SUDO rm -f "$(command -v chromium-browser)" > /dev/null 2>&1 || true<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(chromium-browser --version)is already installed to $(which chromium-browser)"
 
             exit 0<</parameters.replace-existing>>
 
           else
             echo "Google Chrome (via Chromium) is not currently installed; installing it"
           fi
-        elif command -v yum<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
-          if command -v google-chrome<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+        elif command -v yum > /dev/null 2>&1; then
+          if command -v google-chrome > /dev/null 2>&1; then
             <<#parameters.replace-existing>>echo "$(google-chrome --version)is currently installed; replacing it"
 
-            $SUDO yum remove -y google-chrome-stable<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>> || true
+            $SUDO yum remove -y google-chrome-stable > /dev/null 2>&1 || true
 
-            $SUDO rm -f "$(command -v google-chrome)"<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>> || true<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(google-chrome --version)is already installed to $(which google-chrome)"
+            $SUDO rm -f "$(command -v google-chrome)" > /dev/null 2>&1 || true<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(google-chrome --version)is already installed to $(which google-chrome)"
 
             exit 0<</parameters.replace-existing>>
           else
             echo "Google Chrome is not currently installed; installing it"
           fi
         else
-          if command -v google-chrome<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+          if command -v google-chrome > /dev/null 2>&1; then
 
             <<#parameters.replace-existing>>echo "$(google-chrome --version)is currently installed; replacing it"
 
-            $SUDO apt-get -y --purge remove google-chrome-stable<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>> || true
+            $SUDO apt-get -y --purge remove google-chrome-stable > /dev/null 2>&1 || true
 
-            $SUDO rm -f "$(command -v google-chrome)"<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>> || true<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(google-chrome --version)is already installed to $(which google-chrome)"
+            $SUDO rm -f "$(command -v google-chrome)" > /dev/null 2>&1 || true<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(google-chrome --version)is already installed to $(which google-chrome)"
 
             exit 0<</parameters.replace-existing>>
           else
@@ -79,9 +73,9 @@ steps:
         fi
 
         # install chrome
-        if uname -a | grep Darwin<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
-          brew update<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>> && \
-            HOMEBREW_NO_AUTO_UPDATE=1 brew cask install google-chrome<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>
+        if uname -a | grep Darwin > /dev/null 2>&1; then
+          brew update > /dev/null 2>&1 && \
+            HOMEBREW_NO_AUTO_UPDATE=1 brew cask install google-chrome > /dev/null 2>&1
 
           echo -e "#\!/bin/bash\n" > google-chrome
           perl -i -pe "s|#\\\|#|g" google-chrome
@@ -91,7 +85,7 @@ steps:
           $SUDO chmod +x /usr/local/bin/google-chrome
 
           # test/verify installation
-          if google-chrome --version<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+          if google-chrome --version > /dev/null 2>&1; then
             echo "$(google-chrome --version)has been installed in the /Applications directory"
             echo "A shortcut has also been created at $(which google-chrome)"
             exit 0
@@ -99,7 +93,7 @@ steps:
             echo "Something went wrong; Google Chrome could not be installed"
             exit 1
           fi
-        elif cat /etc/issue | grep Alpine<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+        elif cat /etc/issue | grep Alpine > /dev/null 2>&1; then
           # https://github.com/Zenika/alpine-chrome/blob/master/Dockerfile
 
           echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories
@@ -110,21 +104,21 @@ steps:
             harfbuzz@edge \
             nss@edge \
             freetype@edge \
-            ttf-freefont@edge<<^parameters.debug>> \
-            > /dev/null 2>&1<</parameters.debug>>
+            ttf-freefont@edge \
+            > /dev/null 2>&1
 
           rm -rf /var/cache/*
           mkdir /var/cache/apk
 
           # test/verify installation
-          if chromium-browser --version<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+          if chromium-browser --version > /dev/null 2>&1; then
             echo "$(chromium-browser --version)has been installed to $(which chromium-browser)"
             exit 0
           else
             echo "Something went wrong; Chromium could not be installed"
             exit 1
           fi
-        elif command -v yum<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+        elif command -v yum > /dev/null 2>&1; then
           # download chrome
           curl --silent --show-error --location --fail --retry 3 \
             --output google-chrome-stable_current_x86_64.rpm \
@@ -134,11 +128,11 @@ steps:
             --output liberation-fonts.rpm \
             http://mirror.centos.org/centos/7/os/x86_64/Packages/liberation-fonts-1.07.2-16.el7.noarch.rpm
 
-          $SUDO yum localinstall -y liberation-fonts.rpm<<^parameters.debug>> \
-            > /dev/null 2>&1<</parameters.debug>>
+          $SUDO yum localinstall -y liberation-fonts.rpm \
+            > /dev/null 2>&1
 
-          $SUDO yum localinstall -y google-chrome-stable_current_x86_64.rpm<<^parameters.debug>> \
-            > /dev/null 2>&1<</parameters.debug>>
+          $SUDO yum localinstall -y google-chrome-stable_current_x86_64.rpm \
+            > /dev/null 2>&1
 
           rm -rf google-chrome-stable_current_x86_64.rpm liberation-fonts.rpm
         else
@@ -147,8 +141,8 @@ steps:
             --output google-chrome-stable_current_amd64.deb \
             https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 
-          $SUDO apt-get update<<^parameters.debug>> \
-          > /dev/null 2>&1<</parameters.debug>> && \
+          $SUDO apt-get update \
+          > /dev/null 2>&1 && \
           $SUDO apt-get install -y \
             apt-utils \
             fonts-liberation \
@@ -175,19 +169,19 @@ steps:
             libxss1 \
             libxtst6 \
             lsb-release \
-            xdg-utils<<^parameters.debug>> \
-            > /dev/null 2>&1<</parameters.debug>>
+            xdg-utils \
+            > /dev/null 2>&1
 
           # setup chrome installation
           $SUDO dpkg -i \
-            google-chrome-stable_current_amd64.deb<<^parameters.debug>> \
-            > /dev/null 2>&1<</parameters.debug>>
+            google-chrome-stable_current_amd64.deb \
+            > /dev/null 2>&1
 
           rm -rf google-chrome-stable_current_amd64.deb
         fi
 
         # test/verify installation
-        if google-chrome --version<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+        if google-chrome --version > /dev/null 2>&1; then
           echo "$(google-chrome --version) has been installed to $(which google-chrome)"
         else
           echo "Something went wrong; Google Chrome could not be installed"

@@ -20,12 +20,6 @@ parameters:
     description: >
       Directory in which to install Geckodriver
 
-  debug:
-    type: boolean
-    default: false
-    description: >
-      Extra output for orb developers
-
 steps:
   - run:
       name: Install Geckodriver
@@ -94,7 +88,7 @@ steps:
 
         GECKODRIVER_VERSION_NUM="$(echo $GECKODRIVER_VERSION | sed -E 's/v//')"
 
-        if geckodriver --version | grep "$GECKODRIVER_VERSION_NUM"<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+        if geckodriver --version | grep "$GECKODRIVER_VERSION_NU > /dev/null 2>&1; then
           echo "$(geckodriver --version) has been installed to $(which geckodriver)"
         else
           echo "Something went wrong; the specified version of Geckodriver could not be installed"
