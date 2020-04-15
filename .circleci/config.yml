@@ -45,9 +45,6 @@ jobs:
       replace-existing-chrome:
         type: boolean
         default: true
-      debug:
-        type: boolean
-        default: false
     executor: <<parameters.executor>>
     steps:
       - jq/install
@@ -57,7 +54,6 @@ jobs:
           install-geckodriver: false
           # geckodriver-version: <<parameters.geckodriver-version>>
           replace-existing-chrome: <<parameters.replace-existing-chrome>>
-          debug: <<parameters.debug>>
 
 workflows:
   # This `lint-pack_validate_publish-dev` workflow will run on any commit.
