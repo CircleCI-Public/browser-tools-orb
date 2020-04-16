@@ -9,22 +9,7 @@ parameters:
     description: >
       Version of Firefox to install, defaults to the latest stable release.
       To install an older release, specify a full semantic version number,
-      ESR or otherwise, e.g., 66.0.3, 52.0.1esr, 53.0, etc. Note:
-      version-selection is not supported for Alpine Linux-based execution
-      environments, as Mozilla's Firefox binaries are not compiled to run on
-      Alpine. Use the `alpine-version` parameter to select from a limited
-      number of Alpine-based Firefox packages. Otherwise, for a full list of
-      releases, see: https://archive.mozilla.org/pub/firefox/releases/
-
-  alpine-version:
-    type: enum
-    default: stable
-    enum: [stable, esr]
-    description: >
-      For Alpine Linux users, select a Firefox version: either the latest
-      stable release, or the latest Extended Support Release. For more
-      information, see https://mozilla.org/firefox/organizations and
-      https://pkgs.alpinelinux.org/packages?name=firefox*
+      ESR or otherwise, e.g., 66.0.3, 52.0.1esr, 53.0, etc.
 
   install-dir:
     type: string
@@ -37,6 +22,7 @@ steps:
       name: Install Firefox
       command: |
         if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
+
 
         # FUNCTIONS
         grab_firefox_version () {
@@ -77,66 +63,7 @@ steps:
           echo "System detected as MacOS"
           grab_firefox_version
           installation_check
-
           HOMEBREW_NO_AUTO_UPDATE=1 brew install gnupg coreutils > /dev/null 2>&1
-
-        # alpine: install everything, then check version & halt
-        elif cat /etc/issue | grep Alpine > /dev/null 2>&1; then
-          echo "System detected as Alpine"
-
-          # https://stackoverflow.com/questions/51806403/installation-of-firefox-from-alpine-edge
-          # https://wiki.alpinelinux.org/wiki/Include:Upgrading_to_Edge
-
-          if ! command -v perl > /dev/null 2>&1; then
-            apk add perl > /dev/null 2>&1
-          fi
-
-          perl -i -pe 's|v([0-9]+){0,1}(.[0-9]+){0,1}(.[0-9]+)|edge|g' \
-            /etc/apk/repositories
-
-          echo "Updating apt cache"
-          apk upgrade --update-cache --available
-          echo "Adding icu-libs"
-          apk add icu-libs
-
-          if [[ "<<parameters.alpine-version>>" == "stable" ]]; then
-            FIREFOX_VERSION=$(curl \
-              --silent --show-error --location --fail --retry 3 \
-              http://dl-cdn.alpinelinux.org/alpine/edge/testing/x86_64/ | grep firefox | \
-              sed -E 's%<a href="%%' | sed -E 's%.apk">firefox-.*.apk</a>.*%%' | \
-              sed -E 's/firefox-//' | sed -E 's/-.*//')
-
-            echo "Selected version of Firefox is: $FIREFOX_VERSION (Alpine APK)"
-
-            apk --no-cache add \
-              --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
-              firefox > /dev/null 2>&1
-
-          elif [[ "<<parameters.alpine-version>>" == "esr" ]]; then
-            FIREFOX_VERSION=$(curl \
-              --silent --show-error --location --fail --retry 3 \
-              http://dl-cdn.alpinelinux.org/alpine/edge/community/x86_64/ | grep firefox-esr | \
-              sed -E 's|.*="||' | sed -E 's|.apk".*||' | \
-              sed -E 's|firefox-esr-||' | sed -E 's|-.*||')
-
-            echo "Selected version of Firefox is: $FIREFOX_VERSION (Mozilla Extended Support Release, Alpine APK)"
-
-            apk --no-cache add \
-              --repository http://dl-cdn.alpinelinux.org/alpine/edge/community \
-              firefox-esr > /dev/null
-          fi
-
-          ln -s "$(which firefox)" "<<parameters.install-dir>>/firefox"
-
-          # test/verify version
-          if firefox --version | grep "$FIREFOX_VERSION" > /dev/null 2>&1; then
-            echo "$(firefox --version) has been installed to $(which firefox)"
-            exit 0
-          else
-            echo "Something went wrong; the specified version of Firefox could not be installed"
-            exit 1
-          fi
-
         # deb/ubuntu/other linux: setup version, install packages, then continue
         else
           echo "System detected as Linux"

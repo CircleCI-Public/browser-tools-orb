@@ -35,10 +35,6 @@ jobs:
       firefox-version:
         type: string
         default: latest
-      firefox-alpine-version:
-        type: enum
-        default: stable
-        enum: [stable, esr]
       geckodriver-version:
         type: string
         default: latest
@@ -50,7 +46,6 @@ jobs:
       - jq/install
       - browser-tools/install-browser-tools:
           firefox-version: <<parameters.firefox-version>>
-          firefox-alpine-version: <<parameters.firefox-alpine-version>>
           install-geckodriver: false
           # geckodriver-version: <<parameters.geckodriver-version>>
           replace-existing-chrome: <<parameters.replace-existing-chrome>>
@@ -95,9 +90,6 @@ workflows:
       - integration-tests:
           name: test-machine-16
           executor: machine-16
-      - integration-tests:
-          name: test-alpine
-          executor: orb-tools/alpine
 
       # publish a semver version of the orb. relies on
       # the commit subject containing the text "[semver:patch|minor|major|skip]"
@@ -118,7 +110,6 @@ workflows:
             - test-docker
             - test-macos
             - test-machine-16
-            - test-alpine
           filters:
             branches:
               only: master

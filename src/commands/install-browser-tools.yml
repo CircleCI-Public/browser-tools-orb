@@ -17,22 +17,7 @@ parameters:
     description: >
       Version of Firefox to install, defaults to the latest stable release.
       To install an older release, specify a full semantic version number,
-      e.g., 66.0.3, 53.0, etc. Note: version-selection is not supported for
-      Alpine Linux-based execution environments, as Mozilla's Firefox
-      binaries are not compiled to run on Alpine. Use the `alpine-version`
-      parameter to select from a limited number of Alpine-based
-      Firefox packages. Otherwise, for a full list of releases, see the
-      following: https://archive.mozilla.org/pub/firefox/releases/
-
-  firefox-alpine-version:
-    type: enum
-    default: stable
-    enum: [stable, esr]
-    description: >
-      For Alpine Linux users, select a Firefox version: either the latest
-      stable release, or the latest Extended Support Release. For more
-      information, see https://mozilla.org/firefox/organizations and
-      https://pkgs.alpinelinux.org/packages?name=firefox*
+      e.g., 66.0.3, 53.0, etc. 
 
   firefox-install-dir:
     type: string
@@ -100,7 +85,6 @@ steps:
       steps:
         - install-firefox:
             version: <<parameters.firefox-version>>
-            alpine-version: <<parameters.firefox-alpine-version>>
             install-dir: <<parameters.firefox-install-dir>>
 
   - when:

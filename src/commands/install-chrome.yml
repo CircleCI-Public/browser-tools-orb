@@ -93,31 +93,6 @@ steps:
             echo "Something went wrong; Google Chrome could not be installed"
             exit 1
           fi
-        elif cat /etc/issue | grep Alpine > /dev/null 2>&1; then
-          # https://github.com/Zenika/alpine-chrome/blob/master/Dockerfile
-
-          echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories
-          echo @edge http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories
-
-          apk add --no-cache \
-            chromium@edge \
-            harfbuzz@edge \
-            nss@edge \
-            freetype@edge \
-            ttf-freefont@edge \
-            > /dev/null 2>&1
-
-          rm -rf /var/cache/*
-          mkdir /var/cache/apk
-
-          # test/verify installation
-          if chromium-browser --version > /dev/null 2>&1; then
-            echo "$(chromium-browser --version)has been installed to $(which chromium-browser)"
-            exit 0
-          else
-            echo "Something went wrong; Chromium could not be installed"
-            exit 1
-          fi
         elif command -v yum > /dev/null 2>&1; then
           # download chrome
           curl --silent --show-error --location --fail --retry 3 \
