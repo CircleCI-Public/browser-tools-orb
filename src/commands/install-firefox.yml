@@ -37,7 +37,6 @@ steps:
       name: Install Firefox
       command: |
         if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
-        echo "Sudo User detect"
 
         # FUNCTIONS
         grab_firefox_version () {
@@ -89,7 +88,6 @@ steps:
           # https://wiki.alpinelinux.org/wiki/Include:Upgrading_to_Edge
 
           if ! command -v perl > /dev/null 2>&1; then
-            echo "Installing Perl"
             apk add perl > /dev/null 2>&1
           fi
 
@@ -97,9 +95,9 @@ steps:
             /etc/apk/repositories
 
           echo "Updating apt cache"
-          apk upgrade --update-cache --available > /dev/null 2>&1
-
-          apk add icu-libs > /dev/null 2>&1
+          apk upgrade --update-cache --available
+          echo "Adding icu-libs"
+          apk add icu-libs
 
           if [[ "<<parameters.alpine-version>>" == "stable" ]]; then
             FIREFOX_VERSION=$(curl \
