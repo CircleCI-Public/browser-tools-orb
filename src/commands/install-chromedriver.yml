@@ -18,7 +18,6 @@ steps:
       name: Install ChromeDriver
       command: |
         if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
-        
         # determine_chrome_version
         if uname -a | grep Darwin> /dev/null 2>&1; then
           echo "System detected as MacOS"
