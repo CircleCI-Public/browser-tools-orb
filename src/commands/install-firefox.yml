@@ -37,6 +37,7 @@ steps:
       name: Install Firefox
       command: |
         if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
+        echo "Sudo User detect"
 
         # FUNCTIONS
         grab_firefox_version () {
@@ -74,6 +75,7 @@ steps:
 
         # mac: setup version, install packages, then continue
         if uname -a | grep Darwin> /dev/null 2>&1; then
+          echo "System detected as MacOS"
           grab_firefox_version
           installation_check
 
@@ -81,17 +83,20 @@ steps:
 
         # alpine: install everything, then check version & halt
         elif cat /etc/issue | grep Alpine > /dev/null 2>&1; then
+          echo "System detected as Alpine"
 
           # https://stackoverflow.com/questions/51806403/installation-of-firefox-from-alpine-edge
           # https://wiki.alpinelinux.org/wiki/Include:Upgrading_to_Edge
 
           if ! command -v perl > /dev/null 2>&1; then
+            echo "Installing Perl"
             apk add perl > /dev/null 2>&1
           fi
 
           perl -i -pe 's|v([0-9]+){0,1}(.[0-9]+){0,1}(.[0-9]+)|edge|g' \
             /etc/apk/repositories
 
+          echo "Updating apt cache"
           apk upgrade --update-cache --available > /dev/null 2>&1
 
           apk add icu-libs > /dev/null 2>&1
@@ -136,6 +141,7 @@ steps:
 
         # deb/ubuntu/other linux: setup version, install packages, then continue
         else
+          echo "System detected as Linux"
           grab_firefox_version
           installation_check
 

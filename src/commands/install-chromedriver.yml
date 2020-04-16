@@ -18,8 +18,7 @@ steps:
       name: Install ChromeDriver
       command: |
         if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
-        echo "Sudo User detect"
-
+        
         # determine_chrome_version
         if uname -a | grep Darwin> /dev/null 2>&1; then
           echo "System detected as MacOS"
@@ -27,7 +26,6 @@ steps:
           PLATFORM=mac64
 
         elif cat /etc/issue | grep Alpine > /dev/null 2>&1; then
-          echo "System detected as Alpine"
           apk update > /dev/null 2>&1 && \
             apk add --no-cache chromium-chromedriver > /dev/null
 
@@ -36,7 +34,6 @@ steps:
 
           exit 0
         else
-          echo "System detected as Linux"
           CHROME_VERSION="$(google-chrome --version)"
           PLATFORM=linux64
         fi
