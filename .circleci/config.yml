@@ -46,8 +46,6 @@ jobs:
       - jq/install
       - browser-tools/install-browser-tools:
           firefox-version: <<parameters.firefox-version>>
-          install-geckodriver: false
-          # geckodriver-version: <<parameters.geckodriver-version>>
           replace-existing-chrome: <<parameters.replace-existing-chrome>>
 
 workflows:
