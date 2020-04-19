@@ -1,0 +1,12 @@
+description: |
+  Install All available browsers and browser drivers. Includes Chrome, FireFox, ChromeDriver and GeckoDriver.
+usage:
+  version: 2.1
+  orbs:
+     browser-tools: circleci/browser-tools@x.y
+  jobs:
+    test:
+      docker:
+        - image: cimg/node:13.12
+      steps:
+        - browser-tools/install-browser-tools

@@ -20,12 +20,6 @@ parameters:
     description: >
       Directory in which to install Geckodriver
 
-  debug:
-    type: boolean
-    default: false
-    description: >
-      Extra output for orb developers
-
 steps:
   - run:
       name: Install Geckodriver
@@ -34,16 +28,15 @@ steps:
 
         # FUNCTIONS
         grab_geckodriver_version () {
-          if [[ <<parameters.version>> == "latest" ]]; then
+          if [[ "<<parameters.version>>" == "latest" ]]; then
             # extract latest version from github releases API
-            GECKODRIVER_VERSION_STRING=$(curl \
-              https://api.github.com/repos/mozilla/geckodriver/releases/latest | jq '.tag_name')
+            GECKODRIVER_VERSION_STRING=$(curl -Ls -o /dev/null -w "%{url_effective}\n" "https://github.com/mozilla/geckodriver/releases/latest" | sed 's:.*/::')
 
             # strip leading/trailing "
             temp="${GECKODRIVER_VERSION_STRING%\"}"
             GECKODRIVER_VERSION="${temp#\"}"
           else
-            GECKODRIVER_VERSION=<<parameters.version>>
+            GECKODRIVER_VERSION="<<parameters.version>>"
           fi
 
           echo "Selected version of Geckodriver is: $GECKODRIVER_VERSION"
@@ -73,10 +66,7 @@ steps:
         fi
 
         # get download URL
-        GECKODRIVER_URL=$(curl \
-          --silent --show-error --location --fail --retry 3 \
-          "https://api.github.com/repos/mozilla/geckodriver/releases/tags/$GECKODRIVER_VERSION" | \
-          jq -r ".assets[] | select(.name | test(\"$PLATFORM\")) | .browser_download_url")
+        GECKODRIVER_URL="https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-$PLATFORM.tar.gz"
 
         # download geckodriver
         curl --silent --show-error --location --fail --retry 3 \
@@ -98,7 +88,7 @@ steps:
 
         GECKODRIVER_VERSION_NUM="$(echo $GECKODRIVER_VERSION | sed -E 's/v//')"
 
-        if geckodriver --version | grep "$GECKODRIVER_VERSION_NUM"<<^parameters.debug>> > /dev/null 2>&1<</parameters.debug>>; then
+        if geckodriver --version | grep "$GECKODRIVER_VERSION_NUM" > /dev/null 2>&1; then
           echo "$(geckodriver --version) has been installed to $(which geckodriver)"
         else
           echo "Something went wrong; the specified version of Geckodriver could not be installed"
