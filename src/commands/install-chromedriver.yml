@@ -115,11 +115,20 @@ steps:
         fi
 
         echo "ChromeDriver $CHROMEDRIVER_VERSION will be installed"
+        CACHE_BASE=${HOME}/.browsercache
+        CACHE_FILE=${CACHE_BASE}/chromedriver_$PLATFORM.zip
 
+        if [ ! -f "$CACHE_FILE" ]; then
         # download chromedriver
-        curl --silent --show-error --location --fail --retry 3 \
-          --output chromedriver_$PLATFORM.zip \
-          "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_$PLATFORM.zip"
+          curl --silent --show-error --location --fail --retry 3 \
+            --output chromedriver_$PLATFORM.zip \
+            "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_$PLATFORM.zip"
+          mkdir -p $CACHE_BASE
+          cp chromedriver_$PLATFORM.zip $CACHE_FILE
+        else
+          echo "Using cached zip of chromedriver"
+          mv $CACHE_FILE .
+        fi
 
         # setup chromedriver installation
         if command -v yum > /dev/null 2>&1; then
@@ -135,6 +144,8 @@ steps:
         # test/verify version
         if chromedriver --version | grep "$CHROMEDRIVER_VERSION" > /dev/null 2>&1; then
           echo "$(chromedriver --version) has been installed to $(which chromedriver)"
+          # since the chromedriver version is tied to the chrome version, we can lock it to the chrome installation
+          echo "Chromedriver: true" >> ${HOME}/.browser-versions
         else
           echo "Something went wrong; ChromeDriver could not be installed"
           exit 1

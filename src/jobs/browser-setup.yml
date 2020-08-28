@@ -1,0 +1,148 @@
+description: >
+  Install various browsers and browser-testing tools into any
+  Debian/Ubuntu-based Docker image. Intended to ease browser testing on
+  CircleCI. Requirements: bash, curl, apt-get, gpg, sha256sum, sed, tar,
+  unzip, grep
+
+parameters:
+  # what defaults do we *really* want
+  language-version:
+    type: string
+    default: "3.8.5"
+    description: >
+      Language version for the executor
+  language:
+    type: string
+    default: "python"
+    description: >
+      Language for the executor
+# firefox / geckodriver
+  install-firefox:
+    type: boolean
+    default: true
+    description: Install Firefox?
+  firefox-version:
+    type: string
+    default: latest
+    description: >
+      Version of Firefox to install, defaults to the latest stable release.
+      To install an older release, specify a full semantic version number,
+      e.g., 66.0.3, 53.0, etc.
+  firefox-install-dir:
+    type: string
+    default: /usr/local/bin
+    description: >
+      Directory in which to install Firefox
+  install-geckodriver:
+    type: boolean
+    default: true
+    description: Install Geckodriver?
+  geckodriver-version:
+    type: string
+    default: latest
+    description: >
+      Version of Geckodriver to install, defaults to latest release. To
+      install an older release, specify a full semantic version tag,
+      e.g., `v0.23.0`. For a list of releases, and a Firefox/Geckodriver
+      version compatibility table, see the following links:
+      https://github.com/mozilla/geckodriver/releases
+      https://firefox-source-docs.mozilla.org/testing/geckodriver/Support.html
+  geckodriver-install-dir:
+    type: string
+    default: /usr/local/bin
+    description: >
+      Directory in which to install Geckodriver
+  # chrome / chromedriver
+  install-chrome:
+    type: boolean
+    default: true
+    description: >
+      Install Google Chrome? Note: only the latest stable release can be
+      installed, as Google does not maintain a public archive of previous
+      releases.
+  replace-existing-chrome:
+    type: boolean
+    default: false
+    description: >
+      If there is an existing installation of Google Chrome, replace it
+      with the latest stable release
+  install-chromedriver:
+    type: boolean
+    default: true
+    description: >
+      Install Chromedriver? Note: requires Google Chrome. A Chromedriver
+      version will be dynamically selected based on the installed version
+      of Chrome; for details, see the following information:
+      https://sites.google.com/a/chromium.org/chromedriver/downloads/version-selection
+  chromedriver-install-dir:
+    type: string
+    default: /usr/local/bin
+    description: >
+      Directory in which to install Chromedriver
+  cache-version:
+    type: string
+    default: v1
+    description: Change the default cache version if you need to clear the cache for any reason.
+  include-branch-in-cache-key:
+    type: boolean
+    default: false
+    description: >
+      If true, this cache bucket will only apply to jobs within the same branch.
+  chrome-version:
+    default: latest
+    type: string
+    description: >
+      Version of Chrome to install, defaults to the latest stable release.
+      To install an older release, specify a full chrome version number,
+      e.g., 85.0.4183.83
+      Only supported on centos and debian
+
+
+executor:
+  name: default
+  tag: << parameters.language-version >>
+  language: << parameters.language >>
+
+steps:
+  - run:
+      # these are in order of install in
+      name: Write cache lock
+      command: |
+        <<#parameters.install-firefox>>
+        echo "Firefox: <<parameters.firefox-version>>" >> ${HOME}/.browser-versions-restore
+        <</parameters.install-firefox>>
+        <<#parameters.install-geckodriver>>
+        echo "Geckodriver: <<parameters.geckodriver-version>>" >> ${HOME}/.browser-versions-restore
+        <</parameters.install-geckodriver>>
+        <<#parameters.install-chrome>>
+        echo "Chrome: <<parameters.chrome-version>>" >> ${HOME}/.browser-versions-restore
+        <</parameters.install-chrome>>
+        <<#parameters.install-chromedriver>>
+        echo "Chromedriver: <<parameters.install-chromedriver>>" >> ${HOME}/.browser-versions-restore
+        <</parameters.install-chromedriver>>
+
+  - restore_cache:
+      keys:
+      - browser-cache-<<parameters.cache-version>><<#parameters.include-branch-in-cache-key>>-{{ .Branch }}<</parameters.include-branch-in-cache-key>>-{{ checksum "/home/circleci/.browser-versions-restore" }}
+      name: Restore browser caches
+  - install-browser-tools:
+            install-firefox: <<parameters.install-geckodriver>>
+            firefox-version: <<parameters.firefox-version>>
+            firefox-install-dir: <<parameters.firefox-install-dir>>
+            install-geckodriver: <<parameters.install-geckodriver>>
+            geckodriver-version: <<parameters.geckodriver-version>>
+            geckodriver-install-dir: <<parameters.geckodriver-install-dir>>
+            install-chrome: <<parameters.install-chrome>>
+            replace-existing-chrome: <<parameters.replace-existing-chrome>>
+            install-chromedriver: <<parameters.install-chromedriver>>
+            chromedriver-install-dir: <<parameters.chromedriver-install-dir>>
+            chrome-version: <<parameters.chrome-version>>
+  - save_cache:
+      # decide where should the browser-versions go
+      # how does a user check this into code?
+      # Do we instruct them to if they want to enable browser caching?
+      key: browser-cache-<<parameters.cache-version>><<#parameters.include-branch-in-cache-key>>-{{ .Branch }}<</parameters.include-branch-in-cache-key>>-{{ checksum "/home/circleci/.browser-versions" }}
+      name: Caching Browsers and Drivers
+      paths:
+       # This should be paramertized between the install-browser-tools command and this job
+        - /home/circleci/.browsercache/

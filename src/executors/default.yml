@@ -1,0 +1,20 @@
+description: |
+  Select a browser based variant executor.
+
+parameters:
+  tag:
+    type: string
+    default: "3.8.5"
+    description: >
+      Pick a specific cimg/python-browser image version tag:
+      https://hub.docker.com/r/cimg/python
+  language:
+    type: string
+    default: "python"
+    description: >
+      Pick a specific cimg/python-browser image version tag:
+      https://hub.docker.com/r/cimg/python
+
+docker:
+  - image: dayling/test-repo:test
+  # - image: cimg/<<language>>:<<parameters.tag>>-browser
