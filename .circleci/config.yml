@@ -88,6 +88,16 @@ workflows:
       - integration-tests:
           name: test-machine-16
           executor: machine-16
+      - browser-tools/browser-setup:
+          post-steps:
+            - run:
+                name: Check install
+                command: |
+                  google-chrome --version
+                  firefox --version
+                  geckodriver --version
+                  chromedriver --version
+
 
       # publish a semver version of the orb. relies on
       # the commit subject containing the text "[semver:patch|minor|major|skip]"

@@ -8,13 +8,12 @@ parameters:
     description: >
       Pick a specific cimg/python-browser image version tag:
       https://hub.docker.com/r/cimg/python
-  language:
+  image-name:
     type: string
     default: "python"
     description: >
-      Pick a specific cimg/python-browser image version tag:
-      https://hub.docker.com/r/cimg/python
+      Pick a specific convinence-image
+      https://hub.docker.com/r/cimg
 
 docker:
-  - image: dayling/test-repo:test
-  # - image: cimg/<<language>>:<<parameters.tag>>-browser
+  - image: cimg/<<parameters.image-name>>:<<parameters.tag>>

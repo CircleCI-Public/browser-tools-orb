@@ -12,11 +12,11 @@ parameters:
     default: "3.8.5"
     description: >
       Language version for the executor
-  language:
+  image-name:
     type: string
     default: "python"
     description: >
-      Language for the executor
+      Language based convenience image for the executor
 # firefox / geckodriver
   install-firefox:
     type: boolean
@@ -102,7 +102,7 @@ parameters:
 executor:
   name: default
   tag: << parameters.language-version >>
-  language: << parameters.language >>
+  image-name: << parameters.image-name >>
 
 steps:
   - run:
