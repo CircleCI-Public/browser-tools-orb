@@ -5,18 +5,8 @@ usage:
   orbs:
      browser-tools: circleci/browser-tools@x.y
   jobs:
-    - browser-tools/browser-setup:
-        chrome-version: "85.0.4183.102"
-        firefox-version: "80.0.1"
-        geckodriver-version: "v0.27.0"
-        cache-version: v2
-        pre-steps:
-          - checkout
-        post-steps:
-          - run:
-              name: Check install
-              command: |
-                google-chrome --version
-                firefox --version
-                geckodriver --version
-                chromedriver --version
+    test:
+      docker:
+        - image: cimg/node:13.12
+      steps:
+        - browser-tools/install-browser-tools
