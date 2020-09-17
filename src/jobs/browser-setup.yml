@@ -1,7 +1,8 @@
 description: >
-  Install various browsers and browser-testing tools into any
-  Debian/Ubuntu-based Docker image. Intended to ease browser testing on
-  CircleCI. Requirements: bash, curl, apt-get, gpg, sha256sum, sed, tar,
+  Install various browsers and browser-testing tools.
+  Supports caching browser and driver debs and tarballs on debian based distros.
+  Intended to ease browser testing on CircleCI.
+  Requirements: bash, curl, apt-get, gpg, sha256sum, sed, tar,
   unzip, grep
 
 parameters:
