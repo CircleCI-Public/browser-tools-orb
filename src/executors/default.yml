@@ -4,13 +4,13 @@ description: |
 parameters:
   tag:
     type: string
-    default: "3.8.5"
+    default: "stable-browser"
     description: >
-      Pick a specific cimg/python-browser image version tag:
+      Pick a specific cimg/base browser image version tag (or whatever your ):
       https://hub.docker.com/r/cimg/python
   image-name:
     type: string
-    default: "python"
+    default: "base"
     description: >
       Pick a specific convinence-image
       https://hub.docker.com/r/cimg

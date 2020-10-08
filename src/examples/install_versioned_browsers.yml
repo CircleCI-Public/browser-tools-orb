@@ -1,13 +1,12 @@
 description: |
-  Install All available browsers and browser drivers. Includes Chrome, FireFox, ChromeDriver and GeckoDriver.
+  Install specific versions of firefox and chrome in the base variant image.
 usage:
   version: 2.1
   orbs:
      browser-tools: circleci/browser-tools@x.y
   jobs:
     test:
-      docker:
-        - image: cimg/node:13.12
+      executor: browser-tools/default
       steps:
         - browser-tools/install-browser-tools:
             firefox-version: "80.0.1"
@@ -17,3 +16,6 @@ usage:
             command: |
               google-chrome --version
               firefox --version
+              geckodriver --version
+              chromedriver --version
+              java -jar /usr/local/bin/selenium.jar --version
