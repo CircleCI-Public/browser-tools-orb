@@ -19,6 +19,7 @@ parameters:
       To install an older release, specify a full chrome version number,
       e.g., 85.0.4183.83
       Only supported on centos and debian
+      If replace-existing is false, this version is ignored.
 
 steps:
   - run:
@@ -104,7 +105,6 @@ steps:
           fi
         elif command -v yum > /dev/null 2>&1; then
           # download chrome
-          # TODO support caching
           if [[ "$CHROME_VERSION" == "latest" ]]; then
             CHROME_URL="https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm"
           else
@@ -126,23 +126,14 @@ steps:
 
           rm -rf google-chrome.rpm liberation-fonts.rpm
         else
-          CACHE_BASE=${HOME}/.browsercache
-          CACHE_FILE=${CACHE_BASE}/google-chrome.deb
-          if [ ! -f "$CACHE_FILE" ]; then
-            # download chrome
-            if [[ "$CHROME_VERSION" == "latest" ]]; then
-              CHROME_URL="https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
-            else
-              CHROME_URL="https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}-1_amd64.deb"
-            fi
-            curl --silent --show-error --location --fail --retry 3 \
-              --output google-chrome.deb $CHROME_URL
-            mkdir -p $CACHE_BASE
-            cp google-chrome.deb $CACHE_FILE
+          # download chrome
+          if [[ "$CHROME_VERSION" == "latest" ]]; then
+            CHROME_URL="https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
           else
-            echo "Using cached deb of chrome"
-            mv $CACHE_FILE .
+            CHROME_URL="https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}-1_amd64.deb"
           fi
+          curl --silent --show-error --location --fail --retry 3 \
+            --output google-chrome.deb $CHROME_URL
 
           $SUDO apt-get update
           # The pipe will install any dependencies missing

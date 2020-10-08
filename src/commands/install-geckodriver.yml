@@ -68,20 +68,10 @@ steps:
         # get download URL
         GECKODRIVER_URL="https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-$PLATFORM.tar.gz"
 
-        CACHE_BASE=${HOME}/.browsercache
-        CACHE_FILE=${CACHE_BASE}/geckodriver-$GECKODRIVER_VERSION-$PLATFORM.tar.gz
-
-        if [ ! -f "$CACHE_FILE" ]; then
-          # download geckodriver
-          curl --silent --show-error --location --fail --retry 3 \
-            --output "geckodriver-$GECKODRIVER_VERSION-$PLATFORM.tar.gz" \
-            "$GECKODRIVER_URL"
-          mkdir -p $CACHE_BASE
-          cp geckodriver-$GECKODRIVER_VERSION-$PLATFORM.tar.gz $CACHE_FILE
-        else
-          echo "Using cached tar of geckodriver"
-          mv $CACHE_FILE .
-        fi
+        # download geckodriver
+        curl --silent --show-error --location --fail --retry 3 \
+          --output "geckodriver-$GECKODRIVER_VERSION-$PLATFORM.tar.gz" \
+          "$GECKODRIVER_URL"
 
         # setup geckodriver installation
         tar xf "geckodriver-$GECKODRIVER_VERSION-$PLATFORM.tar.gz"
@@ -100,7 +90,6 @@ steps:
 
         if geckodriver --version | grep "$GECKODRIVER_VERSION_NUM" > /dev/null 2>&1; then
           echo "$(geckodriver --version) has been installed to $(which geckodriver)"
-          echo "Geckodriver: $GECKODRIVER_VERSION" >> ${HOME}/.browser-versions
         else
           echo "Something went wrong; the specified version of Geckodriver could not be installed"
           exit 1

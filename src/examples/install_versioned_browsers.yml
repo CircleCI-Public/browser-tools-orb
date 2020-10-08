@@ -1,5 +1,5 @@
 description: |
-  Install Google's Chrome browser and ChromeDriver
+  Install All available browsers and browser drivers. Includes Chrome, FireFox, ChromeDriver and GeckoDriver.
 usage:
   version: 2.1
   orbs:
@@ -9,11 +9,11 @@ usage:
       docker:
         - image: cimg/node:13.12
       steps:
-        - browser-tools/install-chrome
-        - browser-tools/install-chromedriver
+        - browser-tools/install-browser-tools:
+            firefox-version: "80.0.1"
+            chrome-version: "85.0.4183.102"
         - run:
             name: Check install
             command: |
               google-chrome --version
-              chromedriver --version
-
+              firefox --version
