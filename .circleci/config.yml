@@ -87,9 +87,10 @@ workflows:
           name: test-docker
           executor: docker-cimg
       - integration-tests:
-          name: test-docker
+          name: test-specific-version
           executor: docker-cimg
           chrome-version: "85.0.4183.102"
+          firefox-version: "80.0.1"
       - integration-tests:
           name: test-macos
           executor: macos-11-4
