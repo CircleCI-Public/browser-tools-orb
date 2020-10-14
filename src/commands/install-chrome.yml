@@ -11,6 +11,15 @@ parameters:
     description: >
       If there is an existing installation of Google Chrome, replace it
       with the latest stable release?
+  chrome-version:
+    default: latest
+    type: string
+    description: >
+      Version of Chrome to install, defaults to the latest stable release.
+      To install an older release, specify a full chrome version number,
+      e.g., 85.0.4183.83
+      Only supported on centos and debian
+      If replace-existing is false, this version is ignored.
 
 steps:
   - run:
@@ -18,6 +27,7 @@ steps:
       command: |
         if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
 
+        CHROME_VERSION=<<parameters.chrome-version>>
         # installation check
         if uname -a | grep Darwin > /dev/null 2>&1; then
           if ls /Applications | grep "Google Chrome" > /dev/null 2>&1; then
@@ -95,10 +105,15 @@ steps:
           fi
         elif command -v yum > /dev/null 2>&1; then
           # download chrome
-          curl --silent --show-error --location --fail --retry 3 \
-            --output google-chrome-stable_current_x86_64.rpm \
-            https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+          if [[ "$CHROME_VERSION" == "latest" ]]; then
+            CHROME_URL="https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm"
+          else
+            CHROME_URL="https://dl.google.com/linux/chrome/rpm/stable/x86_64/google-chrome-stable-$CHROME_VERSION-1.x86_64.rpm"
+          fi
 
+          curl --silent --show-error --location --fail --retry 3 \
+            --output google-chrome.rpm \
+            $CHROME_URL
           curl --silent --show-error --location --fail --retry 3 \
             --output liberation-fonts.rpm \
             http://mirror.centos.org/centos/7/os/x86_64/Packages/liberation-fonts-1.07.2-16.el7.noarch.rpm
@@ -106,60 +121,42 @@ steps:
           $SUDO yum localinstall -y liberation-fonts.rpm \
             > /dev/null 2>&1
 
-          $SUDO yum localinstall -y google-chrome-stable_current_x86_64.rpm \
+          $SUDO yum localinstall -y google-chrome.rpm \
             > /dev/null 2>&1
 
-          rm -rf google-chrome-stable_current_x86_64.rpm liberation-fonts.rpm
+          rm -rf google-chrome.rpm liberation-fonts.rpm
         else
           # download chrome
+          if [[ "$CHROME_VERSION" == "latest" ]]; then
+            CHROME_URL="https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+          else
+            CHROME_URL="https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}-1_amd64.deb"
+          fi
           curl --silent --show-error --location --fail --retry 3 \
-            --output google-chrome-stable_current_amd64.deb \
-            https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+            --output google-chrome.deb $CHROME_URL
 
-          $SUDO apt-get update \
-          > /dev/null 2>&1 && \
-          $SUDO apt-get install -y \
-            apt-utils \
-            fonts-liberation \
-            libappindicator3-1 \
-            libasound2 \
-            libatk-bridge2.0-0 \
-            libatk1.0-0 \
-            libatspi2.0-0 \
-            libcairo2 \
-            libcups2 \
-            libdbus-1-3 \
-            libgbm1 \
-            libgdk-pixbuf2.0-0 \
-            libglib2.0-0 \
-            libgtk-3-0 \
-            libnspr4 \
-            libnss3 \
-            libpango-1.0-0 \
-            libpangocairo-1.0-0 \
-            libxcomposite1 \
-            libxcursor1 \
-            libxi6 \
-            libxrandr2 \
-            libxrender1 \
-            libxss1 \
-            libxtst6 \
-            lsb-release \
-            xdg-utils \
-            > /dev/null 2>&1
-
-          # setup chrome installation
-          $SUDO dpkg -i \
-            google-chrome-stable_current_amd64.deb \
-            > /dev/null 2>&1
-
-          rm -rf google-chrome-stable_current_amd64.deb
+          $SUDO apt-get update
+          # The pipe will install any dependencies missing
+          $SUDO dpkg -i google-chrome.deb || sudo apt-get -fy install
+          rm -rf google-chrome.deb
+          $SUDO sed -i 's|HERE/chrome"|HERE/chrome" --disable-setuid-sandbox --no-sandbox|g' "/opt/google/chrome/google-chrome"
         fi
 
         # test/verify installation
-        if google-chrome --version > /dev/null 2>&1; then
-          echo "$(google-chrome --version) has been installed to $(which google-chrome)"
+        if [[ "$CHROME_VERSION" != "latest" ]]; then
+          if google-chrome --version | grep "$CHROME_VERSION" > /dev/null 2>&1; then
+            :
+          else
+            echo "Something went wrong; Google Chrome could not be installed"
+            exit 1
+          fi
         else
-          echo "Something went wrong; Google Chrome could not be installed"
-          exit 1
+          if google-chrome --version  > /dev/null 2>&1; then
+            :
+          else
+            echo "Something went wrong; Google Chrome could not be installed"
+            exit 1
+          fi
+          echo "$(google-chrome --version) has been installed to $(which google-chrome)"
+          echo "Chrome: $CHROME_VERSION" >> ${HOME}/.browser-versions
         fi

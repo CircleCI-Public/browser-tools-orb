@@ -1,0 +1,21 @@
+description: |
+  Install specific versions of firefox and chrome in the base variant image.
+usage:
+  version: 2.1
+  orbs:
+     browser-tools: circleci/browser-tools@x.y
+  jobs:
+    test:
+      executor: browser-tools/default
+      steps:
+        - browser-tools/install-browser-tools:
+            firefox-version: "80.0.1"
+            chrome-version: "85.0.4183.102"
+        - run:
+            name: Check install
+            command: |
+              google-chrome --version
+              firefox --version
+              geckodriver --version
+              chromedriver --version
+              java -jar /usr/local/bin/selenium.jar --version
