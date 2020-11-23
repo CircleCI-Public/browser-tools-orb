@@ -137,7 +137,7 @@ steps:
 
           $SUDO apt-get update
           # The pipe will install any dependencies missing
-          $SUDO dpkg -i google-chrome.deb || sudo apt-get -fy install
+          $SUDO dpkg -i google-chrome.deb || $SUDO apt-get -fy install
           rm -rf google-chrome.deb
           $SUDO sed -i 's|HERE/chrome"|HERE/chrome" --disable-setuid-sandbox --no-sandbox|g' "/opt/google/chrome/google-chrome"
         fi
