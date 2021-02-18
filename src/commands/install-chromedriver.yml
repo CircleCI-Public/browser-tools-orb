@@ -37,7 +37,7 @@ steps:
           PLATFORM=linux64
         fi
 
-        CHROME_VERSION_STRING="$(echo $CHROME_VERSION | sed 's/^Google Chrome //' | sed 's/^Chromium //')"
+        CHROME_VERSION_STRING="$(echo $CHROME_VERSION | sed 's/.*Google Chrome //' | sed 's/.*Chromium //')"
 
         # print Chrome version
         echo "Installed version of Google Chrome is $CHROME_VERSION_STRING"
