@@ -34,7 +34,7 @@ steps:
 
             <<#parameters.replace-existing>>echo "$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)is currently installed; replacing it"
 
-            HOMEBREW_NO_AUTO_UPDATE=1 brew cask uninstall google-chrome > /dev/null 2>&1 || true
+            HOMEBREW_NO_AUTO_UPDATE=1 brew uninstall google-chrome > /dev/null 2>&1 || true
 
             $SUDO rm -rf /Applications/Google\ Chrome.app > /dev/null 2>&1 || true<</parameters.replace-existing>><<^parameters.replace-existing>>echo "$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)is already installed"
 
@@ -85,7 +85,7 @@ steps:
         # install chrome
         if uname -a | grep Darwin > /dev/null 2>&1; then
           brew update > /dev/null 2>&1 && \
-            HOMEBREW_NO_AUTO_UPDATE=1 brew cask install google-chrome > /dev/null 2>&1
+            HOMEBREW_NO_AUTO_UPDATE=1 brew install google-chrome > /dev/null 2>&1
 
           echo -e "#\!/bin/bash\n" > google-chrome
           perl -i -pe "s|#\\\|#|g" google-chrome
