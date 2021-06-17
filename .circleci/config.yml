@@ -63,7 +63,7 @@ workflows:
       - orb-tools/pack
       - orb-tools/publish-dev:
           orb-name: circleci/browser-tools
-          context: orb-publishing
+          context: orb-publisher
           requires:
             - orb-tools/lint
             - orb-tools/shellcheck
@@ -72,7 +72,7 @@ workflows:
       # dev:${CIRCLE_SHA1:0:7} version of your orb
       - orb-tools/trigger-integration-tests-workflow:
           name: trigger-integration-dev
-          context: orb-publishing
+          context: orb-publisher
           requires:
             - orb-tools/publish-dev
 
@@ -106,10 +106,10 @@ workflows:
       # e.g. [semver:patch] will cause a patch version to be published.
       - orb-tools/dev-promote-prod-from-commit-subject:
           orb-name: circleci/browser-tools
-          context: orb-publishing
+          context: orb-publisher
           add-pr-comment: true
           bot-token-variable: GHI_TOKEN
-          bot-user: cpe-bot
+          bot-user: orb-publisher
           fail-if-semver-not-indicated: true
           publish-version-tag: true
           ssh-fingerprints: d5:f2:f8:4b:91:76:27:e6:09:2b:ad:06:ac:8f:fa:3e
