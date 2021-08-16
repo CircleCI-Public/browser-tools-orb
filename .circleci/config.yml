@@ -7,15 +7,18 @@ orbs:
   jq: circleci/jq@2.0
 
 executors:
-  docker-cimg:
+  cimg-base:
     docker:
       - image: cimg/base:stable
-  macos-11-4:
+  cimg-node:
+    docker:
+      - image: cimg/node:lts-browsers
+  macos:
     macos:
-      xcode: 11.4.0
-  machine-16:
+      xcode: 12.5.1
+  linux:
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-2004:202107-02
 # Pipeline parameters
 parameters:
   # These pipeline parameters are required by the "trigger-integration-tests-workflow"
@@ -84,19 +87,22 @@ workflows:
     when: << pipeline.parameters.run-integration-tests >>
     jobs:
       - integration-tests:
-          name: test-docker
-          executor: docker-cimg
+          name: test-cimg-base
+          executor: cimg-base
+      - integration-tests:
+          name: test-cimg-node
+          executor: cimg-node
       - integration-tests:
           name: test-specific-version
-          executor: docker-cimg
-          chrome-version: "85.0.4183.102"
-          firefox-version: "80.0.1"
+          executor: cimg-base
+          chrome-version: "92.0.4515.131"
+          firefox-version: "90.0.1"
       - integration-tests:
           name: test-macos
-          executor: macos-11-4
+          executor: macos
       - integration-tests:
-          name: test-machine-16
-          executor: machine-16
+          name: test-linux
+          executor: linux
 
       # publish a semver version of the orb. relies on
       # the commit subject containing the text "[semver:patch|minor|major|skip]"
@@ -114,9 +120,10 @@ workflows:
           publish-version-tag: true
           ssh-fingerprints: d5:f2:f8:4b:91:76:27:e6:09:2b:ad:06:ac:8f:fa:3e
           requires:
-            - test-docker
+            - test-cimg-base
+            - test-cimg-node
             - test-macos
-            - test-machine-16
+            - test-linux
           filters:
             branches:
               only: master
