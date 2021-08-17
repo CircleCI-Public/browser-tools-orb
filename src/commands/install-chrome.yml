@@ -135,7 +135,11 @@ steps:
           curl --silent --show-error --location --fail --retry 3 \
             --output google-chrome.deb $CHROME_URL
 
-          $SUDO apt-get --allow-releaseinfo-change-suite update
+          # Debian 10 fix
+          if grep -i buster /etc/os-release;then
+            $SUDO apt-get --allow-releaseinfo-change-suite update
+          fi
+
           # The pipe will install any dependencies missing
           $SUDO dpkg -i google-chrome.deb || $SUDO apt-get -fy install
           rm -rf google-chrome.deb
