@@ -140,8 +140,11 @@ steps:
             $SUDO apt-get --allow-releaseinfo-change-suite update
           fi
 
+          # Ensure that Chrome apt dependencies are installed.
+          #$SUDO apt-get update
+
           # The pipe will install any dependencies missing
-          $SUDO dpkg -i google-chrome.deb || $SUDO apt-get -fy install
+          $SUDO dpkg -i google-chrome.deb || $SUDO apt-get update && $SUDO apt-get -fy install
           rm -rf google-chrome.deb
           $SUDO sed -i 's|HERE/chrome"|HERE/chrome" --disable-setuid-sandbox --no-sandbox|g' "/opt/google/chrome/google-chrome"
         fi
