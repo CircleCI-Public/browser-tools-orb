@@ -49,7 +49,7 @@ steps:
               exit 0
             else
               echo "A different version of Geckodriver is installed ($(geckodriver --version)); removing it"
-              $SUDO rm -f $(command -v geckodriver)
+              $SUDO rm -rf $(command -v geckodriver)
             fi
           else
             echo "Geckodriver is not currently installed; installing it"
