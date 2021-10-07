@@ -69,13 +69,11 @@ steps:
         GECKODRIVER_URL="https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-$PLATFORM.tar.gz"
 
         # download geckodriver
-        curl --silent --show-error --location --fail --retry 3 \
-          --output "geckodriver-$GECKODRIVER_VERSION-$PLATFORM.tar.gz" \
-          "$GECKODRIVER_URL"
+        $SUDO curl --silent --show-error --location --fail --retry 3 --output "geckodriver-$GECKODRIVER_VERSION-$PLATFORM.tar.gz" "$GECKODRIVER_URL"
 
         # setup geckodriver installation
-        tar xf "geckodriver-$GECKODRIVER_VERSION-$PLATFORM.tar.gz"
-        rm -rf "geckodriver-$GECKODRIVER_VERSION-$PLATFORM.tar.gz"
+        $SUDO tar xf "geckodriver-$GECKODRIVER_VERSION-$PLATFORM.tar.gz"
+        $SUDO rm -rf "geckodriver-$GECKODRIVER_VERSION-$PLATFORM.tar.gz"
 
         $SUDO mv geckodriver <<parameters.install-dir>>
         $SUDO chmod +x <<parameters.install-dir>>/geckodriver
