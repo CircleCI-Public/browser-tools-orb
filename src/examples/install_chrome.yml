@@ -7,7 +7,7 @@ usage:
   jobs:
     test:
       docker:
-        - image: cimg/node:13.12-browser
+        - image: cimg/node:13.12-browsers
       steps:
         - browser-tools/install-chrome
         - browser-tools/install-chromedriver
