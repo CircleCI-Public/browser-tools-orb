@@ -83,7 +83,12 @@ steps:
               > /dev/null 2>&1
           else
             $SUDO apt-get update > /dev/null 2>&1 && \
-              $SUDO apt-get install -y libxt6 libgtk-3-dev libdbus-glib-1-2 > /dev/null 2>&1
+              $SUDO apt-get install -y \
+                libasound-dev \
+                libxt6 \
+                libgtk-3-dev \
+                libdbus-glib-1-2 \
+              > /dev/null 2>&1
           fi
         fi
 
