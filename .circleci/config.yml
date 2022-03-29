@@ -143,7 +143,7 @@ workflows:
             - test-linux-firefox
           filters:
             branches:
-              only: master
+              only: main
 
 jobs:
   int-test-all:
