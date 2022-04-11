@@ -1,213 +1,36 @@
 version: 2.1
-
-parameters:
-  dev-orb-version:
-    type: string
-    default: "dev:alpha"
-  run-integration-tests:
-    type: boolean
-    default: false
-
+setup: true
 orbs:
-  browser-tools: circleci/browser-tools@<<pipeline.parameters.dev-orb-version>>
-  orb-tools: circleci/orb-tools@10.0
-  jq: circleci/jq@2.2
-  shellcheck: circleci/shellcheck@2.0
+  orb-tools: circleci/orb-tools@11.1
+  shellcheck: circleci/shellcheck@3.1
 
-executors:
-  cimg-base:
-    docker:
-      - image: cimg/base:stable
-  cimg-node:
-    docker:
-      - image: cimg/node:lts-browsers
-  cimg-openjdk:
-    docker:
-      - image: cimg/openjdk:11.0-browsers
-  macos:
-    macos:
-      xcode: 12.5.1
-  linux:
-    machine:
-      image: ubuntu-2004:202107-02
+filters: &filters
+  tags:
+    only: /.*/
 
 workflows:
-  main:
-    unless: << pipeline.parameters.run-integration-tests >>
+  lint-pack:
     jobs:
-      - orb-tools/lint
+      - orb-tools/lint:
+          filters: *filters
+      - orb-tools/pack:
+          filters: *filters
+      - orb-tools/review:
+          filters: *filters
       - shellcheck/check:
-          exclude: "SC1009,SC1073,SC1041,SC1042"
-      - orb-tools/pack
-      - orb-tools/publish-dev:
+          exclude: SC2148,SC2038,SC2086,SC2002,SC2016
+          filters: *filters
+      - orb-tools/publish:
           orb-name: circleci/browser-tools
-          context: orb-publisher
+          vcs-type: << pipeline.project.type >>
           requires:
-            - orb-tools/lint
-            - shellcheck/check
-            - orb-tools/pack
-      # trigger an integration workflow to test the
-      # dev:${CIRCLE_SHA1:0:7} version of your orb
-      - orb-tools/trigger-integration-tests-workflow:
-          name: trigger-integration-dev
+            [orb-tools/lint, orb-tools/review, orb-tools/pack, shellcheck/check]
+          # Use a context to hold your publishing token.
           context: orb-publisher
-          requires:
-            - orb-tools/publish-dev
-
-  # This `integration-tests_prod-release` workflow will only run
-  # when the run-integration-tests pipeline parameter is set to true.
-  # It is meant to be triggered by the "trigger-integration-tests-workflow"
-  # job, and run tests on <your orb>@dev:${CIRCLE_SHA1:0:7}.
-  integration-tests_prod-release:
-    when: << pipeline.parameters.run-integration-tests >>
-    jobs:
-      - int-test-all:
-          name: test-cimg-base-all
-          executor: cimg-base
-      - int-test-all:
-          name: test-cimg-node-all
-          executor: cimg-node
-      - int-test-all:
-          name: test-specific-version-all
-          executor: cimg-base
-          chrome-version: "92.0.4515.131"
-          firefox-version: "90.0.1"
-      - int-test-all:
-          name: test-macos-all
-          executor: macos
-      - int-test-all:
-          name: test-linux-all
-          executor: linux
-      - int-test-chrome:
-          name: test-cimg-base-chrome
-          executor: cimg-base
-      - int-test-chrome:
-          name: test-cimg-node-chrome
-          executor: cimg-node
-      - int-test-chrome:
-          name: test-specific-version-chrome
-          executor: cimg-base
-          chrome-version: "92.0.4515.131"
-          firefox-version: "90.0.1"
-      - int-test-chrome:
-          name: test-macos-chrome
-          executor: macos
-      - int-test-chrome:
-          name: test-linux-chrome
-          executor: linux
-      - int-test-firefox:
-          name: test-cimg-base-firefox
-          executor: cimg-base
-      - int-test-firefox:
-          name: test-cimg-node-firefox
-          executor: cimg-node
-      - int-test-firefox:
-          name: test-specific-version-firefox
-          executor: cimg-base
-          chrome-version: "92.0.4515.131"
-          firefox-version: "90.0.1"
-      - int-test-firefox:
-          name: test-macos-firefox
-          executor: macos
-      - int-test-firefox:
-          name: test-linux-firefox
-          executor: linux
-
-      # publish a semver version of the orb. relies on
-      # the commit subject containing the text "[semver:patch|minor|major|skip]"
-      # as that will determine whether a patch, minor or major
-      # version will be published or if publishing should
-      # be skipped.
-      # e.g. [semver:patch] will cause a patch version to be published.
-      - orb-tools/dev-promote-prod-from-commit-subject:
-          orb-name: circleci/browser-tools
-          context: orb-publisher
-          add-pr-comment: true
-          bot-token-variable: GHI_TOKEN
-          bot-user: orb-publisher
-          fail-if-semver-not-indicated: true
-          publish-version-tag: true
-          ssh-fingerprints: d5:f2:f8:4b:91:76:27:e6:09:2b:ad:06:ac:8f:fa:3e
-          requires:
-            - test-cimg-base-all
-            - test-cimg-node-all
-            - test-macos-all
-            - test-linux-all
-            - test-cimg-base-chrome
-            - test-cimg-node-chrome
-            - test-macos-chrome
-            - test-linux-chrome
-            - test-cimg-base-firefox
-            - test-cimg-node-firefox
-            - test-macos-firefox
-            - test-linux-firefox
-          filters:
-            branches:
-              only: main
-
-jobs:
-  int-test-all:
-    parameters:
-      executor:
-        type: executor
-      firefox-version:
-        type: string
-        default: latest
-      geckodriver-version:
-        type: string
-        default: latest
-      replace-existing-chrome:
-        type: boolean
-        default: true
-      chrome-version:
-        type: string
-        default: latest
-    executor: <<parameters.executor>>
-    steps:
-      - jq/install
-      - browser-tools/install-browser-tools:
-          firefox-version: <<parameters.firefox-version>>
-          replace-existing-chrome: <<parameters.replace-existing-chrome>>
-          chrome-version: <<parameters.chrome-version>>
-  int-test-chrome:
-    parameters:
-      executor:
-        type: executor
-      firefox-version:
-        type: string
-        default: latest
-      geckodriver-version:
-        type: string
-        default: latest
-      replace-existing-chrome:
-        type: boolean
-        default: true
-      chrome-version:
-        type: string
-        default: latest
-    executor: <<parameters.executor>>
-    steps:
-      - jq/install
-      - browser-tools/install-chrome
-      - browser-tools/install-chromedriver
-  int-test-firefox:
-    parameters:
-      executor:
-        type: executor
-      firefox-version:
-        type: string
-        default: latest
-      geckodriver-version:
-        type: string
-        default: latest
-      replace-existing-chrome:
-        type: boolean
-        default: true
-      chrome-version:
-        type: string
-        default: latest
-    executor: <<parameters.executor>>
-    steps:
-      - jq/install
-      - browser-tools/install-firefox
-      - browser-tools/install-geckodriver
+          filters: *filters
+      # Triggers the next workflow in the Orb Development Kit.
+      - orb-tools/continue:
+          pipeline-number: << pipeline.number >>
+          vcs-type: << pipeline.project.type >>
+          requires: [orb-tools/publish]
+          filters: *filters
