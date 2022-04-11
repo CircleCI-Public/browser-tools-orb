@@ -2,7 +2,7 @@
 if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
 # installation check
 if uname -a | grep Darwin >/dev/null 2>&1; then
-  if ls /Applications | grep "Google Chrome" >/dev/null 2>&1; then
+  if ls /Applications/*Google\ Chrome* >/dev/null 2>&1; then
     if [ "$ORB_PARAM_REPLACE_EXISTING" == "1" ]; then
       echo "$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)is currently installed; replacing it"
       HOMEBREW_NO_AUTO_UPDATE=1 brew uninstall google-chrome >/dev/null 2>&1 || true
