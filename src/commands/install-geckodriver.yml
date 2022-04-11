@@ -25,5 +25,5 @@ steps:
       name: Install Geckodriver
       environment:
         ORB_PARAM_GECKO_INSTALL_DIR: <<parameters.install-dir>>
-        ORB_PARAM_GECKO_VERSION: <<parameters.chrome-version
+        ORB_PARAM_GECKO_VERSION: <<parameters.chrome-version>>
       command: <<include(scripts/install-geckodriver.sh)>>
