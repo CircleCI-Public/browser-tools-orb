@@ -57,13 +57,14 @@ fi
 
 # install chrome
 if uname -a | grep Darwin >/dev/null 2>&1; then
-  brew update >/dev/null 2>&1 &&
-    HOMEBREW_NO_AUTO_UPDATE=1 brew install google-chrome >/dev/null 2>&1
-  echo -e "#\!/bin/bash\n" >google-chrome
-  perl -i -pe "s|#\\\|#|g" google-chrome
-  echo -e "/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \"\$@\"" >>google-chrome
-  $SUDO mv google-chrome /usr/local/bin
-  $SUDO chmod +x /usr/local/bin/google-chrome
+  CHROME_MAC_URL="https://dl.google.com/chrome/mac/universal/stable/GGRO/googlechrome.dmg"
+  CHROME_MAC_DMG_MOUNT_PATH="$(mktemp -d)/googlechrome"
+  CHROME_MAC_DMG_PATH="$CHROME_MAC_DMG_MOUNT_PATH/googlechrome.dmg"
+  wget -q -O "$CHROME_MAC_DMG_PATH" "$CHROME_MAC_URL"
+  hdiutil attach "$CHROME_MAC_DMG_PATH"
+  ditto -rsrc /Volumes/Google\ Chrome/Google\ Chrome.app /Applications/Google\ Chrome.app
+  hdiutil detach /Volumes/Google\ Chrome
+  rm -rf "$CHROME_MAC_DMG_PATH"
   # test/verify installation
   if google-chrome --version >/dev/null 2>&1; then
     echo "$(google-chrome --version)has been installed in the /Applications directory"
