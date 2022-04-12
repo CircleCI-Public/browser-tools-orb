@@ -57,14 +57,17 @@ fi
 
 # install chrome
 if uname -a | grep Darwin >/dev/null 2>&1; then
-  CHROME_MAC_URL="https://dl.google.com/chrome/mac/universal/stable/GGRO/googlechrome.dmg"
-  CHROME_MAC_DMG_MOUNT_PATH="$(mktemp -d)/googlechrome"
-  CHROME_MAC_DMG_PATH="$CHROME_MAC_DMG_MOUNT_PATH/googlechrome.dmg"
-  wget -q -O "$CHROME_MAC_DMG_PATH" "$CHROME_MAC_URL"
-  hdiutil attach "$CHROME_MAC_DMG_PATH"
-  ditto -rsrc /Volumes/Google\ Chrome/Google\ Chrome.app /Applications/Google\ Chrome.app
-  hdiutil detach /Volumes/Google\ Chrome
-  rm -rf "$CHROME_MAC_DMG_PATH"
+  # Universal MacOS .pkg with license pre-accepted: https://support.google.com/chrome/a/answer/9915669?hl=en
+  CHROME_MAC_URL="https://dl.google.com/chrome/mac/stable/accept_tos%3Dhttps%253A%252F%252Fwww.google.com%252Fintl%252Fen_ph%252Fchrome%252Fterms%252F%26_and_accept_tos%3Dhttps%253A%252F%252Fpolicies.google.com%252Fterms/googlechrome.pkg"
+  CHROME_TEMP_DIR="$(mktemp -d)"
+  curl -L -o "$CHROME_TEMP_DIR/googlechrome.pkg" "$CHROME_MAC_URL"
+  sudo /usr/sbin/installer -pkg "$CHROME_TEMP_DIR/googlechrome.pkg" -target /
+  sudo rm -rf "$CHROME_TEMP_DIR"
+  xattr -rc "/Applications/Google Chrome.app"
+  echo '#!/usr/bin/env bash' >> google-chrome
+  echo '/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome "$@"' >> google-chrome
+  sudo mv google-chrome /usr/local/bin/
+  sudo chmod +x /usr/local/bin/google-chrome
   # test/verify installation
   if google-chrome --version >/dev/null 2>&1; then
     echo "$(google-chrome --version)has been installed in the /Applications directory"
