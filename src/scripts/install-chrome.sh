@@ -58,7 +58,7 @@ fi
 # install chrome
 if uname -a | grep Darwin >/dev/null 2>&1; then
   CHROME_MAC_URL="https://dl.google.com/chrome/mac/universal/stable/GGRO/googlechrome.dmg"
-  CHROME_MAC_DMG_MOUNT_PATH="$(mktemp -d)/googlechrome"
+  CHROME_MAC_DMG_MOUNT_PATH="$(mktemp -d)"
   CHROME_MAC_DMG_PATH="$CHROME_MAC_DMG_MOUNT_PATH/googlechrome.dmg"
   curl -L "$CHROME_MAC_URL" -o "$CHROME_MAC_DMG_PATH"
   hdiutil attach "$CHROME_MAC_DMG_PATH"
