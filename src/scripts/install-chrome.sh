@@ -65,7 +65,7 @@ if uname -a | grep Darwin >/dev/null 2>&1; then
   sudo rm -rf "$CHROME_TEMP_DIR"
   xattr -rc "/Applications/Google Chrome.app"
   shopt -s expand_aliases
-  echo 'alias google-chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"' >> "$BASH_ENV"
+  echo 'alias google-chrome="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"' >> "$BASH_ENV"
   echo 'TEST_ENV="Sourced env variable"' >> "$BASH_ENV"
   cat "$BASH_ENV"
   # shellcheck source=/dev/null
