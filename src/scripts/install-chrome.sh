@@ -65,6 +65,7 @@ if uname -a | grep Darwin >/dev/null 2>&1; then
   sudo rm -rf "$CHROME_TEMP_DIR"
   xattr -rc "/Applications/Google Chrome.app"
   echo 'alias google-chrome="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"' >> "$BASH_ENV"
+  # shellcheck source=/dev/null
   source "$BASH_ENV"
   # test/verify installation
   if google-chrome --version >/dev/null 2>&1; then
