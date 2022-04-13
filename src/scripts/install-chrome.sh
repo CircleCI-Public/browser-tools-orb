@@ -76,7 +76,7 @@ if uname -a | grep Darwin >/dev/null 2>&1; then
     echo "$TEST_ENV"
   else
     echo "Failed to source $BASH_ENV"
-    echo "$TEST_ENV
+    echo "$TEST_ENV"
   fi
   google-chrome --version
   # test/verify installation
