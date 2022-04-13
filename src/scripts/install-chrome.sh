@@ -67,6 +67,7 @@ if uname -a | grep Darwin >/dev/null 2>&1; then
   echo 'alias google-chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"' >> "$BASH_ENV"
   # shellcheck source=/dev/null
   source "$BASH_ENV"
+  google-chrome --version
   # test/verify installation
   if google-chrome --version >/dev/null 2>&1; then
     echo "$(google-chrome --version)has been installed in the /Applications directory"
