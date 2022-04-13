@@ -64,22 +64,10 @@ if uname -a | grep Darwin >/dev/null 2>&1; then
   sudo /usr/sbin/installer -pkg "$CHROME_TEMP_DIR/googlechrome.pkg" -target /
   sudo rm -rf "$CHROME_TEMP_DIR"
   xattr -rc "/Applications/Google Chrome.app"
-  echo "alias google-chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'" >> "$BASH_ENV"
-  echo 'TEST_ENV="Sourced env variable"' >> "$BASH_ENV"
-  cat "$BASH_ENV"
-  # shellcheck source=/dev/null
-  source "$BASH_ENV"
-  echo "Sourced $BASH_ENV"
-  echo "Checking if $TEST_ENV is set"
-  if [ "$TEST_ENV" == "Sourced env variable" ]; then
-    echo "Successfully sourced $BASH_ENV"
-    echo "$TEST_ENV"
-  else
-    echo "Failed to source $BASH_ENV"
-    echo "$TEST_ENV"
-  fi
-  alias
-  google-chrome --version
+  echo '#!/usr/bin/env bash' >> google-chrome
+  echo '/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome "$@"' >> google-chrome
+  sudo mv google-chrome /usr/local/bin/
+  sudo chmod +x /usr/local/bin/google-chrome
   # test/verify installation
   if google-chrome --version >/dev/null 2>&1; then
     echo "$(google-chrome --version)has been installed in the /Applications directory"
