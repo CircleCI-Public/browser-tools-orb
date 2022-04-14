@@ -98,22 +98,16 @@ elif command -v yum >/dev/null 2>&1; then
 else
   # download chrome
   if [[ "$ORB_PARAM_CHROME_VERSION" == "latest" ]]; then
-    CHROME_URL="https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+    wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | $SUDO apt-key add -
+    $SUDO sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+    $SUDO apt-get update
+    $SUDO apt-get install google-chrome-stable
   else
-    CHROME_URL="https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${ORB_PARAM_CHROME_VERSION}-1_amd64.deb"
+    # Google does not keep older releases in their PPA, but they can be installed manually. HTTPS should be enough to secure the download.
+    wget --no-verbose -O /tmp/chrome.deb "https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${ORB_PARAM_CHROME_VERSION}-1_amd64.deb" \
+      && $SUDO apt-get install -y /tmp/chrome.deb \
+      && rm /tmp/chrome.deb
   fi
-  curl --silent --show-error --location --fail --compressed \
-    --retry 3 --retry-delay 5 --keepalive-time 2 \
-    --output google-chrome.deb "$CHROME_URL"
-  # Debian 10 fix
-  if grep -i buster /etc/os-release; then
-    $SUDO apt-get --allow-releaseinfo-change-suite update
-  fi
-  # Ensure that Chrome apt dependencies are installed.
-  #$SUDO apt-get update
-  # The pipe will install any dependencies missing
-  $SUDO dpkg -i google-chrome.deb || $SUDO apt-get update && $SUDO apt-get -fy install
-  rm -rf google-chrome.deb
   $SUDO sed -i 's|HERE/chrome"|HERE/chrome" --disable-setuid-sandbox --no-sandbox|g' "/opt/google/chrome/google-chrome"
 fi
 
