@@ -146,6 +146,7 @@ workflows:
           orb-name: circleci/browser-tools
           vcs-type: << pipeline.project.type >>
           pub-type: production
+          github-token: GHI_TOKEN
           requires:
             - orb-tools/pack
             - test-cimg-base-all
