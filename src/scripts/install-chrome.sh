@@ -57,6 +57,7 @@ fi
 
 # install chrome
 if uname -a | grep Darwin >/dev/null 2>&1; then
+  echo "Preparing Chrome installation for MacOS-based systems"
   # Universal MacOS .pkg with license pre-accepted: https://support.google.com/chrome/a/answer/9915669?hl=en
   CHROME_MAC_URL="https://dl.google.com/chrome/mac/stable/accept_tos%3Dhttps%253A%252F%252Fwww.google.com%252Fintl%252Fen_ph%252Fchrome%252Fterms%252F%26_and_accept_tos%3Dhttps%253A%252F%252Fpolicies.google.com%252Fterms/googlechrome.pkg"
   CHROME_TEMP_DIR="$(mktemp -d)"
@@ -78,6 +79,7 @@ if uname -a | grep Darwin >/dev/null 2>&1; then
     exit 1
   fi
 elif command -v yum >/dev/null 2>&1; then
+  echo "Preparing Chrome installation for RedHat-based systems"
   # download chrome
   if [[ "$ORB_PARAM_CHROME_VERSION" == "latest" ]]; then
     CHROME_URL="https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm"
@@ -97,9 +99,17 @@ elif command -v yum >/dev/null 2>&1; then
   rm -rf google-chrome.rpm liberation-fonts.rpm
 else
   # download chrome
+  echo "Preparing Chrome installation for Debian-based systems"
   if [[ "$ORB_PARAM_CHROME_VERSION" == "latest" ]]; then
+    ENV_IS_ARM=$(! dpkg --print-architecture | grep -q arm; echo $?)
     wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | $SUDO apt-key add -
-    $SUDO sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+    if [ "$ENV_IS_ARM" == "arm" ]; then
+      echo "Installing Chrome for ARM64"
+      $SUDO sh -c 'echo "deb [arch=arm64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+    else
+      echo "Installing Chrome for AMD64"
+      $SUDO sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+    fi
     $SUDO apt-get update
     $SUDO apt-get install -y google-chrome-stable
   else
