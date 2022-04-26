@@ -57,13 +57,18 @@ fi
 
 # install chrome
 if uname -a | grep Darwin >/dev/null 2>&1; then
-  brew update >/dev/null 2>&1 &&
-    HOMEBREW_NO_AUTO_UPDATE=1 brew install google-chrome >/dev/null 2>&1
-  echo -e "#\!/bin/bash\n" >google-chrome
-  perl -i -pe "s|#\\\|#|g" google-chrome
-  echo -e "/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \"\$@\"" >>google-chrome
-  $SUDO mv google-chrome /usr/local/bin
-  $SUDO chmod +x /usr/local/bin/google-chrome
+  echo "Preparing Chrome installation for MacOS-based systems"
+  # Universal MacOS .pkg with license pre-accepted: https://support.google.com/chrome/a/answer/9915669?hl=en
+  CHROME_MAC_URL="https://dl.google.com/chrome/mac/stable/accept_tos%3Dhttps%253A%252F%252Fwww.google.com%252Fintl%252Fen_ph%252Fchrome%252Fterms%252F%26_and_accept_tos%3Dhttps%253A%252F%252Fpolicies.google.com%252Fterms/googlechrome.pkg"
+  CHROME_TEMP_DIR="$(mktemp -d)"
+  curl -L -o "$CHROME_TEMP_DIR/googlechrome.pkg" "$CHROME_MAC_URL"
+  sudo /usr/sbin/installer -pkg "$CHROME_TEMP_DIR/googlechrome.pkg" -target /
+  sudo rm -rf "$CHROME_TEMP_DIR"
+  xattr -rc "/Applications/Google Chrome.app"
+  echo '#!/usr/bin/env bash' >> google-chrome
+  echo '/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome "$@"' >> google-chrome
+  sudo mv google-chrome /usr/local/bin/
+  sudo chmod +x /usr/local/bin/google-chrome
   # test/verify installation
   if google-chrome --version >/dev/null 2>&1; then
     echo "$(google-chrome --version)has been installed in the /Applications directory"
@@ -74,6 +79,7 @@ if uname -a | grep Darwin >/dev/null 2>&1; then
     exit 1
   fi
 elif command -v yum >/dev/null 2>&1; then
+  echo "Preparing Chrome installation for RedHat-based systems"
   # download chrome
   if [[ "$ORB_PARAM_CHROME_VERSION" == "latest" ]]; then
     CHROME_URL="https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm"
@@ -93,23 +99,25 @@ elif command -v yum >/dev/null 2>&1; then
   rm -rf google-chrome.rpm liberation-fonts.rpm
 else
   # download chrome
+  echo "Preparing Chrome installation for Debian-based systems"
   if [[ "$ORB_PARAM_CHROME_VERSION" == "latest" ]]; then
-    CHROME_URL="https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+    ENV_IS_ARM=$(! dpkg --print-architecture | grep -q arm; echo $?)
+    wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | $SUDO apt-key add -
+    if [ "$ENV_IS_ARM" == "arm" ]; then
+      echo "Installing Chrome for ARM64"
+      $SUDO sh -c 'echo "deb [arch=arm64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+    else
+      echo "Installing Chrome for AMD64"
+      $SUDO sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+    fi
+    $SUDO apt-get update
+    $SUDO apt-get install -y google-chrome-stable
   else
-    CHROME_URL="https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${ORB_PARAM_CHROME_VERSION}-1_amd64.deb"
+    # Google does not keep older releases in their PPA, but they can be installed manually. HTTPS should be enough to secure the download.
+    wget --no-verbose -O /tmp/chrome.deb "https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${ORB_PARAM_CHROME_VERSION}-1_amd64.deb" \
+      && $SUDO apt-get install -y /tmp/chrome.deb \
+      && rm /tmp/chrome.deb
   fi
-  curl --silent --show-error --location --fail --compressed \
-    --retry 3 --retry-delay 5 --keepalive-time 2 \
-    --output google-chrome.deb "$CHROME_URL"
-  # Debian 10 fix
-  if grep -i buster /etc/os-release; then
-    $SUDO apt-get --allow-releaseinfo-change-suite update
-  fi
-  # Ensure that Chrome apt dependencies are installed.
-  #$SUDO apt-get update
-  # The pipe will install any dependencies missing
-  $SUDO dpkg -i google-chrome.deb || $SUDO apt-get update && $SUDO apt-get -fy install
-  rm -rf google-chrome.deb
   $SUDO sed -i 's|HERE/chrome"|HERE/chrome" --disable-setuid-sandbox --no-sandbox|g' "/opt/google/chrome/google-chrome"
 fi
 
