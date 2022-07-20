@@ -20,6 +20,12 @@ parameters:
       e.g., 85.0.4183.83
       Only supported on centos and debian
       If replace-existing is false, this version is ignored.
+  channel:
+    description: |
+      The release channel of Google Chrome to use. Defaults to 'stable'.
+    type: enum
+    enum: [ "stable", "beta" ]
+    default: "stable"
 
 steps:
   - run:
@@ -27,4 +33,5 @@ steps:
       environment:
         ORB_PARAM_CHROME_VERSION: <<parameters.chrome-version>>
         ORB_PARAM_REPLACE_EXISTING: <<parameters.replace-existing>>
+        ORB_PARAM_CHANNEL: << parameters.channel >>
       command: <<include(scripts/install-chrome.sh)>>

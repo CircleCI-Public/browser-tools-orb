@@ -30,6 +30,17 @@ jobs:
           firefox-version: <<parameters.firefox-version>>
           replace-existing-chrome: <<parameters.replace-existing-chrome>>
           chrome-version: <<parameters.chrome-version>>
+  int-tests-chrome:
+    parameters:
+      executor:
+        type: executor
+      channel:
+        type: string
+    executor: << parameters.executor >>
+    steps:
+      - jq/install
+      - browser-tools/install-chrome:
+          channel: << parameters.channel >>
   int-test-chrome:
     parameters:
       executor:
@@ -142,6 +153,18 @@ workflows:
           filters: *filters
       - orb-tools/pack:
           filters: *filters
+      # This matrix job can likely replace the several others above in the future
+      - int-tests-chrome:
+          matrix:
+            parameters:
+              executor:
+                - "cimg-base"
+                - "cimg-node"
+                - "linux"
+                - "macos"
+              channel:
+                - "stable"
+                - "beta"
       - orb-tools/publish:
           orb-name: circleci/browser-tools
           vcs-type: << pipeline.project.type >>
