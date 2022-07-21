@@ -193,7 +193,7 @@ workflows:
 executors:
   cimg-base:
     docker:
-      - image: cimg/base:stable
+      - image: cimg/base:current
   cimg-node:
     docker:
       - image: cimg/node:lts-browsers
@@ -202,7 +202,7 @@ executors:
       - image: cimg/openjdk:11.0-browsers
   macos:
     macos:
-      xcode: 12.5.1
+      xcode: 13.4.1
   linux:
     machine:
-      image: ubuntu-2004:202107-02
+      image: ubuntu-2204:2022.04.2
