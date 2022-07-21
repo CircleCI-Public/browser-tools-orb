@@ -38,9 +38,10 @@ jobs:
         type: string
     executor: << parameters.executor >>
     steps:
-      - jq/install
-      - browser-tools/install-chrome:
-          channel: << parameters.channel >>
+      #- jq/install
+      #- browser-tools/install-chrome:
+      #    channel: << parameters.channel >>
+      - browser-tools/install-browser-tools
   int-test-chrome:
     parameters:
       executor:
