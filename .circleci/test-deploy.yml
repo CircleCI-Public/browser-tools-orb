@@ -44,9 +44,8 @@ jobs:
       - run:
           name: "Smoke tests"
           command: |
-            google-chrome-stable --version
+            google-chrome-<< parameters.channel >> --version
             google-chrome --version
-            google-chrome-beta --version
   int-test-chrome:
     parameters:
       executor:
