@@ -1,2 +1,4 @@
 # Ping these folks when changes are made to this repository
-*	@CircleCI-Public/cpeng @CircleCI-Public/images
+* @CircleCI-Public/orb-publishers @CircleCI-Public/images
+
+# We can also add orb-specifc codeowners at some point if desirable
