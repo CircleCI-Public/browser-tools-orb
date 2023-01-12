@@ -116,7 +116,7 @@ else
       $SUDO sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
     fi
     $SUDO apt-get update
-    $SUDO apt-get install -y google-chrome-${ORB_PARAM_CHANNEL}
+    DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y google-chrome-${ORB_PARAM_CHANNEL}
   else
     # Google does not keep older releases in their PPA, but they can be installed manually. HTTPS should be enough to secure the download.
     wget --no-verbose -O /tmp/chrome.deb "https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${ORB_PARAM_CHROME_VERSION}-1_amd64.deb" \

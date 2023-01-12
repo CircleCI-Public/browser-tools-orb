@@ -3,7 +3,12 @@ if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
 # determine_chrome_version
 if uname -a | grep Darwin >/dev/null 2>&1; then
   echo "System detected as MacOS"
-  CHROME_VERSION="$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)"
+
+  if [ -f "/usr/local/bin/google-chrome-stable" ]; then
+    CHROME_VERSION="$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)"
+  else
+    CHROME_VERSION="$(/Applications/Google\ Chrome\ Beta.app/Contents/MacOS/Google\ Chrome\ Beta --version)"
+  fi
   PLATFORM=mac64
 
 elif grep Alpine /etc/issue >/dev/null 2>&1; then
@@ -157,6 +162,7 @@ $SUDO chmod +x "$ORB_PARAM_DRIVER_INSTALL_DIR/chromedriver"
 # test/verify version
 if chromedriver --version | grep "$CHROMEDRIVER_VERSION" >/dev/null 2>&1; then
   echo "$(chromedriver --version) has been installed to $(command -v chromedriver)"
+  rm -f ~/project/LICENSE.chromedriver
 else
   echo "Something went wrong; ChromeDriver could not be installed"
   exit 1
