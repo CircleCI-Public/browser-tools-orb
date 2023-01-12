@@ -162,7 +162,8 @@ $SUDO chmod +x "$ORB_PARAM_DRIVER_INSTALL_DIR/chromedriver"
 # test/verify version
 if chromedriver --version | grep "$CHROMEDRIVER_VERSION" >/dev/null 2>&1; then
   echo "$(chromedriver --version) has been installed to $(command -v chromedriver)"
-  rm -f "${CIRCLE_WORKING_DIRECTORY}/LICENSE.chromedriver"
+  readonly base_dir="${CIRCLE_WORKING_DIRECTORY/\~/$HOME}"
+  rm -f "${base_dir}/LICENSE.chromedriver"
 else
   echo "Something went wrong; ChromeDriver could not be installed"
   exit 1
