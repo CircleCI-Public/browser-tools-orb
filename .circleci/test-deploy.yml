@@ -41,6 +41,9 @@ jobs:
       - jq/install
       - browser-tools/install-chrome:
           channel: << parameters.channel >>
+      - browser-tools/install-chromedriver
+      # checkout step is added last to satisfy a test
+      - checkout
   int-test-chrome:
     parameters:
       executor:
@@ -184,7 +187,7 @@ workflows:
             - test-cimg-node-firefox
             - test-macos-firefox
             - test-linux-firefox
-          context: orb-publisher
+          context: image-orbs
           filters:
             branches:
               ignore: /.*/
