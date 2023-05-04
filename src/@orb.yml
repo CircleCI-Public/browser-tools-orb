@@ -4,4 +4,4 @@ description: >
   Install a variety of browsers and tools for browser testing. Includes Chrome, FireFox, ChromeDriver and GeckoDriver.
 
 display:
-  source_url: https://github.com/CircleCI-Public/browser-tools-orb
+  source_url: https://github.com/vissimo-group/browser-tools-orb
