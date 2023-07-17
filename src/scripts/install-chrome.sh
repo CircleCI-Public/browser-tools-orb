@@ -106,9 +106,9 @@ else
   # download chrome
   echo "Preparing Chrome installation for Debian-based systems"
   if [[ "$ORB_PARAM_CHROME_VERSION" == "latest" ]]; then
-    ENV_IS_ARM=$(! dpkg --print-architecture | grep -q arm; echo $?)
+    ENV_IS_ARM=$(dpkg --print-architecture | grep arm64)
     wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | $SUDO apt-key add -
-    if [ "$ENV_IS_ARM" == "arm" ]; then
+    if [ "$ENV_IS_ARM" == "arm64" ]; then
       echo "Installing Chrome for ARM64"
       $SUDO sh -c 'echo "deb [arch=arm64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
     else
