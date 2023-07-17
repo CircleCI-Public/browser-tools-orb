@@ -125,9 +125,9 @@ if [[ $CHROME_RELEASE -lt 70 ]]; then
     exit 1
     ;;
   esac
-else
-  CHROMEDRIVER_VERSION=$(curl --silent --show-error --location --fail --retry 3 \
-    "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROMEDRIVER_RELEASE")
+  elif [[ $CHROME_RELEASE -lt 115 ]]; then
+    CHROMEDRIVER_VERSION=$(curl --silent --show-error --location --fail --retry 3 \
+      "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROMEDRIVER_RELEASE")
 fi
 
 # installation check
@@ -141,12 +141,34 @@ if command -v chromedriver >/dev/null 2>&1; then
   fi
 fi
 
-echo "ChromeDriver $CHROMEDRIVER_VERSION will be installed"
-
 # download chromedriver
-curl --silent --show-error --location --fail --retry 3 \
-  --output chromedriver_$PLATFORM.zip \
-  "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_$PLATFORM.zip"
+
+if [[ $CHROME_RELEASE -lt 115 ]]; then
+  echo "ChromeDriver $CHROMEDRIVER_VERSION will be installed"
+  curl --silent --show-error --location --fail --retry 3 \
+    --output chromedriver_$PLATFORM.zip \
+    "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_$PLATFORM.zip"
+else 
+   # shellcheck disable=SC2001
+  CHROMEDRIVER_VERSION=$(echo $CHROME_VERSION | sed 's/[^0-9.]//g')
+  echo "$CHROMEDRIVER_VERSION will be installed"
+  if [[ $PLATFORM == "linux64" ]]; then
+    PLATFORM="linux64"
+    curl --silent --show-error --location --fail --retry 3 \
+    --output chromedriver_$PLATFORM.zip \
+    "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip"
+  elif [[ $PLATFORM == "mac64" ]]; then
+    PLATFORM="mac-x64"
+    curl --silent --show-error --location --fail --retry 3 \
+      --output chromedriver_$PLATFORM.zip \
+      "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROMEDRIVER_VERSION/mac-x64/chromedriver-mac-x64.zip"
+  else
+    PLATFORM="win64"
+    curl --silent --show-error --location --fail --retry 3 \
+    --output chromedriver_$PLATFORM.zip \
+    "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROMEDRIVER_VERSION/win64/chromedriver-win64.zip"
+  fi
+fi
 
 # setup chromedriver installation
 if command -v yum >/dev/null 2>&1; then
@@ -156,15 +178,23 @@ fi
 unzip "chromedriver_$PLATFORM.zip" >/dev/null 2>&1
 rm -rf "chromedriver_$PLATFORM.zip"
 
+if [[ $CHROME_RELEASE -gt 114 ]]; then
+  mv "chromedriver-$PLATFORM" chromedriver
+fi
+
 $SUDO mv chromedriver "$ORB_PARAM_DRIVER_INSTALL_DIR"
 $SUDO chmod +x "$ORB_PARAM_DRIVER_INSTALL_DIR/chromedriver"
+export PATH="/usr/local/bin/chromedriver:$PATH"
+# # shellcheck disable=SC1090
+# source ~/.bashrc
 
 # test/verify version
-if chromedriver --version | grep "$CHROMEDRIVER_VERSION" >/dev/null 2>&1; then
-  echo "$(chromedriver --version) has been installed to $(command -v chromedriver)"
-  readonly base_dir="${CIRCLE_WORKING_DIRECTORY/\~/$HOME}"
-  rm -f "${base_dir}/LICENSE.chromedriver"
-else
-  echo "Something went wrong; ChromeDriver could not be installed"
-  exit 1
-fi
+  if chromedriver --version | grep "$CHROMEDRIVER_VERSION" >/dev/null 2>&1; then
+    echo "$(chromedriver --version) has been installed to $(command -v chromedriver)"
+    readonly base_dir="${CIRCLE_WORKING_DIRECTORY/\~/$HOME}"
+    rm -f "${base_dir}/LICENSE.chromedriver"
+  else
+    echo "Something went wrong; ChromeDriver could not be installed"
+    exit 1
+  fi
+# fi
