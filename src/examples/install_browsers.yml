@@ -7,6 +7,6 @@ usage:
   jobs:
     test:
       docker:
-        - image: cimg/node:13.12-browsers
+        - image: cimg/node:20.4.0-browsers
       steps:
         - browser-tools/install-browser-tools
