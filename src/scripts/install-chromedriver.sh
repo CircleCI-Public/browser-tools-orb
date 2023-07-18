@@ -126,6 +126,7 @@ if [[ $CHROME_RELEASE -lt 70 ]]; then
     ;;
   esac
 else
+  echo $CHROMEDRIVER_RELEASE
   CHROMEDRIVER_VERSION=$(curl --silent --show-error --location --fail --retry 3 \
     "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROMEDRIVER_RELEASE")
 fi
