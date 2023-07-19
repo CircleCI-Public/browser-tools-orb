@@ -180,13 +180,15 @@ rm -rf "chromedriver_$PLATFORM.zip"
 
 if [[ $CHROME_RELEASE -gt 114 ]]; then
   mv "chromedriver-$PLATFORM" chromedriver
+  $SUDO mv chromedriver/chromedriver "$ORB_PARAM_DRIVER_INSTALL_DIR"
+  rm -rf "chromedriver"
+else
+  $SUDO mv chromedriver "$ORB_PARAM_DRIVER_INSTALL_DIR"
 fi
 
-$SUDO mv chromedriver "$ORB_PARAM_DRIVER_INSTALL_DIR"
-$SUDO chmod +x "$ORB_PARAM_DRIVER_INSTALL_DIR/chromedriver"
-export PATH="/usr/local/bin/chromedriver:$PATH"
-# # shellcheck disable=SC1090
-# source ~/.bashrc
+
+$SUDO chmod +x "$ORB_PARAM_DRIVER_INSTALL_DIR/chromedriver" 
+
 
 # test/verify version
   if chromedriver --version | grep "$CHROMEDRIVER_VERSION" >/dev/null 2>&1; then
@@ -197,4 +199,3 @@ export PATH="/usr/local/bin/chromedriver:$PATH"
     echo "Something went wrong; ChromeDriver could not be installed"
     exit 1
   fi
-# fi
