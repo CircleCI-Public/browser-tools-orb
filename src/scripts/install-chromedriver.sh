@@ -179,7 +179,7 @@ unzip "chromedriver_$PLATFORM.zip" >/dev/null 2>&1
 rm -rf "chromedriver_$PLATFORM.zip"
 
 if [[ $CHROME_RELEASE -gt 114 ]]; then
-  mv "chromedriver-$PLATFORM" chromedriver
+  mv "chromedriver-$PLATFORM/chromedriver" chromedriver
 fi
 
 $SUDO mv chromedriver "$ORB_PARAM_DRIVER_INSTALL_DIR"
