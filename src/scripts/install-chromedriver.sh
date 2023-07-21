@@ -128,6 +128,9 @@ if [[ $CHROME_RELEASE -lt 70 ]]; then
   elif [[ $CHROME_RELEASE -lt 115 ]]; then
     CHROMEDRIVER_VERSION=$(curl --silent --show-error --location --fail --retry 3 \
       "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROMEDRIVER_RELEASE")
+  else
+    # shellcheck disable=SC2001
+    CHROMEDRIVER_VERSION=$(echo $CHROME_VERSION | sed 's/[^0-9.]//g')
 fi
 
 # installation check
@@ -141,16 +144,14 @@ if command -v chromedriver >/dev/null 2>&1; then
   fi
 fi
 
-# download chromedriver
+echo "ChromeDriver $CHROMEDRIVER_VERSION will be installed"
 
+# download chromedriver
 if [[ $CHROME_RELEASE -lt 115 ]]; then
-  echo "ChromeDriver $CHROMEDRIVER_VERSION will be installed"
   curl --silent --show-error --location --fail --retry 3 \
     --output chromedriver_$PLATFORM.zip \
     "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_$PLATFORM.zip"
 else 
-   # shellcheck disable=SC2001
-  CHROMEDRIVER_VERSION=$(echo $CHROME_VERSION | sed 's/[^0-9.]//g')
   echo "$CHROMEDRIVER_VERSION will be installed"
   if [[ $PLATFORM == "linux64" ]]; then
     PLATFORM="linux64"
