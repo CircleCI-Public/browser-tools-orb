@@ -25,6 +25,9 @@ else
 fi
 
 CHROME_VERSION_STRING="$(echo "$CHROME_VERSION" | sed 's/.*Google Chrome //' | sed 's/.*Chromium //')"
+# shellcheck disable=SC2001
+CHROME_VERSION_MAJOR="$(echo "$CHROME_VERSION_STRING" |  sed "s/\..*//" )"
+echo "Chrome version major is $CHROME_VERSION_MAJOR"
 
 # print Chrome version
 echo "Installed version of Google Chrome is $CHROME_VERSION_STRING"
@@ -144,14 +147,19 @@ if command -v chromedriver >/dev/null 2>&1; then
   fi
 fi
 
-echo "ChromeDriver $CHROMEDRIVER_VERSION will be installed"
-
 # download chromedriver
 if [[ $CHROME_RELEASE -lt 115 ]]; then
   curl --silent --show-error --location --fail --retry 3 \
     --output chromedriver_$PLATFORM.zip \
     "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_$PLATFORM.zip"
 else 
+  MATCHING_CHROMEDRIVER_URL_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" 'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip')
+  echo $MATCHING_CHROMEDRIVER_URL_RESPONSE
+  if [[ $MATCHING_CHROMEDRIVER_URL_RESPONSE == 404 ]]; then
+    echo "Matching Chrome Driver Version 404'd, falling back to first matching major version."
+    CHROMEDRIVER_VERSION=$( curl https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone.json | grep -o "$CHROME_VERSION_MAJOR.*" | grep -o "version.*" | grep -o '\:*'"$CHROME_VERSION_MAJOR"'.*,' | sed 's/".*//')
+    echo "New ChromeDriver version to be installed: $CHROMEDRIVER_VERSION"
+  fi
   echo "$CHROMEDRIVER_VERSION will be installed"
   if [[ $PLATFORM == "linux64" ]]; then
     PLATFORM="linux64"
