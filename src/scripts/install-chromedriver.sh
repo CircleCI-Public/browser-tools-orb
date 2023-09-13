@@ -25,7 +25,7 @@ else
 fi
 
 CHROME_VERSION_STRING="$(echo "$CHROME_VERSION" | sed 's/.*Google Chrome //' | sed 's/.*Chromium //')"
-# shellcheck disable=SC2001
+# shellcheck disable=SC2001 
 CHROME_VERSION_MAJOR="$(echo "$CHROME_VERSION_STRING" |  sed "s/\..*//" )"
 echo "Chrome version major is $CHROME_VERSION_MAJOR"
 
@@ -157,7 +157,7 @@ else
   echo $MATCHING_CHROMEDRIVER_URL_RESPONSE
   if [[ $MATCHING_CHROMEDRIVER_URL_RESPONSE == 404 ]]; then
     echo "Matching Chrome Driver Version 404'd, falling back to first matching major version."
-    CHROMEDRIVER_VERSION=$( curl https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone.json | grep -o "$CHROME_VERSION_MAJOR.*" | grep -o "version.*" | grep -o '\:*'"$CHROME_VERSION_MAJOR"'.*,' | sed 's/".*//')
+    CHROMEDRIVER_VERSION=$( curl https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone.json | jq ".milestones.\"$CHROME_VERSION_MAJOR\".version" | sed 's/\"//g')
     echo "New ChromeDriver version to be installed: $CHROMEDRIVER_VERSION"
   fi
   echo "$CHROMEDRIVER_VERSION will be installed"
