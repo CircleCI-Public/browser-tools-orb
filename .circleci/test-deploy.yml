@@ -7,6 +7,15 @@ filters: &filters
   tags:
     only: /.*/
 jobs:
+  temp-job:
+    docker:
+      - image: cimg/python:3.11.4-browsers
+      - image: cimg/mysql:8.0.27
+      - image: cimg/redis:6.2.6
+      - image: cimg/postgres:14.2
+    resource_class: medium+
+    steps:
+      - browser-tools/install-browser-tools
   int-test-all:
     parameters:
       executor:
@@ -89,6 +98,8 @@ jobs:
 workflows:
   test-deploy:
     jobs:
+      - temp-job:
+          filters: *filters
       - int-test-all:
           name: test-cimg-base-all
           executor: cimg-base
@@ -209,3 +220,4 @@ executors:
   linux:
     machine:
       image: ubuntu-2204:2022.04.2
+  
