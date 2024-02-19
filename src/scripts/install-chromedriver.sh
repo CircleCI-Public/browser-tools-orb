@@ -161,21 +161,27 @@ else
     echo "New ChromeDriver version to be installed: $CHROMEDRIVER_VERSION"
   fi
   echo "$CHROMEDRIVER_VERSION will be installed"
+
+  if [[ $CHROMEDRIVER_VERSION -lt "121" ]]; then
+    CDN_BASE_URL="https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing"
+  else
+    CDN_BASE_URL="https://storage.googleapis.com/chrome-for-testing-public"
+  fi
   if [[ $PLATFORM == "linux64" ]]; then
     PLATFORM="linux64"
     curl --silent --show-error --location --fail --retry 3 \
     --output chromedriver_$PLATFORM.zip \
-    "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip"
+    "$CDN_BASE_URL/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip"
   elif [[ $PLATFORM == "mac64" ]]; then
     PLATFORM="mac-x64"
     curl --silent --show-error --location --fail --retry 3 \
       --output chromedriver_$PLATFORM.zip \
-      "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROMEDRIVER_VERSION/mac-x64/chromedriver-mac-x64.zip"
+      "$CDN_BASE_URL/$CHROMEDRIVER_VERSION/mac-x64/chromedriver-mac-x64.zip"
   else
     PLATFORM="win64"
     curl --silent --show-error --location --fail --retry 3 \
     --output chromedriver_$PLATFORM.zip \
-    "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROMEDRIVER_VERSION/win64/chromedriver-win64.zip"
+    "$CDN_BASE_URL/$CHROMEDRIVER_VERSION/win64/chromedriver-win64.zip"
   fi
 fi
 
