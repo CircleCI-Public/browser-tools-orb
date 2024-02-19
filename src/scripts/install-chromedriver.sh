@@ -153,7 +153,7 @@ if [[ $CHROME_RELEASE -lt 115 ]]; then
     --output chromedriver_$PLATFORM.zip \
     "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_$PLATFORM.zip"
 else 
-  MATCHING_CHROMEDRIVER_URL_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" 'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip')
+  MATCHING_CHROMEDRIVER_URL_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip")
   echo $MATCHING_CHROMEDRIVER_URL_RESPONSE
   if [[ $MATCHING_CHROMEDRIVER_URL_RESPONSE == 404 ]]; then
     echo "Matching Chrome Driver Version 404'd, falling back to first matching major version."
