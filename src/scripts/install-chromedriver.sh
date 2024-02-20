@@ -9,7 +9,11 @@ if uname -a | grep Darwin >/dev/null 2>&1; then
   else
     CHROME_VERSION="$(/Applications/Google\ Chrome\ Beta.app/Contents/MacOS/Google\ Chrome\ Beta --version)"
   fi
-  PLATFORM=mac64
+  if uname -a | grep arm64 >/dev/null 2>&1; then
+    PLATFORM=mac-arm64
+  else
+    PLATFORM=mac-x64
+  fi
 
 elif grep Alpine /etc/issue >/dev/null 2>&1; then
   apk update >/dev/null 2>&1 &&
@@ -153,36 +157,20 @@ if [[ $CHROME_RELEASE -lt 115 ]]; then
     --output chromedriver_$PLATFORM.zip \
     "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_$PLATFORM.zip"
 else 
-  MATCHING_CHROMEDRIVER_URL_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" 'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip')
-  echo $MATCHING_CHROMEDRIVER_URL_RESPONSE
-  if [[ $MATCHING_CHROMEDRIVER_URL_RESPONSE == 404 ]]; then
-    echo "Matching Chrome Driver Version 404'd, falling back to first matching major version."
+  MATCHING_CHROMEDRIVER_DOWNLOAD_URL=$(curl --silent https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json | jq --raw-output --arg chromeDriverVersion $CHROMEDRIVER_VERSION --arg platform $PLATFORM '.versions[] | select(.version=="\($chromeDriverVersion)") | .downloads.chromedriver[] | select(.platform=="\($platform)") | .url')
+  if [ -z "${MATCHING_CHROMEDRIVER_DOWNLOAD_URL}" ]; then
+    echo "Matching Chrome Driver Version URL is empty, falling back to first matching major version."
     CHROMEDRIVER_VERSION=$( curl https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone.json | jq ".milestones.\"$CHROME_VERSION_MAJOR\".version" | sed 's/\"//g')
+    CHROMEDRIVER_DOWNLOAD_URL=$(curl https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json | jq --raw-output --arg chromeVersion $CHROME_VERSION_MAJOR --arg platform $PLATFORM '.milestones."\($chromeVersion)".downloads.chromedriver[] | select(.platform=="\($platform)") | .url')
     echo "New ChromeDriver version to be installed: $CHROMEDRIVER_VERSION"
+  else
+   CHROMEDRIVER_DOWNLOAD_URL=$MATCHING_CHROMEDRIVER_DOWNLOAD_URL
   fi
   echo "$CHROMEDRIVER_VERSION will be installed"
 
-  if [[ $CHROMEDRIVER_VERSION -lt "121" ]]; then
-    CDN_BASE_URL="https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing"
-  else
-    CDN_BASE_URL="https://storage.googleapis.com/chrome-for-testing-public"
-  fi
-  if [[ $PLATFORM == "linux64" ]]; then
-    PLATFORM="linux64"
-    curl --silent --show-error --location --fail --retry 3 \
+  curl --silent --show-error --location --fail --retry 3 \
     --output chromedriver_$PLATFORM.zip \
-    "$CDN_BASE_URL/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip"
-  elif [[ $PLATFORM == "mac64" ]]; then
-    PLATFORM="mac-x64"
-    curl --silent --show-error --location --fail --retry 3 \
-      --output chromedriver_$PLATFORM.zip \
-      "$CDN_BASE_URL/$CHROMEDRIVER_VERSION/mac-x64/chromedriver-mac-x64.zip"
-  else
-    PLATFORM="win64"
-    curl --silent --show-error --location --fail --retry 3 \
-    --output chromedriver_$PLATFORM.zip \
-    "$CDN_BASE_URL/$CHROMEDRIVER_VERSION/win64/chromedriver-win64.zip"
-  fi
+    "$CHROMEDRIVER_DOWNLOAD_URL"
 fi
 
 # setup chromedriver installation
