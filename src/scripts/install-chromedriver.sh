@@ -162,7 +162,7 @@ else
   fi
   echo "$CHROMEDRIVER_VERSION will be installed"
 
-  if [[ $CHROMEDRIVER_VERSION -lt "121" ]]; then
+  if [[ $CHROME_VERSION_MAJOR -lt "121" ]]; then
     CDN_BASE_URL="https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing"
   else
     CDN_BASE_URL="https://storage.googleapis.com/chrome-for-testing-public"
