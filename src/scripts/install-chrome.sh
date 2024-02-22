@@ -108,7 +108,7 @@ else
   if [[ "$ORB_PARAM_CHROME_VERSION" == "latest" ]]; then
     ENV_IS_ARM=$(! dpkg --print-architecture | grep -q arm; echo $?)
     wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | $SUDO apt-key add -
- if [ "$ENV_IS_ARM" == "arm" ]; then
+    if [ "$ENV_IS_ARM" == "arm" ]; then
       echo "Installing Chrome for ARM64"
       $SUDO sh -c 'echo "deb [arch=arm64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
     else
@@ -119,6 +119,7 @@ else
     DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y google-chrome-${ORB_PARAM_CHANNEL}
   else
     # Google does not keep older releases in their PPA, but they can be installed manually. HTTPS should be enough to secure the download.
+    $SUDO apt-get update
     wget --no-verbose -O /tmp/chrome.deb "https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${ORB_PARAM_CHROME_VERSION}-1_amd64.deb" \
       && $SUDO apt-get install -y /tmp/chrome.deb \
       && rm /tmp/chrome.deb
