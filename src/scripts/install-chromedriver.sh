@@ -158,8 +158,8 @@ else
     curl --silent --show-error --location --fail --retry 3 \
     --output chromedriver_$PLATFORM.zip \
     "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip"
-  elif [[ $PLATFORM == "mac64" ]]; then
-    PLATFORM="mac-x64"
+  elif [[ $PLATFORM == "mac_arm64" ]]; then
+    PLATFORM="mac_arm64"
     curl --silent --show-error --location --fail --retry 3 \
       --output chromedriver_$PLATFORM.zip \
       "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROMEDRIVER_VERSION/mac-arm64/chromedriver-mac-arm64.zip"
