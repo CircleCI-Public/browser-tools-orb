@@ -9,7 +9,13 @@ if uname -a | grep Darwin >/dev/null 2>&1; then
   else
     CHROME_VERSION="$(/Applications/Google\ Chrome\ Beta.app/Contents/MacOS/Google\ Chrome\ Beta --version)"
   fi
-  PLATFORM=mac64
+
+  if uname -a | grep arm64 >/dev/null 2>&1; then
+    PLATFORM=mac-arm64
+  else
+    PLATFORM=mac-x64
+  fi
+
 
 elif grep Alpine /etc/issue >/dev/null 2>&1; then
   apk update >/dev/null 2>&1 &&
@@ -25,6 +31,9 @@ else
 fi
 
 CHROME_VERSION_STRING="$(echo "$CHROME_VERSION" | sed 's/.*Google Chrome //' | sed 's/.*Chromium //')"
+# shellcheck disable=SC2001 
+CHROME_VERSION_MAJOR="$(echo "$CHROME_VERSION_STRING" |  sed "s/\..*//" )"
+echo "Chrome version major is $CHROME_VERSION_MAJOR"
 
 # print Chrome version
 echo "Installed version of Google Chrome is $CHROME_VERSION_STRING"
@@ -125,10 +134,12 @@ if [[ $CHROME_RELEASE -lt 70 ]]; then
     exit 1
     ;;
   esac
-else
-  echo $CHROMEDRIVER_RELEASE
+elif [[ $CHROME_RELEASE -lt 115 ]]; then
   CHROMEDRIVER_VERSION=$(curl --silent --show-error --location --fail --retry 3 \
     "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROMEDRIVER_RELEASE")
+else
+  # shellcheck disable=SC2001
+  CHROMEDRIVER_VERSION=$(echo $CHROME_VERSION | sed 's/[^0-9.]//g')
 fi
 
 # installation check
@@ -142,12 +153,27 @@ if command -v chromedriver >/dev/null 2>&1; then
   fi
 fi
 
-echo "ChromeDriver $CHROMEDRIVER_VERSION will be installed"
-
 # download chromedriver
-curl --silent --show-error --location --fail --retry 3 \
-  --output chromedriver_$PLATFORM.zip \
-  "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_$PLATFORM.zip"
+if [[ $CHROME_RELEASE -lt 115 ]]; then
+  curl --silent --show-error --location --fail --retry 3 \
+    --output chromedriver_$PLATFORM.zip \
+    "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_$PLATFORM.zip"
+else 
+  MATCHING_CHROMEDRIVER_DOWNLOAD_URL=$(curl --silent https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json | jq --raw-output --arg chromeDriverVersion $CHROMEDRIVER_VERSION --arg platform $PLATFORM '.versions[] | select(.version=="\($chromeDriverVersion)") | .downloads.chromedriver[] | select(.platform=="\($platform)") | .url')
+  if [ -z "${MATCHING_CHROMEDRIVER_DOWNLOAD_URL}" ]; then
+    echo "Matching Chrome Driver Version URL is empty, falling back to first matching major version."
+    CHROMEDRIVER_VERSION=$( curl https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone.json | jq ".milestones.\"$CHROME_VERSION_MAJOR\".version" | sed 's/\"//g')
+    CHROMEDRIVER_DOWNLOAD_URL=$(curl https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json | jq --raw-output --arg chromeVersion $CHROME_VERSION_MAJOR --arg platform $PLATFORM '.milestones."\($chromeVersion)".downloads.chromedriver[] | select(.platform=="\($platform)") | .url')
+    echo "New ChromeDriver version to be installed: $CHROMEDRIVER_VERSION"
+  else
+   CHROMEDRIVER_DOWNLOAD_URL=$MATCHING_CHROMEDRIVER_DOWNLOAD_URL
+  fi
+  echo "$CHROMEDRIVER_VERSION will be installed"
+
+  curl --silent --show-error --location --fail --retry 3 \
+    --output chromedriver_$PLATFORM.zip \
+    "$CHROMEDRIVER_DOWNLOAD_URL"
+fi
 
 # setup chromedriver installation
 if command -v yum >/dev/null 2>&1; then
@@ -157,15 +183,24 @@ fi
 unzip "chromedriver_$PLATFORM.zip" >/dev/null 2>&1
 rm -rf "chromedriver_$PLATFORM.zip"
 
-$SUDO mv chromedriver "$ORB_PARAM_DRIVER_INSTALL_DIR"
-$SUDO chmod +x "$ORB_PARAM_DRIVER_INSTALL_DIR/chromedriver"
+if [[ $CHROME_RELEASE -gt 114 ]]; then
+  mv "chromedriver-$PLATFORM" chromedriver
+  $SUDO mv chromedriver/chromedriver "$ORB_PARAM_DRIVER_INSTALL_DIR"
+  rm -rf "chromedriver"
+else
+  $SUDO mv chromedriver "$ORB_PARAM_DRIVER_INSTALL_DIR"
+fi
+
+
+$SUDO chmod +x "$ORB_PARAM_DRIVER_INSTALL_DIR/chromedriver" 
+
 
 # test/verify version
-if chromedriver --version | grep "$CHROMEDRIVER_VERSION" >/dev/null 2>&1; then
-  echo "$(chromedriver --version) has been installed to $(command -v chromedriver)"
-  readonly base_dir="${CIRCLE_WORKING_DIRECTORY/\~/$HOME}"
-  rm -f "${base_dir}/LICENSE.chromedriver"
-else
-  echo "Something went wrong; ChromeDriver could not be installed"
-  exit 1
-fi
+  if chromedriver --version | grep "$CHROMEDRIVER_VERSION" >/dev/null 2>&1; then
+    echo "$(chromedriver --version) has been installed to $(command -v chromedriver)"
+    readonly base_dir="${CIRCLE_WORKING_DIRECTORY/\~/$HOME}"
+    rm -f "${base_dir}/LICENSE.chromedriver"
+  else
+    echo "Something went wrong; ChromeDriver could not be installed"
+    exit 1
+  fi

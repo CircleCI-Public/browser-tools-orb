@@ -8,6 +8,6 @@ For full usage guidelines, see the [orb registry listing](http://circleci.com/or
 
 ## Contributing
 
-We welcome [issues](https://github.com/CircleCI-Public/browser-tools/issues) to and [pull requests](https://github.com/CircleCI-Public/browser-tools-orb/pulls) against this repository!
+We welcome [issues](https://github.com/CircleCI-Public/browser-tools-orb/issues) to and [pull requests](https://github.com/CircleCI-Public/browser-tools-orb/pulls) against this repository!
 
 For further questions/comments about this or other orbs, visit [CircleCI's orbs discussion forum](https://discuss.circleci.com/c/ecosystem/orbs).

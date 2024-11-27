@@ -34,7 +34,7 @@ grab_geckodriver_version
 installation_check
 
 if uname -a | grep Darwin >>/dev/null 2>&1; then
-  PLATFORM=macos
+  PLATFORM=macos-aarch64
 else
   PLATFORM=linux64
 fi
