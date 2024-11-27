@@ -162,7 +162,7 @@ else
     PLATFORM="mac-x64"
     curl --silent --show-error --location --fail --retry 3 \
       --output chromedriver_$PLATFORM.zip \
-      "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROMEDRIVER_VERSION/mac-x64/chromedriver-mac-x64.zip"
+      "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROMEDRIVER_VERSION/mac-x64/chromedriver-mac-arm64.zip"
   else
     PLATFORM="win64"
     curl --silent --show-error --location --fail --retry 3 \
