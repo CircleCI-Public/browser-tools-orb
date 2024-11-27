@@ -9,11 +9,13 @@ if uname -a | grep Darwin >/dev/null 2>&1; then
   else
     CHROME_VERSION="$(/Applications/Google\ Chrome\ Beta.app/Contents/MacOS/Google\ Chrome\ Beta --version)"
   fi
+
   if uname -a | grep arm64 >/dev/null 2>&1; then
     PLATFORM=mac-arm64
   else
     PLATFORM=mac-x64
   fi
+
 
 elif grep Alpine /etc/issue >/dev/null 2>&1; then
   apk update >/dev/null 2>&1 &&
@@ -132,12 +134,12 @@ if [[ $CHROME_RELEASE -lt 70 ]]; then
     exit 1
     ;;
   esac
-  elif [[ $CHROME_RELEASE -lt 115 ]]; then
-    CHROMEDRIVER_VERSION=$(curl --silent --show-error --location --fail --retry 3 \
-      "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROMEDRIVER_RELEASE")
-  else
-    # shellcheck disable=SC2001
-    CHROMEDRIVER_VERSION=$(echo $CHROME_VERSION | sed 's/[^0-9.]//g')
+elif [[ $CHROME_RELEASE -lt 115 ]]; then
+  CHROMEDRIVER_VERSION=$(curl --silent --show-error --location --fail --retry 3 \
+    "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROMEDRIVER_RELEASE")
+else
+  # shellcheck disable=SC2001
+  CHROMEDRIVER_VERSION=$(echo $CHROME_VERSION | sed 's/[^0-9.]//g')
 fi
 
 # installation check

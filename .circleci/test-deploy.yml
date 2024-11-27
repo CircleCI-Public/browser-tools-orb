@@ -100,7 +100,7 @@ workflows:
       - int-test-all:
           name: test-specific-version-all
           executor: cimg-base
-          chrome-version: "114.0.5735.90"
+          chrome-version: "131.0.6778.85"
           firefox-version: "90.0.1"
           filters: *filters
       - int-test-all:
@@ -122,7 +122,7 @@ workflows:
       - int-test-chrome:
           name: test-specific-version-chrome
           executor: cimg-base
-          chrome-version: "92.0.4515.131"
+          chrome-version: "131.0.6778.85"
           firefox-version: "90.0.1"
           filters: *filters
       - int-test-chrome:
@@ -143,7 +143,7 @@ workflows:
       - int-test-firefox:
           name: test-specific-version-firefox
           executor: cimg-base
-          chrome-version: "92.0.4515.131"
+          chrome-version: "131.0.6778.85"
           firefox-version: "90.0.1"
           filters: *filters
       - int-test-firefox:
@@ -205,7 +205,7 @@ executors:
       - image: cimg/openjdk:11.0-browsers
   macos:
     macos:
-      xcode: 13.4.1
+      xcode: 15.3.0
   linux:
     machine:
-      image: ubuntu-2204:2022.04.2
+      image: ubuntu-2204:2024.08.1
