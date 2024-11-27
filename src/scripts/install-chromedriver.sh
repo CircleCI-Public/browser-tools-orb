@@ -9,7 +9,7 @@ if uname -a | grep Darwin >/dev/null 2>&1; then
   else
     CHROME_VERSION="$(/Applications/Google\ Chrome\ Beta.app/Contents/MacOS/Google\ Chrome\ Beta --version)"
   fi
-  PLATFORM=mac64
+  PLATFORM=mac_arm64
 
 elif grep Alpine /etc/issue >/dev/null 2>&1; then
   apk update >/dev/null 2>&1 &&
@@ -125,12 +125,12 @@ if [[ $CHROME_RELEASE -lt 70 ]]; then
     exit 1
     ;;
   esac
-  elif [[ $CHROME_RELEASE -lt 115 ]]; then
-    CHROMEDRIVER_VERSION=$(curl --silent --show-error --location --fail --retry 3 \
-      "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROMEDRIVER_RELEASE")
-  else
-    # shellcheck disable=SC2001
-    CHROMEDRIVER_VERSION=$(echo $CHROME_VERSION | sed 's/[^0-9.]//g')
+elif [[ $CHROME_RELEASE -lt 115 ]]; then
+  CHROMEDRIVER_VERSION=$(curl --silent --show-error --location --fail --retry 3 \
+    "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROMEDRIVER_RELEASE")
+else
+  # shellcheck disable=SC2001
+  CHROMEDRIVER_VERSION=$(echo $CHROME_VERSION | sed 's/[^0-9.]//g')
 fi
 
 # installation check
@@ -162,7 +162,7 @@ else
     PLATFORM="mac-x64"
     curl --silent --show-error --location --fail --retry 3 \
       --output chromedriver_$PLATFORM.zip \
-      "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROMEDRIVER_VERSION/mac-x64/chromedriver-mac-arm64.zip"
+      "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROMEDRIVER_VERSION/mac-arm64/chromedriver-mac-arm64.zip"
   else
     PLATFORM="win64"
     curl --silent --show-error --location --fail --retry 3 \
