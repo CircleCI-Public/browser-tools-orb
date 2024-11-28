@@ -100,7 +100,7 @@ workflows:
       - int-test-all:
           name: test-specific-version-all
           executor: cimg-base
-          chrome-version: "131.0.6778.85"
+          chrome-version: "114.0.5735.90"
           firefox-version: "90.0.1"
           filters: *filters
       - int-test-all:
