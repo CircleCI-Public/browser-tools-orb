@@ -13,9 +13,9 @@ if uname -a | grep Darwin >/dev/null 2>&1; then
     else
       target_version="$PROCESSED_CHROME_VERSION"
     fi
-    installed_vesion="$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)"
+    installed_version="$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version)"
 
-    if [ "$ORB_PARAM_REPLACE_EXISTING" == "1" ] && [ "$installed_vesion" != "$target_version" ]; then
+    if [ "$ORB_PARAM_REPLACE_EXISTING" == "1" ] && [ "$installed_version" != "$target_version" ]; then
       echo "$installed_version is currently installed; replacing it"
       HOMEBREW_NO_AUTO_UPDATE=1 brew uninstall google-chrome >/dev/null 2>&1 || true
       $SUDO rm -rf /Applications/Google\ Chrome.app >/dev/null 2>&1 || true
@@ -34,9 +34,9 @@ elif grep Alpine /etc/issue >/dev/null 2>&1; then
     else
       target_version="$PROCESSED_CHROME_VERSION"
     fi
-    installed_vesion="$(chromium-browser --version)"
+    installed_version="$(chromium-browser --version)"
 
-    if [ "$ORB_PARAM_REPLACE_EXISTING" == "1" ] && [ "$installed_vesion" != "$target_version" ]; then
+    if [ "$ORB_PARAM_REPLACE_EXISTING" == "1" ] && [ "$installed_version" != "$target_version" ]; then
       echo "$installed_version is currently installed; replacing it"
       $SUDO apk del --force-broken-world chromium >/dev/null 2>&1 || true
       $SUDO rm -f "$(command -v chromium-browser)" >/dev/null 2>&1 || true
@@ -55,9 +55,9 @@ elif command -v yum >/dev/null 2>&1; then
     else
       target_version="$PROCESSED_CHROME_VERSION"
     fi
-    installed_vesion="$(google-chrome --version)"
+    installed_version="$(google-chrome --version)"
 
-    if [ "$ORB_PARAM_REPLACE_EXISTING" == "1" ] && [ "$installed_vesion" != "$target_version" ]; then
+    if [ "$ORB_PARAM_REPLACE_EXISTING" == "1" ] && [ "$installed_version" != "$target_version" ]; then
       echo "$installed_version is currently installed; replacing it"
       $SUDO yum remove -y google-chrome-stable >/dev/null 2>&1 || true
       $SUDO rm -f "$(command -v google-chrome)" >/dev/null 2>&1 || true
