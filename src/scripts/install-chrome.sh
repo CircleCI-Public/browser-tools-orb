@@ -2,7 +2,14 @@
 if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
 
 # process ORB_PARAM_CHROME_VERSION
-PROCESSED_CHROME_VERSION=$(circleci env subst "$ORB_PARAM_CHROME_VERSION")
+if command -v circleci &>/dev/null; then
+  # CircleCI is installed, proceed with substitution
+  PROCESSED_CHROME_VERSION=$(circleci env subst "$ORB_PARAM_CHROME_VERSION")
+else
+  # CircleCI is not installed, fallback to using the environment variable as-is
+  echo "CircleCI CLI is not installed. Relying on the environment variable ORB_PARAM_CHROME_VERSION to be set manually."
+  PROCESSED_CHROME_VERSION=${ORB_PARAM_CHROME_VERSION:-latest} # Default to "latest" if the variable is unset
+fi
 
 # installation check
 if uname -a | grep Darwin >/dev/null 2>&1; then
