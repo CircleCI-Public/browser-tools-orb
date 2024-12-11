@@ -41,11 +41,12 @@ jobs:
       - jq/install
       - browser-tools/install-chrome:
           channel: << parameters.channel >>
+          cache_key: v2
       - browser-tools/install-chromedriver
       # checkout step is added last to satisfy a test
       - run: |
           pwd
-          ls -la '/home/circleci/project/~'
+          ls -la '/home/circleci/project/~/bin'
       - checkout
   int-test-chrome:
     parameters:

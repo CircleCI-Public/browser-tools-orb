@@ -63,4 +63,4 @@ steps:
       - save_cache:
           key: <<parameters.cache_key>>-<<parameters.chrome-version>>
           paths:
-          - chrome.tar.gz
+          - /tmp/chrome.tar.gz
