@@ -41,7 +41,6 @@ jobs:
       - jq/install
       - browser-tools/install-chrome:
           channel: << parameters.channel >>
-          cache_key: v2
       - browser-tools/install-chromedriver
       # checkout step is added last to satisfy a test
       - run: |
@@ -98,6 +97,7 @@ jobs:
       - jq/install
       - browser-tools/install-chrome:
           use_cache: true
+          cache_key: v2
       - browser-tools/install-chromedriver
 workflows:
   test-deploy:
