@@ -86,9 +86,29 @@ jobs:
       - jq/install
       - browser-tools/install-firefox
       - browser-tools/install-geckodriver
+  int-test-chrome-cache:
+    parameters:
+      executor:
+        type: executor
+      replace-existing-chrome:
+        type: boolean
+        default: true
+      chrome-version:
+        type: string
+        default: latest
+    executor: <<parameters.executor>>
+    steps:
+      - jq/install
+      - browser-tools/install-chrome:
+          use_cache: true
+      - browser-tools/install-chromedriver
 workflows:
   test-deploy:
     jobs:
+      - int-test-chrome-cache:
+          name: test-cimg-node-chrome-cache
+          executor: cimg-node
+          filters: *filters
       - int-test-all:
           name: test-cimg-base-all
           executor: cimg-base
