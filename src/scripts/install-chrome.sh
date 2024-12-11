@@ -4,6 +4,16 @@ if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
 # process ORB_PARAM_CHROME_VERSION
 PROCESSED_CHROME_VERSION=$(circleci env subst "$ORB_PARAM_CHROME_VERSION")
 
+save_cache() {
+  if command -v apt >/dev/null 2>&1; then
+    tar -czf chrome.tar.gz /opt/google/chrome
+  else
+    mkdir dummy
+    echo "Dummy cache" > /tmp/dummy/cache
+    tar -czf chrome.tar.gz /tmp/dummy
+  fi
+}
+
 # installation check
 if uname -a | grep Darwin >/dev/null 2>&1; then
   if ls /Applications/*Google\ Chrome* >/dev/null 2>&1; then
@@ -158,9 +168,13 @@ TESTING_CHROME_VERSION=${PROCESSED_CHROME_VERSION::-2}
 # test/verify installation
 if [[ "$PROCESSED_CHROME_VERSION" != "latest" ]]; then
   if google-chrome-$ORB_PARAM_CHANNEL --version | grep "$PROCESSED_CHROME_VERSION" >/dev/null 2>&1; then
-    :
+    if [ "$ORB_PARAM_SAVE_CACHE" = 1 ]; then
+      save_cache
+    fi
   elif google-chrome-$ORB_PARAM_CHANNEL --version | grep "$TESTING_CHROME_VERSION" >/dev/null 2>&1; then
-    :
+    if [ "$ORB_PARAM_SAVE_CACHE" = 1 ]; then
+      save_cache
+    fi
   else
     echo "Google Chrome v${PROCESSED_CHROME_VERSION} (${ORB_PARAM_CHANNEL}) failed to install."
     exit 1

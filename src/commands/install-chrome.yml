@@ -26,12 +26,35 @@ parameters:
     type: enum
     enum: [ "stable", "beta" ]
     default: "stable"
+  use_cache:
+    description: |
+      Install chrome using a cached version. The cache key is the version.
+      Setting to true could increase considerable storage costs, use only if having slow times with the installation.
+      Defaults to false.
+    default: false
+    type: boolean
 
 steps:
+  - when: <<parameters.use_cache>>
+      steps:
+      - restore_cache:
+          keys: 
+          - <<parameters.chrome-version>>
+      - run:
+          name: Process cache
+          command: |
+            tar -xzf chrome.tar.gz -C /
   - run:
       name: Install Google Chrome
       environment:
         ORB_PARAM_CHROME_VERSION: <<parameters.chrome-version>>
         ORB_PARAM_REPLACE_EXISTING: <<parameters.replace-existing>>
         ORB_PARAM_CHANNEL: << parameters.channel >>
+        ORB_PARAM_SAVE_CACHE: <<parameters.use_cache>>
       command: <<include(scripts/install-chrome.sh)>>
+  - when: <<parameters.use_cache>>
+      steps:
+      - save_cache:
+          key: <<parameters.chrome-version>>
+          paths:
+          - chrome.tar.gz
