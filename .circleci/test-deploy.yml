@@ -43,6 +43,7 @@ jobs:
           channel: << parameters.channel >>
       - browser-tools/install-chromedriver
       # checkout step is added last to satisfy a test
+      - run: ls -la 
       - checkout
   int-test-chrome:
     parameters:
