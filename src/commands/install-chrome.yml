@@ -40,15 +40,15 @@ parameters:
     default: v1
     type: string
 steps:
-  - when:
-      condition: <<parameters.use_cache>>
-      steps:
-      - restore_cache:
-          keys:
-          - <<parameters.cache_key>>-<<parameters.chrome-version>>
-      - run:
-          name: Process cache
-          command: <<include(scripts/process-cache.sh)>>
+  # - when:
+  #     condition: <<parameters.use_cache>>
+  #     steps:
+  #     - restore_cache:
+  #         keys:
+  #         - <<parameters.cache_key>>-<<parameters.chrome-version>>
+  #     - run:
+  #         name: Process cache
+  #         command: <<include(scripts/process-cache.sh)>>
   - run:
       name: Install Google Chrome
       environment:
@@ -57,10 +57,10 @@ steps:
         ORB_PARAM_CHANNEL: << parameters.channel >>
         ORB_PARAM_SAVE_CACHE: <<parameters.use_cache>>
       command: <<include(scripts/install-chrome.sh)>>
-  - when:
-      condition: <<parameters.use_cache>>
-      steps:
-      - save_cache:
-          key: <<parameters.cache_key>>-<<parameters.chrome-version>>
-          paths:
-          - chrome.tar.gz
+  # - when:
+  #     condition: <<parameters.use_cache>>
+  #     steps:
+  #     - save_cache:
+  #         key: <<parameters.cache_key>>-<<parameters.chrome-version>>
+  #         paths:
+  #         - chrome.tar.gz
