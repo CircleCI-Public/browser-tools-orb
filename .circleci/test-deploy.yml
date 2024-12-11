@@ -45,8 +45,7 @@ jobs:
       - browser-tools/install-chromedriver
       # checkout step is added last to satisfy a test
       - run: |
-          pwd
-          ls -la '/home/circleci/project/~/bin'
+          ls -la *
       - checkout
   int-test-chrome:
     parameters:
