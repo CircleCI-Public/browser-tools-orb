@@ -35,11 +35,11 @@ parameters:
     type: boolean
 
 steps:
-  - when: 
+  - when:
       condition: <<parameters.use_cache>>
       steps:
       - restore_cache:
-          keys: 
+          keys:
           - <<parameters.chrome-version>>
       - run:
           name: Process cache
@@ -52,7 +52,7 @@ steps:
         ORB_PARAM_CHANNEL: << parameters.channel >>
         ORB_PARAM_SAVE_CACHE: <<parameters.use_cache>>
       command: <<include(scripts/install-chrome.sh)>>
-  - when: 
+  - when:
       condition: <<parameters.use_cache>>
       steps:
       - save_cache:
