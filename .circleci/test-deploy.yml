@@ -45,9 +45,7 @@ jobs:
       # checkout step is added last to satisfy a test
       - run: |
           pwd
-          ls -la
-          ls -la ~
-          ls -la /home/circleci/project
+          ls -la '/home/circleci/project/~'
       - checkout
   int-test-chrome:
     parameters:
