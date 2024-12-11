@@ -4,4 +4,5 @@ if [ -f "/tmp/chrome.tar.gz" ]; then
     $SUDO mkdir -p /opt/google/chrome
     $SUDO tar -xzf /tmp/chrome.tar.gz -C /opt/google/chrome
     $SUDO rm -rf /tmp/chrome.tar.gz
+    $SUDO ln -s /opt/google/chrome/google-chrome "/usr/bin/google-chrome-$ORB_PARAM_CHANNEL"
 fi

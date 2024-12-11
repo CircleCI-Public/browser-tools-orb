@@ -49,6 +49,8 @@ steps:
       - run:
           name: Process cache
           command: <<include(scripts/process-cache.sh)>>
+          environment:
+            ORB_PARAM_CHANNEL: << parameters.channel >>
   - run:
       name: Install Google Chrome
       environment:
