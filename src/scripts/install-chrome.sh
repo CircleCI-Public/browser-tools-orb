@@ -5,6 +5,7 @@ if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
 PROCESSED_CHROME_VERSION=$(circleci env subst "$ORB_PARAM_CHROME_VERSION")
 
 save_cache() {
+  echo "Saving cache"
   if command -v apt >/dev/null 2>&1; then
     $SUDO tar -czf chrome.tar.gz -C /opt/google/chrome .
   fi
