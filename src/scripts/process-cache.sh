@@ -1,0 +1,1 @@
+tar -xzf chrome.tar.gz -C /
