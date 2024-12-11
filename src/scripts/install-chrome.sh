@@ -6,11 +6,11 @@ PROCESSED_CHROME_VERSION=$(circleci env subst "$ORB_PARAM_CHROME_VERSION")
 
 save_cache() {
   if command -v apt >/dev/null 2>&1; then
-    tar -czf chrome.tar.gz /opt/google/chrome
+    $SUDO tar -czf chrome.tar.gz /opt/google/chrome
   else
-    mkdir dummy
+    mkdir -p dummy
     echo "Dummy cache" > /tmp/dummy/cache
-    tar -czf chrome.tar.gz /tmp/dummy
+    $SUDO tar -czf chrome.tar.gz /tmp/dummy
   fi
 }
 
@@ -181,7 +181,9 @@ if [[ "$PROCESSED_CHROME_VERSION" != "latest" ]]; then
   fi
 else
   if google-chrome-$ORB_PARAM_CHANNEL --version >/dev/null 2>&1; then
-    :
+    if [ "$ORB_PARAM_SAVE_CACHE" = 1 ]; then
+      save_cache
+    fi
   else
     echo "The latest release of Google Chrome (${ORB_PARAM_CHANNEL}) failed to install."
     exit 1

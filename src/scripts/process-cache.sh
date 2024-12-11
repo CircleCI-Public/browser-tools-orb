@@ -1,3 +1,4 @@
 if [ -f "chrome.tar.gz" ]; then
-    tar -xzf chrome.tar.gz -C /
+    $SUDO tar -xzf chrome.tar.gz -C /
+    $SUDO rm -rf chrome.tar.gz
 fi

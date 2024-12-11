@@ -28,19 +28,24 @@ parameters:
     default: "stable"
   use_cache:
     description: |
-      Install chrome using a cached version. The cache key is the version.
+      Install chrome using a cached version.
       Setting to true could increase considerable storage costs, use only if having slow times with the installation.
       Defaults to false.
     default: false
     type: boolean
-
+  cache_key:
+    description: |
+      Cache key to save chrome.
+      Defaults to v1.
+    default: v1
+    type: string
 steps:
   - when:
       condition: <<parameters.use_cache>>
       steps:
       - restore_cache:
           keys:
-          - <<parameters.chrome-version>>
+          - <<parameters.cache-key>>-<<parameters.chrome-version>>
       - run:
           name: Process cache
           command: <<include(scripts/process-cache.sh)>>
@@ -56,6 +61,6 @@ steps:
       condition: <<parameters.use_cache>>
       steps:
       - save_cache:
-          key: <<parameters.chrome-version>>
+          key: <<parameters.cache-key>>-<<parameters.chrome-version>>
           paths:
           - chrome.tar.gz
