@@ -2,7 +2,7 @@ version: 2.1
 orbs:
   browser-tools: circleci/browser-tools@dev:<<pipeline.git.revision>>
   orb-tools: circleci/orb-tools@11.1
-  jq: circleci/jq@3.0.1
+  jq: circleci/jq@2.2
 filters: &filters
   tags:
     only: /.*/
