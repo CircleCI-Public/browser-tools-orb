@@ -6,6 +6,7 @@ if [ -f "/tmp/chrome.tar.gz" ]; then
     $SUDO tar -xzf /tmp/chrome.tar.gz -C /opt/google/chrome
     $SUDO rm -rf /tmp/chrome.tar.gz
     $SUDO ln -s /opt/google/chrome/google-chrome "/usr/bin/google-chrome-$ORB_PARAM_CHANNEL"
-    google-chrome-$ORB_PARAM_CHANNEL --version
+    $SUDO ln -s "/usr/bin/google-chrome-$ORB_PARAM_CHANNEL" "/etc/alternatives/google-chrome"
+    $SUDO ln -s "/etc/alternatives/google-chrome" "/usr/bin/google-chrome"
 fi
 set +x
