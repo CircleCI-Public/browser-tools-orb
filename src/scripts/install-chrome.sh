@@ -6,10 +6,10 @@ PROCESSED_CHROME_VERSION=$(circleci env subst "$ORB_PARAM_CHROME_VERSION")
 
 save_cache() {
   echo "Saving cache"
-  if command -v apt >/dev/null 2>&1; then
-    $SUDO tar -czf /tmp/chrome.tar.gz -C /opt/google/chrome .
-  elif uname -a | grep Darwin >/dev/null 2>&1; then
+  if uname -a | grep Darwin >/dev/null 2>&1; then
     $SUDO tar -czf /tmp/chrome.tar.gz -C "$CHROME_TEMP_DIR" googlechrome.pkg
+  elif command -v apt >/dev/null 2>&1; then
+    $SUDO tar -czf /tmp/chrome.tar.gz -C /opt/google/chrome .
   # elif grep Alpine /etc/issue >/dev/null 2>&1; then
   # elif command -v yum >/dev/null 2>&1; then
   else

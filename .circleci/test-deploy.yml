@@ -105,7 +105,7 @@ workflows:
   test-deploy:
     jobs:
       - int-test-chrome-cache:
-          name: test-cimg-node-chrome-cache
+          name: test-chrome-cache-<<matrix.executor>>
           matrix:
             parameters:
               executor: [cimg-node, macos]
