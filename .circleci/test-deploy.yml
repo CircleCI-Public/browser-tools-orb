@@ -2,7 +2,7 @@ version: 2.1
 orbs:
   browser-tools: circleci/browser-tools@dev:<<pipeline.git.revision>>
   orb-tools: circleci/orb-tools@11.1
-  jq: circleci/jq@3.0.0
+  jq: circleci/jq@2.2
 filters: &filters
   tags:
     only: /.*/
@@ -106,7 +106,9 @@ workflows:
     jobs:
       - int-test-chrome-cache:
           name: test-cimg-node-chrome-cache
-          executor: cimg-node
+          matrix:
+            parameters:
+              executor: [cimg-node, macos]
           filters: *filters
       - int-test-all:
           name: test-cimg-base-all
