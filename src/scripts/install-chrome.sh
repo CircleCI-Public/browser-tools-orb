@@ -109,10 +109,10 @@ if uname -a | grep Darwin >/dev/null 2>&1; then
   fi
   curl -L -o "$CHROME_TEMP_DIR/googlechrome.pkg" "$CHROME_MAC_URL"
   sudo /usr/sbin/installer -pkg "$CHROME_TEMP_DIR/googlechrome.pkg" -target /
-  sudo rm -rf "$CHROME_TEMP_DIR"
   if [ "$ORB_PARAM_SAVE_CACHE" = 1 ]; then
     save_cache
   fi
+  sudo rm -rf "$CHROME_TEMP_DIR"
   echo '#!/usr/bin/env bash' >> google-chrome-$ORB_PARAM_CHANNEL
   if [[ $ORB_PARAM_CHANNEL == "beta" ]]; then
     xattr -rc "/Applications/Google Chrome Beta.app"
