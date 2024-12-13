@@ -42,6 +42,7 @@ steps:
       environment:
         ORB_PARAM_FIREFOX_INSTALL_DIR: <<parameters.install-dir>>
         ORB_PARAM_FIREFOX_VERSION: <<parameters.version>>
+        ORB_PARAM_SAVE_CACHE: <<parameters.use_cache>>
       command: <<include(scripts/install-firefox.sh)>>
   - when:
       condition: <<parameters.use_cache>>

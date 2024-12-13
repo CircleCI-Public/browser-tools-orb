@@ -99,11 +99,11 @@ if [ "$ORB_PARAM_SAVE_CACHE" = 1 ] && [ -f "/tmp/firefox" ]; then
   mv /tmp/firefox "$FIREFOX_FILE_NAME.$FILE_EXT"
 else
   # download firefox
+  echo "Downloading firefox"
   curl --silent --show-error --location --fail --retry 3 \
     --output "$FIREFOX_FILE_NAME.$FILE_EXT" \
     "$FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.$FILE_EXT"
 fi
-
 
 if [ "$ORB_PARAM_SAVE_CACHE" = 1 ]; then
   cp "$FIREFOX_FILE_NAME.$FILE_EXT" /tmp/firefox
