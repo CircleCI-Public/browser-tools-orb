@@ -29,7 +29,7 @@ parameters:
   use_cache:
     description: |
       Install chrome using a cached version.
-      Setting to true could increase considerable storage costs, use only if having slow times with the installation.
+      Using this option will increase costs and does not improve times considerable, use only if having problems with download.
       Defaults to false.
     default: false
     type: boolean
