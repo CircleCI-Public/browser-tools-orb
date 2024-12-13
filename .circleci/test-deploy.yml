@@ -110,6 +110,7 @@ jobs:
       - jq/install
       - browser-tools/install-firefox:
           use_cache: true
+          cache_key: v2
       - checkout
 workflows:
   test-deploy:
