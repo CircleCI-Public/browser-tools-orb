@@ -4,11 +4,22 @@ if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
 # process ORB_PARAM_CHROME_VERSION
 PROCESSED_CHROME_VERSION=$(circleci env subst "$ORB_PARAM_CHROME_VERSION")
 
+save_cache() {
+  echo "Saving cache"
+  if uname -a | grep Darwin >/dev/null 2>&1; then
+    $SUDO tar -czf /tmp/chrome.tar.gz -C "$CHROME_TEMP_DIR" googlechrome.pkg
+  elif command -v apt-get >/dev/null 2>&1; then
+    $SUDO tar -czf /tmp/chrome.tar.gz -C /opt/google/chrome .
+  else
+    echo "This system doesn't support cache for chrome"
+  fi
+}
+
 # installation check
 if uname -a | grep Darwin >/dev/null 2>&1; then
   if ls /Applications/*Google\ Chrome* >/dev/null 2>&1; then
-    LATEST_VERSION="$(curl -s 'https://chromiumdash.appspot.com/fetch_releases?channel=Stable&platform=Mac' | jq -r ' .[0] | .version ')"
     if [[ "$PROCESSED_CHROME_VERSION" == "latest" ]]; then
+      LATEST_VERSION="$(curl -s 'https://chromiumdash.appspot.com/fetch_releases?channel=Stable&platform=Mac' | jq -r ' .[0] | .version ')"
       target_version="$LATEST_VERSION"
     else
       target_version="$PROCESSED_CHROME_VERSION"
@@ -28,8 +39,8 @@ if uname -a | grep Darwin >/dev/null 2>&1; then
   fi
 elif grep Alpine /etc/issue >/dev/null 2>&1; then
   if command -v chromium-browser >/dev/null 2>&1; then
-    LATEST_VERSION="$(curl -s 'https://chromiumdash.appspot.com/fetch_releases?channel=Stable&platform=Linux' | jq -r ' .[0] | .version ')"
     if [[ "$PROCESSED_CHROME_VERSION" == "latest" ]]; then
+      LATEST_VERSION="$(curl -s 'https://chromiumdash.appspot.com/fetch_releases?channel=Stable&platform=Linux' | jq -r ' .[0] | .version ')"
       target_version="$LATEST_VERSION"
     else
       target_version="$PROCESSED_CHROME_VERSION"
@@ -49,8 +60,8 @@ elif grep Alpine /etc/issue >/dev/null 2>&1; then
   fi
 elif command -v yum >/dev/null 2>&1; then
   if command -v google-chrome >/dev/null 2>&1; then
-    LATEST_VERSION="$(curl -s 'https://chromiumdash.appspot.com/fetch_releases?channel=Stable&platform=Linux' | jq -r ' .[0] | .version ')"
     if [[ "$PROCESSED_CHROME_VERSION" == "latest" ]]; then
+      LATEST_VERSION="$(curl -s 'https://chromiumdash.appspot.com/fetch_releases?channel=Stable&platform=Linux' | jq -r ' .[0] | .version ')"
       target_version="$LATEST_VERSION"
     else
       target_version="$PROCESSED_CHROME_VERSION"
@@ -87,10 +98,18 @@ fi
 if uname -a | grep Darwin >/dev/null 2>&1; then
   echo "Preparing Chrome installation for MacOS-based systems"
   # Universal MacOS .pkg with license pre-accepted: https://support.google.com/chrome/a/answer/9915669?hl=en
-  CHROME_MAC_URL="https://dl.google.com/chrome/mac/${ORB_PARAM_CHANNEL}/accept_tos%3Dhttps%253A%252F%252Fwww.google.com%252Fintl%252Fen_ph%252Fchrome%252Fterms%252F%26_and_accept_tos%3Dhttps%253A%252F%252Fpolicies.google.com%252Fterms/googlechrome.pkg"
   CHROME_TEMP_DIR="$(mktemp -d)"
-  curl -L -o "$CHROME_TEMP_DIR/googlechrome.pkg" "$CHROME_MAC_URL"
+  if [ "$ORB_PARAM_SAVE_CACHE" = 1 ] && [ -f "/tmp/googlechrome.pkg" ]; then
+    echo "Cache found."
+    cp /tmp/googlechrome.pkg "$CHROME_TEMP_DIR"
+  else
+    CHROME_MAC_URL="https://dl.google.com/chrome/mac/${ORB_PARAM_CHANNEL}/accept_tos%3Dhttps%253A%252F%252Fwww.google.com%252Fintl%252Fen_ph%252Fchrome%252Fterms%252F%26_and_accept_tos%3Dhttps%253A%252F%252Fpolicies.google.com%252Fterms/googlechrome.pkg"
+    curl -L -o "$CHROME_TEMP_DIR/googlechrome.pkg" "$CHROME_MAC_URL"
+  fi
   sudo /usr/sbin/installer -pkg "$CHROME_TEMP_DIR/googlechrome.pkg" -target /
+  if [ "$ORB_PARAM_SAVE_CACHE" = 1 ]; then
+    save_cache
+  fi
   sudo rm -rf "$CHROME_TEMP_DIR"
   echo '#!/usr/bin/env bash' >> google-chrome-$ORB_PARAM_CHANNEL
   if [[ $ORB_PARAM_CHANNEL == "beta" ]]; then
@@ -129,6 +148,9 @@ elif command -v yum >/dev/null 2>&1; then
     >/dev/null 2>&1
   $SUDO yum localinstall -y google-chrome.rpm \
     >/dev/null 2>&1
+  if [ "$ORB_PARAM_SAVE_CACHE" = 1 ]; then
+    save_cache
+  fi
   rm -rf google-chrome.rpm liberation-fonts.rpm
 else
   # download chrome
@@ -151,6 +173,9 @@ else
     wget --no-verbose -O /tmp/chrome.deb "https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${ORB_PARAM_CHROME_VERSION}-1_amd64.deb" \
       && $SUDO apt-get install -y apt-utils && $SUDO apt-get install -y /tmp/chrome.deb \
       && rm /tmp/chrome.deb
+  fi
+  if [ "$ORB_PARAM_SAVE_CACHE" = 1 ]; then
+    save_cache
   fi
 fi
 

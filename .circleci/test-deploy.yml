@@ -30,6 +30,7 @@ jobs:
           firefox-version: <<parameters.firefox-version>>
           replace-existing-chrome: <<parameters.replace-existing-chrome>>
           chrome-version: <<parameters.chrome-version>>
+      - checkout
   int-tests-chrome:
     parameters:
       executor:
@@ -65,6 +66,7 @@ jobs:
       - jq/install
       - browser-tools/install-chrome
       - browser-tools/install-chromedriver
+      - checkout
   int-test-firefox:
     parameters:
       executor:
@@ -86,9 +88,45 @@ jobs:
       - jq/install
       - browser-tools/install-firefox
       - browser-tools/install-geckodriver
+      - checkout
+  int-test-chrome-cache:
+    parameters:
+      executor:
+        type: executor
+    executor: <<parameters.executor>>
+    steps:
+      - jq/install
+      - browser-tools/install-chrome:
+          use_cache: true
+          cache_key: v2
+      - browser-tools/install-chromedriver
+      - checkout
+  int-test-firefox-cache:
+    parameters:
+      executor:
+        type: executor
+    executor: <<parameters.executor>>
+    steps:
+      - jq/install
+      - browser-tools/install-firefox:
+          use_cache: true
+          cache_key: v2
+      - checkout
 workflows:
   test-deploy:
     jobs:
+      - int-test-chrome-cache:
+          name: test-chrome-cache-<<matrix.executor>>
+          matrix:
+            parameters:
+              executor: [cimg-node, macos]
+          filters: *filters
+      - int-test-firefox-cache:
+          name: test-firefox-cache-<<matrix.executor>>
+          matrix:
+            parameters:
+              executor: [cimg-node, macos]
+          filters: *filters
       - int-test-all:
           name: test-cimg-base-all
           executor: cimg-base
