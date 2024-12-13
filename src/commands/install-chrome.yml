@@ -45,7 +45,7 @@ steps:
       steps:
       - restore_cache:
           keys:
-          - <<parameters.cache_key>>-<<parameters.chrome-version>>-{{ arch }}
+          - chrome-<<parameters.cache_key>>-<<parameters.chrome-version>>-{{ arch }}
       - run:
           name: Process cache
           command: <<include(scripts/process-cache.sh)>>
@@ -63,6 +63,6 @@ steps:
       condition: <<parameters.use_cache>>
       steps:
       - save_cache:
-          key: <<parameters.cache_key>>-<<parameters.chrome-version>>-{{ arch }}
+          key: chrome-<<parameters.cache_key>>-<<parameters.chrome-version>>-{{ arch }}
           paths:
           - /tmp/chrome.tar.gz

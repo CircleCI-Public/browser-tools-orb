@@ -36,7 +36,7 @@ steps:
       steps:
       - restore_cache:
           keys:
-          - <<parameters.cache_key>>-<<parameters.version>>-{{ arch }}
+          - firefox-<<parameters.cache_key>>-<<parameters.version>>-{{ arch }}
   - run:
       name: Install Firefox
       environment:
@@ -48,6 +48,6 @@ steps:
       condition: <<parameters.use_cache>>
       steps:
       - save_cache:
-          key: <<parameters.cache_key>>-<<parameters.version>>-{{ arch }}
+          key: firefox-<<parameters.cache_key>>-<<parameters.version>>-{{ arch }}
           paths:
           - /tmp/firefox
