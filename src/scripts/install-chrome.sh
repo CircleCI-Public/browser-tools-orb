@@ -8,10 +8,8 @@ save_cache() {
   echo "Saving cache"
   if uname -a | grep Darwin >/dev/null 2>&1; then
     $SUDO tar -czf /tmp/chrome.tar.gz -C "$CHROME_TEMP_DIR" googlechrome.pkg
-  elif command -v apt >/dev/null 2>&1; then
+  elif command -v apt-get >/dev/null 2>&1; then
     $SUDO tar -czf /tmp/chrome.tar.gz -C /opt/google/chrome .
-  # elif grep Alpine /etc/issue >/dev/null 2>&1; then
-  # elif command -v yum >/dev/null 2>&1; then
   else
     echo "This system doesn't support cache for chrome"
   fi

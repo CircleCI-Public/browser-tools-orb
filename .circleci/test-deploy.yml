@@ -101,11 +101,27 @@ jobs:
           cache_key: v2
       - browser-tools/install-chromedriver
       - checkout
+  int-test-firefox-cache:
+    parameters:
+      executor:
+        type: executor
+    executor: <<parameters.executor>>
+    steps:
+      - jq/install
+      - browser-tools/install-firefox:
+          use_cache: true
+      - checkout
 workflows:
   test-deploy:
     jobs:
       - int-test-chrome-cache:
           name: test-chrome-cache-<<matrix.executor>>
+          matrix:
+            parameters:
+              executor: [cimg-node, macos]
+          filters: *filters
+      - int-test-firefox-cache:
+          name: test-firefox-cache-<<matrix.executor>>
           matrix:
             parameters:
               executor: [cimg-node, macos]

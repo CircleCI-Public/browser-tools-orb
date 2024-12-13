@@ -94,10 +94,20 @@ FIREFOX_FILE_LOCATION="$PLATFORM/en-US/$FIREFOX_FILE"
 
 FIREFOX_FILE_NAME="$PLATFORM-en-US-$FIREFOX_FILE"
 
-# download firefox
-curl --silent --show-error --location --fail --retry 3 \
-  --output "$FIREFOX_FILE_NAME.$FILE_EXT" \
-  "$FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.$FILE_EXT"
+if [ "$ORB_PARAM_SAVE_CACHE" = 1 ] && [ -f "/tmp/firefox" ]; then
+  echo "Cache found."
+  mv /tmp/firefox "$FIREFOX_FILE_NAME.$FILE_EXT"
+else
+  # download firefox
+  curl --silent --show-error --location --fail --retry 3 \
+    --output "$FIREFOX_FILE_NAME.$FILE_EXT" \
+    "$FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.$FILE_EXT"
+fi
+
+
+if [ "$ORB_PARAM_SAVE_CACHE" = 1 ]; then
+  cp "$FIREFOX_FILE_NAME.$FILE_EXT" /tmp/firefox
+fi
 
 if uname -a | grep Darwin >/dev/null 2>&1; then
   echo "No PGP data for macOS Firefox releases; skipping PGP verification"
