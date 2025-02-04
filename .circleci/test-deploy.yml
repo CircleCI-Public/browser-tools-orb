@@ -180,7 +180,7 @@ workflows:
           filters: *filters
       - int-test-firefox:
           matrix:
-            alias: test-specific-version-firefox
+            alias: test-specific-version-firefox-matrix
             parameters:
               firefox-version: ["90.0.1", "135.0"]
           name: test-specific-version-firefox
@@ -192,7 +192,7 @@ workflows:
           name: test-macos-firefox
           executor: macos
           matrix:
-            alias: test-macos-firefox
+            alias: test-macos-firefox-matrix
             parameters:
               firefox-version: ["90.0.1", "135.0"]
           filters: *filters
@@ -200,7 +200,7 @@ workflows:
           name: test-linux-firefox
           executor: linux
           matrix:
-            alias: test-linux-firefox
+            alias: test-linux-firefox-matrix
             parameters:
               firefox-version: ["90.0.1", "135.0"]
           filters: *filters
@@ -235,8 +235,9 @@ workflows:
             - test-linux-chrome
             - test-cimg-base-firefox
             - test-cimg-node-firefox
-            - test-macos-firefox
-            - test-linux-firefox
+            - test-specific-version-firefox-matrix
+            - test-macos-firefox-matrix
+            - test-linux-firefox-matrix
           context: image-orbs
           filters:
             branches:
