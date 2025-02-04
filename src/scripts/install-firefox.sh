@@ -166,7 +166,7 @@ if uname -a | grep Darwin >/dev/null 2>&1; then
 
 else
   if [ "$FIREFOX_MAJOR_VERSION" -ge 135 ]; then
-    $SUDO tar -xzf "$FIREFOX_FILE_NAME.$FILE_EXT"
+    $SUDO tar -xJf "$FIREFOX_FILE_NAME.$FILE_EXT"
   else
     $SUDO tar -xjf "$FIREFOX_FILE_NAME.$FILE_EXT"
   fi
