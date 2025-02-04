@@ -251,6 +251,7 @@ executors:
   cimg-node:
     docker:
       - image: cimg/node:lts-browsers
+    shell: bash -eox pipefail
   cimg-openjdk:
     docker:
       - image: cimg/openjdk:11.0-browsers
@@ -260,3 +261,4 @@ executors:
   linux:
     machine:
       image: ubuntu-2204:2024.08.1
+    shell: bash -eox pipefail
