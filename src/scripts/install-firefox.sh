@@ -87,7 +87,11 @@ if uname -a | grep Darwin >/dev/null 2>&1; then
 else
   FIREFOX_FILE="firefox-$FIREFOX_VERSION"
   PLATFORM=linux-x86_64
-  FILE_EXT=tar.bz2
+  if [ "$FIREFOX_VERSION" -ge 135 ]; then
+    FILE_EXT=tar.xz
+  else
+    FILE_EXT=tar.bz2
+  fi
 fi
 
 FIREFOX_FILE_LOCATION="$PLATFORM/en-US/$FIREFOX_FILE"

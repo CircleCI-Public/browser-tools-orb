@@ -179,6 +179,10 @@ workflows:
           executor: cimg-node
           filters: *filters
       - int-test-firefox:
+          matrix:
+            alias: test-specific-version-firefox
+            parameters:
+              firefox-version: ["90.0.1", "135.0"]
           name: test-specific-version-firefox
           executor: cimg-base
           chrome-version: "131.0.6778.85"
@@ -187,10 +191,18 @@ workflows:
       - int-test-firefox:
           name: test-macos-firefox
           executor: macos
+          matrix:
+            alias: test-macos-firefox
+            parameters:
+              firefox-version: ["90.0.1", "135.0"]
           filters: *filters
       - int-test-firefox:
           name: test-linux-firefox
           executor: linux
+          matrix:
+            alias: test-linux-firefox
+            parameters:
+              firefox-version: ["90.0.1", "135.0"]
           filters: *filters
       - orb-tools/pack:
           filters: *filters
