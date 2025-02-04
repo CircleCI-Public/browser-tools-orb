@@ -179,6 +179,10 @@ workflows:
           executor: cimg-node
           filters: *filters
       - int-test-firefox:
+          matrix:
+            alias: test-specific-version-firefox-matrix
+            parameters:
+              firefox-version: ["90.0.1", "135.0"]
           name: test-specific-version-firefox
           executor: cimg-base
           chrome-version: "131.0.6778.85"
@@ -187,10 +191,18 @@ workflows:
       - int-test-firefox:
           name: test-macos-firefox
           executor: macos
+          matrix:
+            alias: test-macos-firefox-matrix
+            parameters:
+              firefox-version: ["90.0.1", "135.0"]
           filters: *filters
       - int-test-firefox:
           name: test-linux-firefox
           executor: linux
+          matrix:
+            alias: test-linux-firefox-matrix
+            parameters:
+              firefox-version: ["90.0.1", "135.0"]
           filters: *filters
       - orb-tools/pack:
           filters: *filters
@@ -223,8 +235,9 @@ workflows:
             - test-linux-chrome
             - test-cimg-base-firefox
             - test-cimg-node-firefox
-            - test-macos-firefox
-            - test-linux-firefox
+            - test-specific-version-firefox-matrix
+            - test-macos-firefox-matrix
+            - test-linux-firefox-matrix
           context: image-orbs
           filters:
             branches:
@@ -238,6 +251,7 @@ executors:
   cimg-node:
     docker:
       - image: cimg/node:lts-browsers
+    shell: bash -eox pipefail
   cimg-openjdk:
     docker:
       - image: cimg/openjdk:11.0-browsers
@@ -247,3 +261,4 @@ executors:
   linux:
     machine:
       image: ubuntu-2204:2024.08.1
+    shell: bash -eox pipefail

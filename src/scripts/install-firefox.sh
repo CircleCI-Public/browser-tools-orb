@@ -78,7 +78,7 @@ curl -O --silent --show-error --location --fail --retry 3 "$FIREFOX_URL_BASE/SHA
 # verify shasums
 gpg --verify SHA256SUMS.asc SHA256SUMS || gpg --verify SHA512SUMS.asc SHA512SUMS
 rm -f SHA256SUMS.asc || rm -f SHA512SUMS.asc
-
+FIREFOX_MAJOR_VERSION=$(echo "$FIREFOX_VERSION" | awk -F. '{print $1}')
 # setup firefox download
 if uname -a | grep Darwin >/dev/null 2>&1; then
   FIREFOX_FILE="Firefox%20$FIREFOX_VERSION"
@@ -87,7 +87,11 @@ if uname -a | grep Darwin >/dev/null 2>&1; then
 else
   FIREFOX_FILE="firefox-$FIREFOX_VERSION"
   PLATFORM=linux-x86_64
-  FILE_EXT=tar.bz2
+  if [ "$FIREFOX_MAJOR_VERSION" -ge 135 ]; then
+    FILE_EXT=tar.xz
+  else
+    FILE_EXT=tar.bz2
+  fi
 fi
 
 FIREFOX_FILE_LOCATION="$PLATFORM/en-US/$FIREFOX_FILE"
@@ -161,7 +165,11 @@ if uname -a | grep Darwin >/dev/null 2>&1; then
   fi
 
 else
-  $SUDO tar -xjf "$FIREFOX_FILE_NAME.$FILE_EXT"
+  if [ "$FIREFOX_MAJOR_VERSION" -ge 135 ]; then
+    $SUDO tar -xJf "$FIREFOX_FILE_NAME.$FILE_EXT"
+  else
+    $SUDO tar -xjf "$FIREFOX_FILE_NAME.$FILE_EXT"
+  fi
   $SUDO rm -f "$FIREFOX_FILE_NAME.$FILE_EXT"
   $SUDO mv firefox "$ORB_PARAM_FIREFOX_INSTALL_DIR/firefox-$FIREFOX_VERSION"
   $SUDO chmod +x "$ORB_PARAM_FIREFOX_INSTALL_DIR/firefox-$FIREFOX_VERSION/firefox"
