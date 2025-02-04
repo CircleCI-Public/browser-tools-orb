@@ -87,7 +87,8 @@ if uname -a | grep Darwin >/dev/null 2>&1; then
 else
   FIREFOX_FILE="firefox-$FIREFOX_VERSION"
   PLATFORM=linux-x86_64
-  if [ "$FIREFOX_VERSION" -ge 135 ]; then
+  FIREFOX_MAJOR_VERSION=$(echo "$FIREFOX_VERSION" | awk -F. '{print $1}')
+  if [ "$FIREFOX_MAJOR_VERSION" -ge 135 ]; then
     FILE_EXT=tar.xz
   else
     FILE_EXT=tar.bz2
