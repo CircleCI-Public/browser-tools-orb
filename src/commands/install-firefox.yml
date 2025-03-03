@@ -17,10 +17,37 @@ parameters:
     description: >
       Directory in which to install Firefox
 
+  use_cache:
+    description: |
+      Install firefox using a cached version of the installer.
+      Using this option will increase costs and does not improve times considerable, use only if having problems with download.
+      Defaults to false.
+    default: false
+    type: boolean
+  cache_key:
+    description: |
+      Cache key to save chrome.
+      Defaults to v1.
+    default: v1
+    type: string
 steps:
+  - when:
+      condition: <<parameters.use_cache>>
+      steps:
+      - restore_cache:
+          keys:
+          - firefox-<<parameters.cache_key>>-<<parameters.version>>-{{ arch }}
   - run:
       name: Install Firefox
       environment:
         ORB_PARAM_FIREFOX_INSTALL_DIR: <<parameters.install-dir>>
         ORB_PARAM_FIREFOX_VERSION: <<parameters.version>>
+        ORB_PARAM_SAVE_CACHE: <<parameters.use_cache>>
       command: <<include(scripts/install-firefox.sh)>>
+  - when:
+      condition: <<parameters.use_cache>>
+      steps:
+      - save_cache:
+          key: firefox-<<parameters.cache_key>>-<<parameters.version>>-{{ arch }}
+          paths:
+          - /tmp/firefox
