@@ -53,7 +53,7 @@ steps:
       condition:
         and:
           - equal: [ true, <<parameters.use_cache>> ]
-          - not: 
+          - not:
               equal: [ latest, <<parameters.version>> ]
       steps:
       - save_cache:
