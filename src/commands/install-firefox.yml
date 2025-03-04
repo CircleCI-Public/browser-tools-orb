@@ -34,9 +34,10 @@ parameters:
 steps:
   - when:
       condition:
-        and: 
+        and:
           - equal: [ true, <<parameters.use_cache>> ]
-          - not: [ latest, <<parameters.version>> ]
+          - not:
+              equal: [ latest, <<parameters.version>> ]
       steps:
       - restore_cache:
           keys:
@@ -52,7 +53,8 @@ steps:
       condition:
         and:
           - equal: [ true, <<parameters.use_cache>> ]
-          - not: [ latest, <<parameters.version>> ]
+          - not: 
+              equal: [ latest, <<parameters.version>> ]
       steps:
       - save_cache:
           key: firefox-<<parameters.cache_key>>-<<parameters.version>>-{{ arch }}
