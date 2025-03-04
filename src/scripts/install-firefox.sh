@@ -98,7 +98,7 @@ FIREFOX_FILE_LOCATION="$PLATFORM/en-US/$FIREFOX_FILE"
 
 FIREFOX_FILE_NAME="$PLATFORM-en-US-$FIREFOX_FILE"
 
-if [ "$ORB_PARAM_SAVE_CACHE" = 1 ] && [ -f "/tmp/firefox" ]; then
+if [ "$ORB_PARAM_SAVE_CACHE" = 1 ] && [ -f "/tmp/firefox" ] && [ "$ORB_PARAM_FIREFOX_VERSION" != "latest" ]; then
   echo "Cache found."
   mv /tmp/firefox "$FIREFOX_FILE_NAME.$FILE_EXT"
 else
@@ -109,7 +109,7 @@ else
     "$FIREFOX_URL_BASE/$FIREFOX_FILE_LOCATION.$FILE_EXT"
 fi
 
-if [ "$ORB_PARAM_SAVE_CACHE" = 1 ]; then
+if [ "$ORB_PARAM_SAVE_CACHE" = 1 ] && [ "$ORB_PARAM_FIREFOX_VERSION" != "latest" ]; then
   cp "$FIREFOX_FILE_NAME.$FILE_EXT" /tmp/firefox
 fi
 

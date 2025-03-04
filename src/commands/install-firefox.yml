@@ -21,6 +21,7 @@ parameters:
     description: |
       Install firefox using a cached version of the installer.
       Using this option will increase costs and does not improve times considerable, use only if having problems with download.
+      Cache won't be used when version is set to latest.
       Defaults to false.
     default: false
     type: boolean
@@ -32,7 +33,11 @@ parameters:
     type: string
 steps:
   - when:
-      condition: <<parameters.use_cache>>
+      condition:
+        and:
+          - equal: [ true, <<parameters.use_cache>> ]
+          - not:
+              equal: [ latest, <<parameters.version>> ]
       steps:
       - restore_cache:
           keys:
@@ -45,7 +50,11 @@ steps:
         ORB_PARAM_SAVE_CACHE: <<parameters.use_cache>>
       command: <<include(scripts/install-firefox.sh)>>
   - when:
-      condition: <<parameters.use_cache>>
+      condition:
+        and:
+          - equal: [ true, <<parameters.use_cache>> ]
+          - not:
+              equal: [ latest, <<parameters.version>> ]
       steps:
       - save_cache:
           key: firefox-<<parameters.cache_key>>-<<parameters.version>>-{{ arch }}
