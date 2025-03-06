@@ -26,6 +26,11 @@ elif grep Alpine /etc/issue >/dev/null 2>&1; then
 
   exit 0
 else
+  ENV_IS_ARM=$(! dpkg --print-architecture | grep -q arm; echo $?)
+  if [ "$ENV_IS_ARM" = 1 ]; then
+    echo "No Linux ARM64 support for Chrome Driver"
+    exit 1
+  fi
   CHROME_VERSION="$(google-chrome --version)"
   PLATFORM=linux64
 fi
