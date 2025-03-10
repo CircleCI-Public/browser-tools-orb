@@ -165,9 +165,9 @@ else
   if [[ "$PROCESSED_CHROME_VERSION" == "latest" ]]; then
     ENV_IS_ARM=$(! dpkg --print-architecture | grep -q arm; echo $?)
     wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | $SUDO apt-key add -
-    if [ "$ENV_IS_ARM" == "arm" ]; then
-      echo "Installing Chrome for ARM64"
-      $SUDO sh -c 'echo "deb [arch=arm64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+    if [ "$ENV_IS_ARM" = 1 ]; then
+      echo "No Linux ARM64 support for Chrome"
+      exit 1
     else
       echo "Installing Chrome for AMD64"
       $SUDO sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
