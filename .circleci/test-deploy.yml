@@ -1,8 +1,8 @@
 version: 2.1
 orbs:
   browser-tools: circleci/browser-tools@dev:<<pipeline.git.revision>>
-  orb-tools: circleci/orb-tools@11.1
-  jq: circleci/jq@2.2
+  orb-tools: circleci/orb-tools@11.6.1
+  jq: circleci/jq@3.0.2
 filters: &filters
   tags:
     only: /.*/
@@ -105,12 +105,15 @@ jobs:
     parameters:
       executor:
         type: executor
+      version:
+        type: string
     executor: <<parameters.executor>>
     steps:
       - jq/install
       - browser-tools/install-firefox:
           use_cache: true
-          cache_key: v2
+          cache_key: v3-<<parameters.version>>
+          version: <<parameters.version>>
       - checkout
 workflows:
   test-deploy:
@@ -122,10 +125,11 @@ workflows:
               executor: [cimg-node, macos]
           filters: *filters
       - int-test-firefox-cache:
-          name: test-firefox-cache-<<matrix.executor>>
+          name: test-firefox-cache-<<matrix.executor>>-<<matrix.version>>
           matrix:
             parameters:
               executor: [cimg-node, macos]
+              version: ["latest", "90.0.1", "135.0"]
           filters: *filters
       - int-test-all:
           name: test-cimg-base-all
@@ -183,13 +187,13 @@ workflows:
             alias: test-specific-version-firefox-matrix
             parameters:
               firefox-version: ["90.0.1", "135.0"]
-          name: test-specific-version-firefox
+          name: test-specific-version-firefox-<<matrix.firefox-version>>
           executor: cimg-base
           chrome-version: "131.0.6778.85"
           firefox-version: "90.0.1"
           filters: *filters
       - int-test-firefox:
-          name: test-macos-firefox
+          name: test-macos-firefox-<<matrix.firefox-version>>
           executor: macos
           matrix:
             alias: test-macos-firefox-matrix
@@ -197,7 +201,7 @@ workflows:
               firefox-version: ["90.0.1", "135.0"]
           filters: *filters
       - int-test-firefox:
-          name: test-linux-firefox
+          name: test-linux-firefox-<<matrix.firefox-version>>
           executor: linux
           matrix:
             alias: test-linux-firefox-matrix
