@@ -87,6 +87,28 @@ parameters:
       e.g., 85.0.4183.83
       Only supported on centos and debian
 
+  install-edge:
+    default: false
+    type: boolean
+    description: Install Microsoft Edge?
+  
+  install-edge-web-driver:
+    default: false
+    type: boolean
+    description: Install Microsoft Edge Web Driver?
+
+  edge-version:
+    type: string
+    default: latest
+    description: Version of Edge to install, defaults to the latest stable release.
+      This param only works for Ubuntu/Debian version, MacOS will always install latest version.
+
+  edge-driver-dir:
+    type: string
+    default: /usr/local/bin
+    description: >
+      Directory in which to install Edge WebDriver
+
 steps:
   - when:
       condition: <<parameters.install-firefox>>
@@ -114,3 +136,13 @@ steps:
       steps:
         - install-chromedriver:
             install-dir: <<parameters.chromedriver-install-dir>>
+  - when:
+      condition: <<parameters.install-edge>>
+      steps:
+        - install-edge:
+            version: <<parameters.edge-version>>
+  - when: 
+      condition: <<parameters.install-edge-web-driver>>
+      steps:
+        - install-edge-driver:
+            install-dir: <<parameters.edge-driver-dir>>

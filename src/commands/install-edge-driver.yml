@@ -1,0 +1,17 @@
+description: >
+  Install Edge WebDriver, for use in browser
+  testing with Chrome. Edge must be installed first to select the right version to install.
+
+parameters:
+  install-dir:
+    type: string
+    default: /usr/local/bin
+    description: >
+      Directory in which to install Edge WebDriver
+
+steps:
+  - run:
+      name: Install Edge WebDriver
+      environment:
+        ORB_PARAM_DRIVER_INSTALL_DIR: <<parameters.install-dir>>
+      command: <<include(scripts/install-edge-driver.sh)>>

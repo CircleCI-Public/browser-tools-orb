@@ -1,0 +1,19 @@
+description: >
+  Install Edge browser, for use in browser testing.
+  Supports Linux (Debian/Ubuntu) amd64 and MacOS environments.
+  There is not an Edge version of Edge for Linux ARM.
+  For MacOS brew is required.
+
+parameters:
+  version:
+    default: latest
+    type: string
+    description: >
+      Version of Edge to install, defaults to the latest stable release.
+      This param only works for Ubuntu/Debian version, MacOS will always install latest version.
+steps:
+  - run:
+      name: Install Edge
+      environment:
+        ORB_PARAM_VERSION: <<parameters.chrome-version>>
+      command: <<include(scripts/install-edge.sh)>>
