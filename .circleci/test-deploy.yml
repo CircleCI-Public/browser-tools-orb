@@ -220,7 +220,7 @@ workflows:
           matrix:
             alias: test-linux-edge
             parameters:
-              edge-version: ["latest", "136.0.3240.76", "135.0.3179.54", "125.0.2535.37"]
+              edge-version: ["latest", "136.0.3240.76", "135.0.3179.54"]
               executor: [cimg-base, cimg-node, cimg-openjdk, linux]
       - int-test-edge:
           name: test-macos-edge
