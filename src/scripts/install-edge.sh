@@ -20,7 +20,7 @@ elif command -v apt >/dev/null 2>&1; then
     VERSION="=$ORB_PARAM_VERSION-1"
   fi
   $SUDO apt-get update
-  $SUDO apt-get install -y "microsoft-edge-stable$VERSION"
+  DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y "microsoft-edge-stable$VERSION"
   if command -v microsoft-edge >/dev/null 2>&1; then
     echo "Microsoft Edge version $(microsoft-edge --version) was installed."
   else
