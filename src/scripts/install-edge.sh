@@ -7,6 +7,12 @@ if uname -a | grep Darwin >/dev/null 2>&1; then
     exit 1
   fi
   brew install --cask microsoft-edge
+  if "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge" --version >/dev/null 2>&1; then
+    echo "Microsoft Edge version was installed."
+  else
+    echo "Microsoft Edge could not be installed"
+    exit 1
+  fi
 elif command -v apt >/dev/null 2>&1; then
   wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /usr/share/keyrings/microsoft-archive-keyring.gpg
   echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/repos/edge stable main" | sudo tee /etc/apt/sources.list.d/microsoft-edge-stable.list
@@ -15,11 +21,10 @@ elif command -v apt >/dev/null 2>&1; then
   fi
   $SUDO apt-get update
   $SUDO apt-get install -y "microsoft-edge-stable$VERSION"
-fi
-
-if command -v microsoft-edge >/dev/null 2>&1; then
-  echo "Microsoft Edge version $(microsoft-edge --version) was installed."
-else
-  echo "Microsoft Edge could not be installed"
-  exit 1
+  if command -v microsoft-edge >/dev/null 2>&1; then
+    echo "Microsoft Edge version $(microsoft-edge --version) was installed."
+  else
+    echo "Microsoft Edge could not be installed"
+    exit 1
+  fi
 fi
