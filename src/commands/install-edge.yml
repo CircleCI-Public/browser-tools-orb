@@ -15,5 +15,5 @@ steps:
   - run:
       name: Install Edge
       environment:
-        ORB_PARAM_VERSION: <<parameters.chrome-version>>
+        ORB_PARAM_VERSION: <<parameters.version>>
       command: <<include(scripts/install-edge.sh)>>

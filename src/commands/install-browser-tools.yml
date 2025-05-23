@@ -91,7 +91,7 @@ parameters:
     default: false
     type: boolean
     description: Install Microsoft Edge?
-  
+
   install-edge-web-driver:
     default: false
     type: boolean
@@ -141,7 +141,7 @@ steps:
       steps:
         - install-edge:
             version: <<parameters.edge-version>>
-  - when: 
+  - when:
       condition: <<parameters.install-edge-web-driver>>
       steps:
         - install-edge-driver:
