@@ -1,18 +1,22 @@
 #!/bin/bash
 if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
 
-if ! command -v microsoft-edge >/dev/null 2>&1; then
-  echo "Microsoft Edge is not installed"
-  exit 1
-fi
-
 if uname -a | grep Darwin >/dev/null 2>&1; then
+  if ! "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge" --version >/dev/null 2>&1; then
+    echo "Microsoft Edge is not installed"
+    exit 1
+  fi
   PLATFORM=mac64_m1
+  VERSION=$("/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge" --version | awk '{print $3}')
 else
+  if ! command -v microsoft-edge >/dev/null 2>&1; then
+    echo "Microsoft Edge is not installed"
+    exit 1
+  fi
   PLATFORM=linux64
+  VERSION=$(microsoft-edge --version | awk '{print $3}')
 fi
 
-VERSION=$(microsoft-edge --version | awk '{print $3}')
 
 wget -q -O edgedriver.zip "https://msedgedriver.azureedge.net/$VERSION/edgedriver_$PLATFORM.zip"
 unzip edgedriver.zip >/dev/null 2>&1
