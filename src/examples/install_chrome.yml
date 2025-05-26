@@ -3,7 +3,7 @@ description: |
 usage:
   version: 2.1
   orbs:
-     browser-tools: circleci/browser-tools@x.y
+    browser-tools: circleci/browser-tools@x.y
   jobs:
     test:
       docker:
@@ -16,4 +16,3 @@ usage:
             command: |
               google-chrome --version
               chromedriver --version
-

@@ -3,7 +3,7 @@ description: |
 usage:
   version: 2.1
   orbs:
-     browser-tools: circleci/browser-tools@x.y
+    browser-tools: circleci/browser-tools@x.y
   jobs:
     test:
       executor: browser-tools/default

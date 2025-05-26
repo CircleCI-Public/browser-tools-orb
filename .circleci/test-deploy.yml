@@ -23,6 +23,9 @@ jobs:
       chrome-version:
         type: string
         default: latest
+      edge-version:
+        type: string
+        default: latest
     executor: <<parameters.executor>>
     steps:
       - jq/install
@@ -30,6 +33,8 @@ jobs:
           firefox-version: <<parameters.firefox-version>>
           replace-existing-chrome: <<parameters.replace-existing-chrome>>
           chrome-version: <<parameters.chrome-version>>
+          install-edge: true
+          edge-version: <<parameters.edge-version>>
       - checkout
   int-tests-chrome:
     parameters:
@@ -49,12 +54,6 @@ jobs:
     parameters:
       executor:
         type: executor
-      firefox-version:
-        type: string
-        default: latest
-      geckodriver-version:
-        type: string
-        default: latest
       replace-existing-chrome:
         type: boolean
         default: true
@@ -64,7 +63,8 @@ jobs:
     executor: <<parameters.executor>>
     steps:
       - jq/install
-      - browser-tools/install-chrome
+      - browser-tools/install-chrome:
+          chrome-version: <<parameters.chrome-version>>
       - browser-tools/install-chromedriver
       - checkout
   int-test-firefox:
@@ -77,17 +77,26 @@ jobs:
       geckodriver-version:
         type: string
         default: latest
-      replace-existing-chrome:
-        type: boolean
-        default: true
-      chrome-version:
+    executor: <<parameters.executor>>
+    steps:
+      - jq/install
+      - browser-tools/install-firefox:
+          version: <<parameters.firefox-version>>
+      - browser-tools/install-geckodriver:
+          version: <<parameters.geckodriver-version>>
+      - checkout
+  int-test-edge:
+    parameters:
+      executor:
+        type: executor
+      edge-version:
         type: string
         default: latest
     executor: <<parameters.executor>>
     steps:
-      - jq/install
-      - browser-tools/install-firefox
-      - browser-tools/install-geckodriver
+      - browser-tools/install-edge:
+          version: <<parameters.edge-version>>
+      - browser-tools/install-edge-driver
       - checkout
   int-test-chrome-cache:
     parameters:
@@ -165,7 +174,6 @@ workflows:
           name: test-specific-version-chrome
           executor: cimg-base
           chrome-version: "131.0.6778.85"
-          firefox-version: "90.0.1"
           filters: *filters
       - int-test-chrome:
           name: test-macos-chrome
@@ -189,7 +197,6 @@ workflows:
               firefox-version: ["90.0.1", "135.0"]
           name: test-specific-version-firefox-<<matrix.firefox-version>>
           executor: cimg-base
-          chrome-version: "131.0.6778.85"
           firefox-version: "90.0.1"
           filters: *filters
       - int-test-firefox:
@@ -208,6 +215,16 @@ workflows:
             parameters:
               firefox-version: ["90.0.1", "135.0"]
           filters: *filters
+      - int-test-edge:
+          name: test-linux-edge-<<matrix.edge-version>>-<<matrix.executor>>
+          matrix:
+            alias: test-linux-edge
+            parameters:
+              edge-version: ["latest", "136.0.3240.76", "135.0.3179.54"]
+              executor: [cimg-base, cimg-node, cimg-openjdk, linux]
+      - int-test-edge:
+          name: test-macos-edge
+          executor: macos
       - orb-tools/pack:
           filters: *filters
       # This matrix job can likely replace the several others above in the future
@@ -242,6 +259,8 @@ workflows:
             - test-specific-version-firefox-matrix
             - test-macos-firefox-matrix
             - test-linux-firefox-matrix
+            - test-linux-edge
+            - test-macos-edge
           context: image-orbs
           filters:
             branches:
