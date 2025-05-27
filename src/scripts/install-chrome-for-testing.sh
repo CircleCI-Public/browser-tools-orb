@@ -22,7 +22,6 @@ elif command -v apt >/dev/null 2>&1; then
         echo "Version $ORB_PARAM_VERSION doesn't exist"
         exit 1
     fi
-    $SUDO unzip chrome-for-testing.zip >/dev/null 2>&1
     $SUDO apt-get update
     while read -r pkg; do
         $SUDO apt-get satisfy -y --no-install-recommends "${pkg}";
