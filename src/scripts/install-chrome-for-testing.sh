@@ -5,13 +5,23 @@ cd "$ORB_PARAM_DIR" || exit 1
 
 if uname -a | grep Darwin >/dev/null 2>&1; then
     $SUDO wget -q -O chrome-for-testing.zip "https://storage.googleapis.com/chrome-for-testing-public/$ORB_PARAM_VERSION/mac-arm64/chrome-mac-arm64.zip"
-    $SUDO unzip chrome-for-testing.zip >/dev/null 2>&1
-
+    if [ -s "chrome-for-testing.zip" ]; then
+        $SUDO unzip chrome-for-testing.zip >/dev/null 2>&1
+    else
+        echo "Version $ORB_PARAM_VERSION doesn't exist"
+        exit 1
+    fi
     $SUDO wget -q -O chrome-for-testing-driver.zip "https://storage.googleapis.com/chrome-for-testing-public/$ORB_PARAM_VERSION/mac-arm64/chromedriver-mac-arm64.zip"
     $SUDO unzip chrome-for-testing-driver.zip >/dev/null 2>&1
     $SUDO mv chromedriver-mac-arm64/chromedriver chromedriver
 elif command -v apt >/dev/null 2>&1; then
     $SUDO wget -q -O chrome-for-testing.zip "https://storage.googleapis.com/chrome-for-testing-public/$ORB_PARAM_VERSION/linux64/chrome-linux64.zip"
+    if [ -s "chrome-for-testing.zip" ]; then
+        $SUDO unzip chrome-for-testing.zip >/dev/null 2>&1
+    else
+        echo "Version $ORB_PARAM_VERSION doesn't exist"
+        exit 1
+    fi
     $SUDO unzip chrome-for-testing.zip >/dev/null 2>&1
     $SUDO apt-get update
     while read -r pkg; do

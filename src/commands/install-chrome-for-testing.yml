@@ -17,7 +17,7 @@ parameters:
       Which version to install. No default version provided, you must specify the one you want.
 steps:
   - run:
-      name: Install ChromeDriver
+      name: Install Chrome for testing
       environment:
         ORB_PARAM_DIR: <<parameters.install-dir>>
         ORB_PARAM_VERSION: <<parameters.version>>
