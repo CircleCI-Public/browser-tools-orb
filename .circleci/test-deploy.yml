@@ -237,7 +237,7 @@ workflows:
           name: test-macos-edge
           executor: macos
       - int-chrome-for-testing:
-          name: install-chrome-for-testing
+          name: install-chrome-for-testing-<<matrix.version>>-<<matrix.executor>>
           matrix:
             alias: install-chrome-for-testing
             parameters:
