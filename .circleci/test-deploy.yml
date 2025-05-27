@@ -15,8 +15,9 @@ jobs:
         type: string
     executor: <<parameters.executor >>
     steps:
-      - browser-tools/install-chrome-int-chrome-for-testing:
+      - browser-tools/install-chrome-for-testing:
           version: <<parameters.version >>
+      - checkout
   int-test-all:
     parameters:
       executor:
