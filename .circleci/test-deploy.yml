@@ -258,10 +258,10 @@ workflows:
                 - "stable"
                 - "beta"
       - orb-tools/publish:
-          orb-name: circleci/browser-tools
-          vcs-type: << pipeline.project.type >>
-          pub-type: production
-          github-token: GHI_TOKEN
+          orb_name: circleci/browser-tools
+          vcs_type: << pipeline.project.type >>
+          pub_type: production
+          context: orb-publisher
           requires:
             - orb-tools/pack
             - test-cimg-base-all
@@ -280,7 +280,6 @@ workflows:
             - test-linux-firefox-matrix
             - test-linux-edge
             - test-macos-edge
-          context: image-orbs
           filters:
             branches:
               ignore: /.*/
