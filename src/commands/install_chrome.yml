@@ -5,13 +5,13 @@ description: >
   Linux, Alpine Linux (via Chromium), and macOS environments.
 
 parameters:
-  replace-existing:
+  replace_existing:
     type: boolean
     default: false
     description: >
       If there is an existing installation of Google Chrome, replace it
       with the latest stable release?
-  chrome-version:
+  chrome_version:
     default: latest
     type: string
     description: >
@@ -19,7 +19,7 @@ parameters:
       To install an older release, specify a full chrome version number,
       e.g., 85.0.4183.83
       Only supported on centos and debian
-      If replace-existing is false, this version is ignored.
+      If replace_existing is false, this version is ignored.
   channel:
     description: |
       The release channel of Google Chrome to use. Defaults to 'stable'.
@@ -45,24 +45,24 @@ steps:
       steps:
       - restore_cache:
           keys:
-          - chrome-<<parameters.cache_key>>-<<parameters.chrome-version>>-{{ arch }}
+          - chrome-<<parameters.cache_key>>-<<parameters.chrome_version>>-{{ arch }}
       - run:
           name: Process cache
-          command: <<include(scripts/process-cache.sh)>>
+          command: <<include(scripts/process_cache.sh)>>
           environment:
             ORB_PARAM_CHANNEL: << parameters.channel >>
   - run:
       name: Install Google Chrome
       environment:
-        ORB_PARAM_CHROME_VERSION: <<parameters.chrome-version>>
-        ORB_PARAM_REPLACE_EXISTING: <<parameters.replace-existing>>
+        ORB_PARAM_CHROME_VERSION: <<parameters.chrome_version>>
+        ORB_PARAM_REPLACE_EXISTING: <<parameters.replace_existing>>
         ORB_PARAM_CHANNEL: << parameters.channel >>
         ORB_PARAM_SAVE_CACHE: <<parameters.use_cache>>
-      command: <<include(scripts/install-chrome.sh)>>
+      command: <<include(scripts/install_chrome.sh)>>
   - when:
       condition: <<parameters.use_cache>>
       steps:
       - save_cache:
-          key: chrome-<<parameters.cache_key>>-<<parameters.chrome-version>>-{{ arch }}
+          key: chrome-<<parameters.cache_key>>-<<parameters.chrome_version>>-{{ arch }}
           paths:
           - /tmp/chrome.tar.gz

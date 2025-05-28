@@ -4,7 +4,7 @@ description: >
   https://developer.chrome.com/blog/chrome-for-testing/
 
 parameters:
-  install-dir:
+  install_dir:
     type: string
     default: /usr/local/bin
     description: >
@@ -19,6 +19,6 @@ steps:
   - run:
       name: Install Chrome for testing
       environment:
-        ORB_PARAM_DIR: <<parameters.install-dir>>
+        ORB_PARAM_DIR: <<parameters.install_dir>>
         ORB_PARAM_VERSION: <<parameters.version>>
-      command: <<include(scripts/install-chrome-for-testing.sh)>>
+      command: <<include(scripts/install_chrome_for_testing.sh)>>

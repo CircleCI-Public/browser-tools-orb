@@ -6,7 +6,7 @@ description: >
   Requirements: sed, curl, unzip
 
 parameters:
-  install-dir:
+  install_dir:
     type: string
     default: /usr/local/bin
     description: >
@@ -17,5 +17,5 @@ steps:
   - run:
       name: Install ChromeDriver
       environment:
-        ORB_PARAM_DRIVER_INSTALL_DIR: <<parameters.install-dir>>
-      command: <<include(scripts/install-chromedriver.sh)>>
+        ORB_PARAM_DRIVER_INSTALL_DIR: <<parameters.install_dir>>
+      command: <<include(scripts/install_chromedriver.sh)>>

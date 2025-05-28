@@ -6,12 +6,12 @@ description: >
 
 parameters:
 # firefox / geckodriver
-  install-firefox:
+  install_firefox:
     type: boolean
     default: true
     description: Install Firefox?
 
-  firefox-version:
+  firefox_version:
     type: string
     default: latest
     description: >
@@ -19,18 +19,18 @@ parameters:
       To install an older release, specify a full semantic version number,
       e.g., 66.0.3, 53.0, etc.
 
-  firefox-install-dir:
+  firefox_install_dir:
     type: string
     default: /usr/local/bin
     description: >
       Directory in which to install Firefox
 
-  install-geckodriver:
+  install_geckodriver:
     type: boolean
     default: true
     description: Install Geckodriver?
 
-  geckodriver-version:
+  geckodriver_version:
     type: string
     default: latest
     description: >
@@ -41,14 +41,14 @@ parameters:
       https://github.com/mozilla/geckodriver/releases
       https://firefox-source-docs.mozilla.org/testing/geckodriver/Support.html
 
-  geckodriver-install-dir:
+  geckodriver_install_dir:
     type: string
     default: /usr/local/bin
     description: >
       Directory in which to install Geckodriver
 
   # chrome / chromedriver
-  install-chrome:
+  install_chrome:
     type: boolean
     default: true
     description: >
@@ -56,14 +56,14 @@ parameters:
       installed, as Google does not maintain a public archive of previous
       releases.
 
-  replace-existing-chrome:
+  replace_existing_chrome:
     type: boolean
     default: false
     description: >
       If there is an existing installation of Google Chrome, replace it
       with the latest stable release
 
-  install-chromedriver:
+  install_chromedriver:
     type: boolean
     default: true
     description: >
@@ -72,13 +72,13 @@ parameters:
       of Chrome; for details, see the following information:
       https://sites.google.com/a/chromium.org/chromedriver/downloads/version-selection
 
-  chromedriver-install-dir:
+  chromedriver_install_dir:
     type: string
     default: /usr/local/bin
     description: >
       Directory in which to install Chromedriver
 
-  chrome-version:
+  chrome_version:
     default: latest
     type: string
     description: >
@@ -87,23 +87,23 @@ parameters:
       e.g., 85.0.4183.83
       Only supported on centos and debian
 
-  install-edge:
+  install_edge:
     default: false
     type: boolean
     description: Install Microsoft Edge?
 
-  install-edge-web-driver:
+  install_edge-web-driver:
     default: false
     type: boolean
     description: Install Microsoft Edge Web Driver?
 
-  edge-version:
+  edge_version:
     type: string
     default: latest
     description: Version of Edge to install, defaults to the latest stable release.
       This param only works for Ubuntu/Debian version, MacOS will always install latest version.
 
-  edge-driver-dir:
+  edge_driver_dir:
     type: string
     default: /usr/local/bin
     description: >
@@ -111,38 +111,38 @@ parameters:
 
 steps:
   - when:
-      condition: <<parameters.install-firefox>>
+      condition: <<parameters.install_firefox>>
       steps:
-        - install-firefox:
-            version: <<parameters.firefox-version>>
-            install-dir: <<parameters.firefox-install-dir>>
+        - install_firefox:
+            version: <<parameters.firefox_version>>
+            install_dir: <<parameters.firefox_install_dir>>
 
   - when:
-      condition: <<parameters.install-geckodriver>>
+      condition: <<parameters.install_geckodriver>>
       steps:
-        - install-geckodriver:
-            version: <<parameters.geckodriver-version>>
-            install-dir: <<parameters.geckodriver-install-dir>>
+        - install_geckodriver:
+            version: <<parameters.geckodriver_version>>
+            install_dir: <<parameters.geckodriver_install_dir>>
 
   - when:
-      condition: <<parameters.install-chrome>>
+      condition: <<parameters.install_chrome>>
       steps:
-        - install-chrome:
-            replace-existing: <<parameters.replace-existing-chrome>>
-            chrome-version: <<parameters.chrome-version>>
+        - install_chrome:
+            replace_existing: <<parameters.replace_existing_chrome>>
+            chrome_version: <<parameters.chrome_version>>
 
   - when:
-      condition: <<parameters.install-chromedriver>>
+      condition: <<parameters.install_chromedriver>>
       steps:
-        - install-chromedriver:
-            install-dir: <<parameters.chromedriver-install-dir>>
+        - install_chromedriver:
+            install_dir: <<parameters.chromedriver_install_dir>>
   - when:
-      condition: <<parameters.install-edge>>
+      condition: <<parameters.install_edge>>
       steps:
-        - install-edge:
-            version: <<parameters.edge-version>>
+        - install_edge:
+            version: <<parameters.edge_version>>
   - when:
-      condition: <<parameters.install-edge-web-driver>>
+      condition: <<parameters.install_edge-web-driver>>
       steps:
-        - install-edge-driver:
-            install-dir: <<parameters.edge-driver-dir>>
+        - install_edge_driver:
+            install_dir: <<parameters.edge_driver_dir>>

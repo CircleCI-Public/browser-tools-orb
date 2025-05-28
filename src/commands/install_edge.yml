@@ -16,4 +16,4 @@ steps:
       name: Install Edge
       environment:
         ORB_PARAM_VERSION: <<parameters.version>>
-      command: <<include(scripts/install-edge.sh)>>
+      command: <<include(scripts/install_edge.sh)>>
