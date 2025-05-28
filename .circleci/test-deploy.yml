@@ -7,6 +7,17 @@ filters: &filters
   tags:
     only: /.*/
 jobs:
+  int-chrome-for-testing:
+    parameters:
+      executor:
+        type: executor
+      version:
+        type: string
+    executor: <<parameters.executor >>
+    steps:
+      - browser-tools/install-chrome-for-testing:
+          version: <<parameters.version >>
+      - checkout
   int-test-all:
     parameters:
       executor:
@@ -225,6 +236,13 @@ workflows:
       - int-test-edge:
           name: test-macos-edge
           executor: macos
+      - int-chrome-for-testing:
+          name: install-chrome-for-testing-<<matrix.version>>-<<matrix.executor>>
+          matrix:
+            alias: install-chrome-for-testing
+            parameters:
+              executor: [cimg-base, linux, macos]
+              version: [ "136.0.7103.113", "137.0.7151.40" ]
       - orb-tools/pack:
           filters: *filters
       # This matrix job can likely replace the several others above in the future
@@ -256,6 +274,7 @@ workflows:
             - test-linux-chrome
             - test-cimg-base-firefox
             - test-cimg-node-firefox
+            - install-chrome-for-testing
             - test-specific-version-firefox-matrix
             - test-macos-firefox-matrix
             - test-linux-firefox-matrix
