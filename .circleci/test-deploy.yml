@@ -1,8 +1,8 @@
 version: 2.1
 orbs:
-  browser-tools: circleci/browser-tools@dev:<<pipeline.git.revision>>
-  orb-tools: circleci/orb-tools@11.6.1
+  orb-tools: circleci/orb-tools@12.3.1
   jq: circleci/jq@3.0.2
+  browser-tools: {}
 filters: &filters
   tags:
     only: /.*/
@@ -15,37 +15,37 @@ jobs:
         type: string
     executor: <<parameters.executor >>
     steps:
-      - browser-tools/install-chrome-for-testing:
+      - browser-tools/install_chrome_for_testing:
           version: <<parameters.version >>
       - checkout
   int-test-all:
     parameters:
       executor:
         type: executor
-      firefox-version:
+      firefox_version:
         type: string
         default: latest
-      geckodriver-version:
+      geckodriver_version:
         type: string
         default: latest
-      replace-existing-chrome:
+      replace_existing_chrome:
         type: boolean
         default: true
-      chrome-version:
+      chrome_version:
         type: string
         default: latest
-      edge-version:
+      edge_version:
         type: string
         default: latest
     executor: <<parameters.executor>>
     steps:
       - jq/install
-      - browser-tools/install-browser-tools:
-          firefox-version: <<parameters.firefox-version>>
-          replace-existing-chrome: <<parameters.replace-existing-chrome>>
-          chrome-version: <<parameters.chrome-version>>
-          install-edge: true
-          edge-version: <<parameters.edge-version>>
+      - browser-tools/install_browser_tools:
+          firefox_version: <<parameters.firefox_version>>
+          replace_existing_chrome: <<parameters.replace_existing_chrome>>
+          chrome_version: <<parameters.chrome_version>>
+          install_edge: true
+          edge_version: <<parameters.edge_version>>
       - checkout
   int-tests-chrome:
     parameters:
@@ -56,58 +56,58 @@ jobs:
     executor: << parameters.executor >>
     steps:
       - jq/install
-      - browser-tools/install-chrome:
+      - browser-tools/install_chrome:
           channel: << parameters.channel >>
-      - browser-tools/install-chromedriver
+      - browser-tools/install_chromedriver
       # checkout step is added last to satisfy a test
       - checkout
   int-test-chrome:
     parameters:
       executor:
         type: executor
-      replace-existing-chrome:
+      replace_existing_chrome:
         type: boolean
         default: true
-      chrome-version:
+      chrome_version:
         type: string
         default: latest
     executor: <<parameters.executor>>
     steps:
       - jq/install
-      - browser-tools/install-chrome:
-          chrome-version: <<parameters.chrome-version>>
-      - browser-tools/install-chromedriver
+      - browser-tools/install_chrome:
+          chrome_version: <<parameters.chrome_version>>
+      - browser-tools/install_chromedriver
       - checkout
   int-test-firefox:
     parameters:
       executor:
         type: executor
-      firefox-version:
+      firefox_version:
         type: string
         default: latest
-      geckodriver-version:
+      geckodriver_version:
         type: string
         default: latest
     executor: <<parameters.executor>>
     steps:
       - jq/install
-      - browser-tools/install-firefox:
-          version: <<parameters.firefox-version>>
-      - browser-tools/install-geckodriver:
-          version: <<parameters.geckodriver-version>>
+      - browser-tools/install_firefox:
+          version: <<parameters.firefox_version>>
+      - browser-tools/install_geckodriver:
+          version: <<parameters.geckodriver_version>>
       - checkout
   int-test-edge:
     parameters:
       executor:
         type: executor
-      edge-version:
+      edge_version:
         type: string
         default: latest
     executor: <<parameters.executor>>
     steps:
-      - browser-tools/install-edge:
-          version: <<parameters.edge-version>>
-      - browser-tools/install-edge-driver
+      - browser-tools/install_edge:
+          version: <<parameters.edge_version>>
+      - browser-tools/install_edge_driver
       - checkout
   int-test-chrome-cache:
     parameters:
@@ -116,10 +116,10 @@ jobs:
     executor: <<parameters.executor>>
     steps:
       - jq/install
-      - browser-tools/install-chrome:
+      - browser-tools/install_chrome:
           use_cache: true
           cache_key: v2
-      - browser-tools/install-chromedriver
+      - browser-tools/install_chromedriver
       - checkout
   int-test-firefox-cache:
     parameters:
@@ -130,7 +130,7 @@ jobs:
     executor: <<parameters.executor>>
     steps:
       - jq/install
-      - browser-tools/install-firefox:
+      - browser-tools/install_firefox:
           use_cache: true
           cache_key: v3-<<parameters.version>>
           version: <<parameters.version>>
@@ -162,8 +162,8 @@ workflows:
       - int-test-all:
           name: test-specific-version-all
           executor: cimg-base
-          chrome-version: "131.0.6778.85"
-          firefox-version: "90.0.1"
+          chrome_version: "131.0.6778.85"
+          firefox_version: "90.0.1"
           filters: *filters
       - int-test-all:
           name: test-macos-all
@@ -184,7 +184,7 @@ workflows:
       - int-test-chrome:
           name: test-specific-version-chrome
           executor: cimg-base
-          chrome-version: "131.0.6778.85"
+          chrome_version: "131.0.6778.85"
           filters: *filters
       - int-test-chrome:
           name: test-macos-chrome
@@ -205,44 +205,44 @@ workflows:
           matrix:
             alias: test-specific-version-firefox-matrix
             parameters:
-              firefox-version: ["90.0.1", "135.0"]
-          name: test-specific-version-firefox-<<matrix.firefox-version>>
+              firefox_version: ["90.0.1", "135.0"]
+          name: test-specific-version-firefox-<<matrix.firefox_version>>
           executor: cimg-base
-          firefox-version: "90.0.1"
+          firefox_version: "90.0.1"
           filters: *filters
       - int-test-firefox:
-          name: test-macos-firefox-<<matrix.firefox-version>>
+          name: test-macos-firefox-<<matrix.firefox_version>>
           executor: macos
           matrix:
             alias: test-macos-firefox-matrix
             parameters:
-              firefox-version: ["90.0.1", "135.0"]
+              firefox_version: ["90.0.1", "135.0"]
           filters: *filters
       - int-test-firefox:
-          name: test-linux-firefox-<<matrix.firefox-version>>
+          name: test-linux-firefox-<<matrix.firefox_version>>
           executor: linux
           matrix:
             alias: test-linux-firefox-matrix
             parameters:
-              firefox-version: ["90.0.1", "135.0"]
+              firefox_version: ["90.0.1", "135.0"]
           filters: *filters
       - int-test-edge:
-          name: test-linux-edge-<<matrix.edge-version>>-<<matrix.executor>>
+          name: test-linux-edge-<<matrix.edge_version>>-<<matrix.executor>>
           matrix:
             alias: test-linux-edge
             parameters:
-              edge-version: ["latest", "136.0.3240.76", "135.0.3179.54"]
+              edge_version: ["latest", "136.0.3240.76", "135.0.3179.54"]
               executor: [cimg-base, cimg-node, cimg-openjdk, linux]
       - int-test-edge:
           name: test-macos-edge
           executor: macos
       - int-chrome-for-testing:
-          name: install-chrome-for-testing-<<matrix.version>>-<<matrix.executor>>
+          name: install_chrome_for_testing-<<matrix.version>>-<<matrix.executor>>
           matrix:
-            alias: install-chrome-for-testing
+            alias: install_chrome_for_testing
             parameters:
               executor: [cimg-base, linux, macos]
-              version: [ "136.0.7103.113", "137.0.7151.40" ]
+              version: ["136.0.7103.113", "137.0.7151.40"]
       - orb-tools/pack:
           filters: *filters
       # This matrix job can likely replace the several others above in the future
@@ -274,7 +274,7 @@ workflows:
             - test-linux-chrome
             - test-cimg-base-firefox
             - test-cimg-node-firefox
-            - install-chrome-for-testing
+            - install_chrome_for_testing
             - test-specific-version-firefox-matrix
             - test-macos-firefox-matrix
             - test-linux-firefox-matrix

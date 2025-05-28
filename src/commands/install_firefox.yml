@@ -11,7 +11,7 @@ parameters:
       To install an older release, specify a full semantic version number,
       ESR or otherwise, e.g., 66.0.3, 52.0.1esr, 53.0, etc.
 
-  install-dir:
+  install_dir:
     type: string
     default: /usr/local/bin
     description: >
@@ -45,10 +45,10 @@ steps:
   - run:
       name: Install Firefox
       environment:
-        ORB_PARAM_FIREFOX_INSTALL_DIR: <<parameters.install-dir>>
+        ORB_PARAM_FIREFOX_INSTALL_DIR: <<parameters.install_dir>>
         ORB_PARAM_FIREFOX_VERSION: <<parameters.version>>
         ORB_PARAM_SAVE_CACHE: <<parameters.use_cache>>
-      command: <<include(scripts/install-firefox.sh)>>
+      command: <<include(scripts/install_firefox.sh)>>
   - when:
       condition:
         and:

@@ -9,4 +9,4 @@ usage:
       docker:
         - image: cimg/node:20.4.0-browsers
       steps:
-        - browser-tools/install-browser-tools
+        - browser-tools/install_browser_tools
