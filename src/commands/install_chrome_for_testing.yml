@@ -6,8 +6,9 @@ description: >
 parameters:
   version:
     type: string
+    default: "latest"
     description: >
-      Which version to install. No default version provided, you must specify the one you want.
+      Which version to install. If none provided, the latest available will be installed.
 
   install_dir:
     type: string
