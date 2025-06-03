@@ -244,9 +244,9 @@ workflows:
               executor: [cimg-base, linux, macos]
               version: ["136.0.7103.113", "137.0.7151.40", "latest"]
       - int-chrome-for-testing-no-args:
-          name: install_chrome_for_testing-no-args-<<matrix.version>>-<<matrix.executor>>
+          name: install_chrome_for_testing_no_args-<<matrix.executor>>
           matrix:
-            alias: install_chrome_for_testing
+            alias: install_chrome_for_testing_no_args
             parameters:
               executor: [cimg-base, linux, macos]
       - orb-tools/pack:
