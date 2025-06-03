@@ -4,21 +4,27 @@ description: >
   https://developer.chrome.com/blog/chrome-for-testing/
 
 parameters:
+  version:
+    type: string
+    description: >
+      Which version to install. No default version provided, you must specify the one you want.
+
   install_dir:
     type: string
     default: /usr/local/bin
     description: >
       Directory in which to download chrome and the driver.
 
-  version:
-    type: string
-    default: ""
+  install_chromedriver:
+    type: boolean
+    default: true
     description: >
-      Which version to install. No default version provided, you must specify the one you want.
+      Whether or not to install Chrome for Testing chromedriver alongside Chrome for Testing
 steps:
   - run:
       name: Install Chrome for testing
       environment:
         ORB_PARAM_DIR: <<parameters.install_dir>>
         ORB_PARAM_VERSION: <<parameters.version>>
+        ORB_PARAM_INSTALL_CHROMEDRIVER: <<parameters.install_chromedriver>>
       command: <<include(scripts/install_chrome_for_testing.sh)>>
