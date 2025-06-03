@@ -3,6 +3,7 @@ if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
 
 cd "$ORB_PARAM_DIR" || { echo "$ORB_PARAM_DIR does not exist. Exiting"; exit 1; }
 
+
 # process ORB_PARAM_VERSION
 if command -v circleci &>/dev/null; then
   # CircleCI is installed, proceed with substitution
@@ -22,6 +23,7 @@ if uname -a | grep Darwin >/dev/null 2>&1; then
     fi
 
     $SUDO curl -s -o chrome-for-testing.zip "https://storage.googleapis.com/chrome-for-testing-public/$target_version/mac-arm64/chrome-mac-arm64.zip"
+
     if [ -s "chrome-for-testing.zip" ]; then
         $SUDO unzip chrome-for-testing.zip >/dev/null 2>&1
     else
@@ -67,6 +69,7 @@ fi
 
 if [ "$ORB_PARAM_INSTALL_CHROMEDRIVER" = true ] ; then
     if chromedriver --version | grep "$target_version" >/dev/null 2>&1; then
+
         echo "chromedriver for Chrome for testing installed correctly"
     else
         echo "Error installing Chrome for testing"
