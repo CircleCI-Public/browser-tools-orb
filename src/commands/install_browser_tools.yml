@@ -76,7 +76,8 @@ parameters:
     type: string
     default: /usr/local/bin
     description: >
-      Directory in which to install Chromedriver
+      Directory in which to install Chromedriver.
+      If installling Chrome Testing Driver as well, use a different directoy for each.
 
   chrome_version:
     default: latest
@@ -109,6 +110,29 @@ parameters:
     description: >
       Directory in which to install Edge WebDriver
 
+  install_chrome_for_testing:
+    default: false
+    type: boolean
+    description: Install Chrome for testing?
+
+  install_chrome_for_testing_driver:
+    default: false
+    type: boolean
+    description: Install Chrome for testing with driver?
+
+  chrome_for_testing_version:
+    type: string
+    default: latest
+    description: >
+      Version of Chrome for testing to install, defaults to the latest stable release.
+
+  chrome_for_testing_driver_install_dir:
+    type: string
+    default: /usr/local/bin
+    description: >
+      Directory in which to install Chromedriver.
+      If installling chromedriver as well, use a different directoy for each.
+
 steps:
   - when:
       condition: <<parameters.install_firefox>>
@@ -123,6 +147,13 @@ steps:
         - install_geckodriver:
             version: <<parameters.geckodriver_version>>
             install_dir: <<parameters.geckodriver_install_dir>>
+  - when:
+      condition: <<parameters.install_chrome_for_testing>>
+      steps:
+        - install_chrome_for_testing:
+            version: <<parameters.chrome_for_testing_version>>
+            install_chromedriver: <<parameters.install_chrome_for_testing_driver>>
+            install_dir: <<parameters.chrome_for_testing_driver_install_dir>>
 
   - when:
       condition: <<parameters.install_chrome>>
