@@ -18,6 +18,14 @@ jobs:
       - browser-tools/install_chrome_for_testing:
           version: <<parameters.version >>
       - checkout
+  int-chrome-for-testing-no-args:
+    parameters:
+      executor:
+        type: executor
+    executor: <<parameters.executor >>
+    steps:
+      - browser-tools/install_chrome_for_testing
+      - checkout
   int-test-all:
     parameters:
       executor:
@@ -242,7 +250,13 @@ workflows:
             alias: install_chrome_for_testing
             parameters:
               executor: [cimg-base, linux, macos]
-              version: ["136.0.7103.113", "137.0.7151.40"]
+              version: ["136.0.7103.113", "137.0.7151.40", "latest"]
+      - int-chrome-for-testing-no-args:
+          name: install_chrome_for_testing_no_args-<<matrix.executor>>
+          matrix:
+            alias: install_chrome_for_testing_no_args
+            parameters:
+              executor: [cimg-base, linux, macos]
       - orb-tools/pack:
           filters: *filters
       # This matrix job can likely replace the several others above in the future
