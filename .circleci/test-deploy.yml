@@ -48,6 +48,7 @@ jobs:
     executor: <<parameters.executor>>
     steps:
       - jq/install
+      - run: mkdir /usr/local/bin/testing
       - browser-tools/install_browser_tools:
           firefox_version: <<parameters.firefox_version>>
           replace_existing_chrome: <<parameters.replace_existing_chrome>>
