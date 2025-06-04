@@ -18,6 +18,14 @@ jobs:
       - browser-tools/install_chrome_for_testing:
           version: <<parameters.version >>
       - checkout
+  int-chrome-for-testing-no-args:
+    parameters:
+      executor:
+        type: executor
+    executor: <<parameters.executor >>
+    steps:
+      - browser-tools/install_chrome_for_testing
+      - checkout
   int-test-all:
     parameters:
       executor:
