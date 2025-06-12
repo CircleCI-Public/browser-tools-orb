@@ -57,6 +57,11 @@ elif command -v apt >/dev/null 2>&1; then
         exit 1
     fi
 
+    $SUDO apt-get update
+    while read -r pkg; do
+        $SUDO apt-get satisfy -y --no-install-recommends "${pkg}";
+    done < /opt/chrome-for-testing/deb.deps;
+
     if [ "$ORB_PARAM_INSTALL_CHROMEDRIVER" = true ] ; then
         $SUDO curl -s -o chrome-for-testing-driver.zip "https://storage.googleapis.com/chrome-for-testing-public/$target_version/linux64/chromedriver-linux64.zip"
         $SUDO unzip chrome-for-testing-driver.zip >/dev/null 2>&1
