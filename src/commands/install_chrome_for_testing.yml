@@ -1,6 +1,6 @@
 description: >
-  Install Chrome for testing and its driver into the specified directory.
-  For more information about chrome for testing:
+  Install Chrome for Testing and its driver into the specified directory.
+  For more information about Chrome for Testing:
   https://developer.chrome.com/blog/chrome-for-testing/
 
 parameters:
@@ -14,16 +14,16 @@ parameters:
     type: string
     default: /usr/local/bin
     description: >
-      Directory in which to download chrome and the driver.
+      Directory in which to download Chrome and the driver.
 
   install_chromedriver:
     type: boolean
     default: true
     description: >
-      Whether or not to install Chrome for Testing chromedriver alongside Chrome for Testing
+      Whether or not to install Chrome for Testing ChromeDriver alongside Chrome for Testing
 steps:
   - run:
-      name: Install Chrome for testing
+      name: Install Chrome for Testing
       environment:
         ORB_PARAM_DIR: <<parameters.install_dir>>
         ORB_PARAM_VERSION: <<parameters.version>>

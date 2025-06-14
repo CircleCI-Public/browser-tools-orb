@@ -16,9 +16,9 @@ parameters:
     type: string
     description: >
       Version of Chrome to install, defaults to the latest stable release.
-      To install an older release, specify a full chrome version number,
+      To install an older release, specify a full Chrome version number,
       e.g., 85.0.4183.83
-      Only supported on centos and debian
+      Only supported on CentOS and Debian
       If replace_existing is false, this version is ignored.
   channel:
     description: |
@@ -28,14 +28,14 @@ parameters:
     default: "stable"
   use_cache:
     description: |
-      Install chrome using a cached version.
+      Install Chrome using a cached version.
       Using this option will increase costs and does not improve times considerable, use only if having problems with download.
       Defaults to false.
     default: false
     type: boolean
   cache_key:
     description: |
-      Cache key to save chrome.
+      Cache key to save Chrome.
       Defaults to v1.
     default: v1
     type: string

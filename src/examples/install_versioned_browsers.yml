@@ -1,5 +1,5 @@
 description: |
-  Install specific versions of firefox and chrome in the base variant image.
+  Install specific versions of Firefox and Chrome in the base variant image.
 usage:
   version: 2.1
   orbs:

@@ -1,5 +1,5 @@
 description: >
-  Install Mozilla's Geckodriver WebDriver proxy, for use in browser
+  Install Mozilla's geckodriver WebDriver proxy, for use in browser
   testing with Firefox. Requirements: curl, tar
 
 parameters:
@@ -7,9 +7,9 @@ parameters:
     type: string
     default: latest
     description: >
-      Version of Geckodriver to install, defaults to latest release. To
+      Version of geckodriver to install, defaults to latest release. To
       install an older release, specify a full semantic version tag,
-      e.g., `v0.23.0`. For a list of releases, and a Firefox/Geckodriver
+      e.g., `v0.23.0`. For a list of releases, and a Firefox/geckodriver
       version compatibility table, see the following links:
       https://github.com/mozilla/geckodriver/releases
       https://firefox-source-docs.mozilla.org/testing/geckodriver/Support.html
@@ -18,11 +18,11 @@ parameters:
     type: string
     default: /usr/local/bin
     description: >
-      Directory in which to install Geckodriver
+      Directory in which to install geckodriver
 
 steps:
   - run:
-      name: Install Geckodriver
+      name: Install geckodriver
       environment:
         ORB_PARAM_GECKO_INSTALL_DIR: <<parameters.install_dir>>
         ORB_PARAM_GECKO_VERSION: <<parameters.version>>

@@ -1,7 +1,7 @@
 version: 2.1
 
 description: >
-  Install a variety of browsers and tools for browser testing. Includes Chrome, FireFox, ChromeDriver and GeckoDriver.
+  Install a variety of browsers and tools for browser testing. Includes Chrome, Firefox, ChromeDriver and geckodriver.
 
 display:
   source_url: https://github.com/CircleCI-Public/browser-tools-orb
