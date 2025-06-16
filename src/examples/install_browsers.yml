@@ -1,5 +1,5 @@
 description: |
-  Install all available browsers and browser drivers. Includes Chrome, FireFox, ChromeDriver and GeckoDriver. Use the node variant
+  Install all available browsers and browser drivers. Includes Chrome, Firefox, ChromeDriver and geckodriver. Use the node variant
 usage:
   version: 2.1
   orbs:

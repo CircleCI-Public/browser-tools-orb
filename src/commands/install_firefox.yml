@@ -19,7 +19,7 @@ parameters:
 
   use_cache:
     description: |
-      Install firefox using a cached version of the installer.
+      Install Firefox using a cached version of the installer.
       Using this option will increase costs and does not improve times considerable, use only if having problems with download.
       Cache won't be used when version is set to latest.
       Defaults to false.
