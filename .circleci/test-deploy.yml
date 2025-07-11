@@ -161,7 +161,7 @@ workflows:
           matrix:
             parameters:
               executor: [cimg-node, macos]
-              version: ["latest", "90.0.1", "135.0"]
+              version: ["latest", "128.0.2", "135.0", "140.0"]
           filters: *filters
       - int-test-all:
           name: test-cimg-base-all
@@ -175,7 +175,7 @@ workflows:
           name: test-specific-version-all
           executor: cimg-base
           chrome_version: "131.0.6778.85"
-          firefox_version: "90.0.1"
+          firefox_version: "128.0.2"
           filters: *filters
       - int-test-all:
           name: test-macos-all
@@ -217,10 +217,9 @@ workflows:
           matrix:
             alias: test-specific-version-firefox-matrix
             parameters:
-              firefox_version: ["90.0.1", "135.0"]
+              firefox_version: ["128.0.2", "135.0", "140.0"]
           name: test-specific-version-firefox-<<matrix.firefox_version>>
           executor: cimg-base
-          firefox_version: "90.0.1"
           filters: *filters
       - int-test-firefox:
           name: test-macos-firefox-<<matrix.firefox_version>>
@@ -228,7 +227,7 @@ workflows:
           matrix:
             alias: test-macos-firefox-matrix
             parameters:
-              firefox_version: ["90.0.1", "135.0"]
+              firefox_version: ["128.0.2", "135.0", "140.0"]
           filters: *filters
       - int-test-firefox:
           name: test-linux-firefox-<<matrix.firefox_version>>
@@ -236,7 +235,7 @@ workflows:
           matrix:
             alias: test-linux-firefox-matrix
             parameters:
-              firefox_version: ["90.0.1", "135.0"]
+              firefox_version: ["128.0.2", "135.0", "140.0"]
           filters: *filters
       - int-test-edge:
           name: test-linux-edge-<<matrix.edge_version>>-<<matrix.executor>>
