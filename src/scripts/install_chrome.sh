@@ -164,7 +164,7 @@ else
   echo "Preparing Chrome installation for Debian-based systems"
   if [[ "$PROCESSED_CHROME_VERSION" == "latest" ]]; then
     ENV_IS_ARM=$(! dpkg --print-architecture | grep -q arm; echo $?)
-    wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | $SUDO apt-key add -
+    wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | $SUDO tee /etc/apt/trusted.gpg.d/linux_signing_key.asc
     if [ "$ENV_IS_ARM" = 1 ]; then
       echo "No Linux ARM64 support for Chrome"
       exit 1
