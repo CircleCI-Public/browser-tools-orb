@@ -58,6 +58,7 @@ elif command -v apt >/dev/null 2>&1; then
     fi
 
     $SUDO apt-get update
+    $SUDO chmod +r /opt/chrome-for-testing/deb.deps
     while read -r pkg; do
         $SUDO apt-get satisfy -y --no-install-recommends "${pkg}";
     done < /opt/chrome-for-testing/deb.deps;
