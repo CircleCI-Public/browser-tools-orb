@@ -18,7 +18,7 @@ else
 fi
 
 
-wget -q -O edgedriver.zip "https://msedgedriver.azureedge.net/$VERSION/edgedriver_$PLATFORM.zip"
+wget -q -O edgedriver.zip "https://msedgedriver.microsoft.com/$VERSION/edgedriver_$PLATFORM.zip"
 unzip edgedriver.zip >/dev/null 2>&1
 $SUDO mv msedgedriver "$ORB_PARAM_DRIVER_INSTALL_DIR"
 rm -rf edgedriver.zip Driver_Notes
