@@ -9,8 +9,10 @@ usage:
       docker:
         - image: cimg/node:20.4.0-browsers
       steps:
-        - browser-tools/install_chrome
-        - browser-tools/install_chromedriver
+        - browser-tools/install_chrome:
+            timeout: 5m
+        - browser-tools/install_chromedriver:
+            timeout: 5m
         - run:
             name: Check install
             command: |

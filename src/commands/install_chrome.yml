@@ -39,6 +39,11 @@ parameters:
       Defaults to v1.
     default: v1
     type: string
+  timeout:
+    type: string
+    default: 10m
+    description: >
+      Maximum time to allow without output before failing the step. Passed to CircleCI's no_output_timeout.
 steps:
   - when:
       condition: <<parameters.use_cache>>
@@ -51,6 +56,7 @@ steps:
           command: <<include(scripts/process_cache.sh)>>
           environment:
             ORB_PARAM_CHANNEL: << parameters.channel >>
+          no_output_timeout: <<parameters.timeout>>
   - run:
       name: Install Google Chrome
       environment:
@@ -59,6 +65,7 @@ steps:
         ORB_PARAM_CHANNEL: << parameters.channel >>
         ORB_PARAM_SAVE_CACHE: <<parameters.use_cache>>
       command: <<include(scripts/install_chrome.sh)>>
+      no_output_timeout: <<parameters.timeout>>
   - when:
       condition: <<parameters.use_cache>>
       steps:
