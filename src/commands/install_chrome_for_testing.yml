@@ -21,6 +21,11 @@ parameters:
     default: true
     description: >
       Whether or not to install Chrome for Testing ChromeDriver alongside Chrome for Testing
+  timeout:
+    type: string
+    default: 10m
+    description: >
+      Maximum time to allow without output before failing the step. Passed to CircleCI's no_output_timeout.
 steps:
   - run:
       name: Install Chrome for Testing
@@ -29,3 +34,4 @@ steps:
         ORB_PARAM_VERSION: <<parameters.version>>
         ORB_PARAM_INSTALL_CHROMEDRIVER: <<parameters.install_chromedriver>>
       command: <<include(scripts/install_chrome_for_testing.sh)>>
+      no_output_timeout: <<parameters.timeout>>

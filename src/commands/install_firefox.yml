@@ -31,6 +31,11 @@ parameters:
       Defaults to v1.
     default: v1
     type: string
+  timeout:
+    type: string
+    default: 10m
+    description: >
+      Maximum time to allow without output before failing the step. Passed to CircleCI's no_output_timeout.
 steps:
   - when:
       condition:
@@ -49,6 +54,7 @@ steps:
         ORB_PARAM_FIREFOX_VERSION: <<parameters.version>>
         ORB_PARAM_SAVE_CACHE: <<parameters.use_cache>>
       command: <<include(scripts/install_firefox.sh)>>
+      no_output_timeout: <<parameters.timeout>>
   - when:
       condition:
         and:

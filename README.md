@@ -6,6 +6,18 @@ Install Chrome, Chrome for Testing, ChromeDriver, Edge, Firefox and geckodriver 
 
 For full usage guidelines, see the [orb registry listing](http://circleci.com/orbs/registry/orb/circleci/browser-tools).
 
+### Timeout parameter
+
+All install commands support a `timeout` parameter that maps to CircleCI's `no_output_timeout`. Example:
+
+```yaml
+- browser-tools/install_chrome:
+    replace_existing: true
+    timeout: 5m
+- browser-tools/install_chromedriver:
+    timeout: 5m
+```
+
 ## Contributing
 
 We welcome [issues](https://github.com/CircleCI-Public/browser-tools-orb/issues) to and [pull requests](https://github.com/CircleCI-Public/browser-tools-orb/pulls) against this repository!

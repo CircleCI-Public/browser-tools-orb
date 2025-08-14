@@ -19,6 +19,11 @@ parameters:
     default: /usr/local/bin
     description: >
       Directory in which to install geckodriver
+  timeout:
+    type: string
+    default: 10m
+    description: >
+      Maximum time to allow without output before failing the step. Passed to CircleCI's no_output_timeout.
 
 steps:
   - run:
@@ -27,3 +32,4 @@ steps:
         ORB_PARAM_GECKO_INSTALL_DIR: <<parameters.install_dir>>
         ORB_PARAM_GECKO_VERSION: <<parameters.version>>
       command: <<include(scripts/install_geckodriver.sh)>>
+      no_output_timeout: <<parameters.timeout>>

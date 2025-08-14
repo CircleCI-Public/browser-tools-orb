@@ -8,6 +8,11 @@ parameters:
     default: /usr/local/bin
     description: >
       Directory in which to install Edge WebDriver
+  timeout:
+    type: string
+    default: 10m
+    description: >
+      Maximum time to allow without output before failing the step. Passed to CircleCI's no_output_timeout.
 
 steps:
   - run:
@@ -15,3 +20,4 @@ steps:
       environment:
         ORB_PARAM_DRIVER_INSTALL_DIR: <<parameters.install_dir>>
       command: <<include(scripts/install_edge_driver.sh)>>
+      no_output_timeout: <<parameters.timeout>>

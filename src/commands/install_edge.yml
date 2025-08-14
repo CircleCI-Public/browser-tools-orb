@@ -11,9 +11,15 @@ parameters:
     description: >
       Version of Edge to install, defaults to the latest stable release.
       This param only works for Ubuntu/Debian version, macOS will always install latest version.
+  timeout:
+    type: string
+    default: 10m
+    description: >
+      Maximum time to allow without output before failing the step. Passed to CircleCI's no_output_timeout.
 steps:
   - run:
       name: Install Edge
       environment:
         ORB_PARAM_VERSION: <<parameters.version>>
       command: <<include(scripts/install_edge.sh)>>
+      no_output_timeout: <<parameters.timeout>>
