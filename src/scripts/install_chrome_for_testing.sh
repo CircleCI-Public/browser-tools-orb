@@ -27,7 +27,7 @@ if uname -a | grep Darwin >/dev/null 2>&1; then
         $SUDO rm chrome-for-testing.zip
         $SUDO mv ./chrome-mac-arm64 /opt/chrome-for-testing
         # leveraging /opt instead of /Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing as this should be temporary
-        $SUDO ln -fs /opt/chrome-for-testing/chrome /usr/local/bin/chrome
+        $SUDO ln -fs /opt/chrome-for-testing/chrome "$ORB_PARAM_DIR/chrome"
     else
         echo "Version $target_version doesn't exist"
         #exit 1
@@ -51,7 +51,7 @@ elif command -v apt >/dev/null 2>&1; then
         $SUDO unzip chrome-for-testing.zip >/dev/null 2>&1
         $SUDO rm chrome-for-testing.zip
         $SUDO mv ./chrome-linux64 /opt/chrome-for-testing
-        $SUDO ln -fs /opt/chrome-for-testing/chrome /usr/local/bin/chrome
+        $SUDO ln -fs /opt/chrome-for-testing/chrome "$ORB_PARAM_DIR/chrome"
     else
         echo "Version $target_version doesn't exist"
         exit 1

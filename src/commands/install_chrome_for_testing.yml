@@ -14,7 +14,7 @@ parameters:
     type: string
     default: /usr/local/bin
     description: >
-      Directory in which to download Chrome and the driver.
+      Directory in which to download and install Chrome and the driver.
 
   install_chromedriver:
     type: boolean
