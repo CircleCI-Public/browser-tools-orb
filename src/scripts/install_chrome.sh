@@ -88,7 +88,14 @@ elif command -v yum >/dev/null 2>&1; then
   fi
 else
   if command -v google-chrome >/dev/null 2>&1; then
-    if [ "$ORB_PARAM_REPLACE_EXISTING" == "1" ]; then
+    if [[ "$PROCESSED_CHROME_VERSION" == "latest" ]]; then
+      LATEST_VERSION="$(curl -s 'https://chromiumdash.appspot.com/fetch_releases?channel=Stable&platform=Linux' | jq -r ' .[0] | .version ')"
+      target_version="$LATEST_VERSION"
+    else
+      target_version="$PROCESSED_CHROME_VERSION"
+    fi
+    installed_version="$(google-chrome --version | awk '{print $3}')"
+    if [ "$ORB_PARAM_REPLACE_EXISTING" == "1" ] && [ "$installed_version" != "$target_version" ]; then
       echo "$(google-chrome --version)is currently installed; replacing it"
       $SUDO apt-get -y --purge remove google-chrome-stable >/dev/null 2>&1 || true
       $SUDO rm -f "$(command -v google-chrome)" >/dev/null 2>&1 || true
