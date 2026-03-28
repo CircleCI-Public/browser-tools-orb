@@ -32,7 +32,7 @@ fi
 
 if uname -a | grep Darwin >/dev/null 2>&1; then
     if [[ "$PROCESSED_CHROME_VERSION" == "latest" ]]; then
-      LATEST_VERSION="$(curl -s 'https://chromiumdash.appspot.com/fetch_releases?channel=Stable&platform=Mac' | jq -r ' .[0] | .version ')"
+      LATEST_VERSION="$(curl -s 'https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json' | jq -r '.channels.Stable.version')"
       target_version="$LATEST_VERSION"
     else
       target_version="$PROCESSED_CHROME_VERSION"
@@ -58,7 +58,7 @@ if uname -a | grep Darwin >/dev/null 2>&1; then
     fi
 elif command -v apt >/dev/null 2>&1; then
     if [[ "$PROCESSED_CHROME_VERSION" == "latest" ]]; then
-      LATEST_VERSION="$(curl -s 'https://chromiumdash.appspot.com/fetch_releases?channel=Stable&platform=Linux' | jq -r ' .[0] | .version ')"
+      LATEST_VERSION="$(curl -s 'https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json' | jq -r '.channels.Stable.version')"
       target_version="$LATEST_VERSION"
     else
       target_version="$PROCESSED_CHROME_VERSION"
