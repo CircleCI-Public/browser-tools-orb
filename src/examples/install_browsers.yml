@@ -7,6 +7,6 @@ usage:
   jobs:
     test:
       docker:
-        - image: cimg/node:20.4.0-browsers
+        - image: cimg/node:lts-browsers # see https://circleci.com/developer/images/image/cimg/node for additional tags
       steps:
         - browser-tools/install_browser_tools
