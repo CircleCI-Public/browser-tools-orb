@@ -9,7 +9,7 @@ parameters:
     description: >
       Version of Firefox to install, defaults to the latest stable release.
       To install an older release, specify a full semantic version number,
-      ESR or otherwise, e.g., 66.0.3, 52.0.1esr, 53.0, etc.
+      ESR or otherwise, e.g., 149.0, 149.0.2, 140.9.1esr, etc.
 
   install_dir:
     type: string
@@ -20,14 +20,14 @@ parameters:
   use_cache:
     description: |
       Install Firefox using a cached version of the installer.
-      Using this option will increase costs and does not improve times considerable, use only if having problems with download.
+      Using this option will increase costs and does not considerably improve times, use only if having problems with download.
       Cache won't be used when version is set to latest.
       Defaults to false.
     default: false
     type: boolean
   cache_key:
     description: |
-      Cache key to save chrome.
+      Cache key to save Firefox.
       Defaults to v1.
     default: v1
     type: string

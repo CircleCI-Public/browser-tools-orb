@@ -9,8 +9,8 @@ usage:
       executor: browser-tools/default
       steps:
         - browser-tools/install_browser_tools:
-            firefox_version: "80.0.1"
-            chrome_version: "85.0.4183.102"
+            firefox_version: "149.0.2"
+            chrome_version: "147.0.7727.55"
         - run:
             name: Check install
             command: |

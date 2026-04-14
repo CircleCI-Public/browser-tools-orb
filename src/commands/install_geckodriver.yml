@@ -9,7 +9,7 @@ parameters:
     description: >
       Version of geckodriver to install, defaults to latest release. To
       install an older release, specify a full semantic version tag,
-      e.g., `v0.23.0`. For a list of releases, and a Firefox/geckodriver
+      e.g., `v0.36.0`. For a list of releases, and a Firefox/geckodriver
       version compatibility table, see the following links:
       https://github.com/mozilla/geckodriver/releases
       https://firefox-source-docs.mozilla.org/testing/geckodriver/Support.html

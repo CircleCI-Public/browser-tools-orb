@@ -161,7 +161,7 @@ workflows:
           matrix:
             parameters:
               executor: [cimg-node, macos]
-              version: ["latest", "128.0.2", "135.0", "140.0"]
+              version: ["latest", "149.0", "149.0.2", "140.9.1esr"]
           filters: *filters
       - int-test-all:
           name: test-cimg-base-all
@@ -174,8 +174,8 @@ workflows:
       - int-test-all:
           name: test-specific-version-all
           executor: cimg-base
-          chrome_version: "143.0.7499.146"
-          firefox_version: "128.0.2"
+          chrome_version: "147.0.7727.55"
+          firefox_version: "149.0.2"
           filters: *filters
       - int-test-all:
           name: test-macos-all
@@ -196,7 +196,7 @@ workflows:
       - int-test-chrome:
           name: test-specific-version-chrome
           executor: cimg-base
-          chrome_version: "143.0.7499.146"
+          chrome_version: "147.0.7727.55"
           filters: *filters
       - int-test-chrome:
           name: test-macos-chrome
@@ -217,7 +217,7 @@ workflows:
           matrix:
             alias: test-specific-version-firefox-matrix
             parameters:
-              firefox_version: ["128.0.2", "135.0", "140.0"]
+              firefox_version: ["149.0", "149.0.2", "140.9.1esr"]
           name: test-specific-version-firefox-<<matrix.firefox_version>>
           executor: cimg-base
           filters: *filters
@@ -227,7 +227,7 @@ workflows:
           matrix:
             alias: test-macos-firefox-matrix
             parameters:
-              firefox_version: ["128.0.2", "135.0", "140.0"]
+              firefox_version: ["149.0", "149.0.2", "140.9.1esr"]
           filters: *filters
       - int-test-firefox:
           name: test-linux-firefox-<<matrix.firefox_version>>
@@ -235,14 +235,14 @@ workflows:
           matrix:
             alias: test-linux-firefox-matrix
             parameters:
-              firefox_version: ["128.0.2", "135.0", "140.0"]
+              firefox_version: ["149.0", "149.0.2", "140.9.1esr"]
           filters: *filters
       - int-test-edge:
           name: test-linux-edge-<<matrix.edge_version>>-<<matrix.executor>>
           matrix:
             alias: test-linux-edge
             parameters:
-              edge_version: ["latest", "136.0.3240.76", "135.0.3179.54"]
+              edge_version: ["latest", "147.0.3912.60"]
               executor: [cimg-base, cimg-node, cimg-openjdk, linux]
       - int-test-edge:
           name: test-macos-edge
@@ -253,7 +253,7 @@ workflows:
             alias: install_chrome_for_testing
             parameters:
               executor: [cimg-base, linux, macos]
-              version: ["136.0.7103.113", "137.0.7151.40", "latest"]
+              version: ["latest", "147.0.7727.56"]
       - int-chrome-for-testing-no-args:
           name: install_chrome_for_testing_no_args-<<matrix.executor>>
           matrix:
