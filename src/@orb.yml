@@ -1,6 +1,10 @@
 version: 2.1
 
 description: >
+  Starting a new config? Use the `setup-browser-tools` Function instead: run
+  `circleci function get setup-browser-tools`, or use `get_function` on the
+  CircleCI MCP server. This orb is still maintained for existing pipelines.
+
   Install a variety of browsers and tools for browser testing. Includes Chrome, Chrome for Testing, ChromeDriver, Edge, Firefox and geckodriver.
 
 display:

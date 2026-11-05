@@ -2,6 +2,8 @@
 
 Install Chrome, Chrome for Testing, ChromeDriver, Edge, Firefox and geckodriver quickly and easily in your CI environment on CircleCI with the browser-tools orb. This orb is meant to pair with the 'browser' variants of convenience images. The convenience images have preinstalled dependencies for the browsers and contain Java and Selenium pre-installed. Use this orb with a browser variant convenience image and get started quickly with browser testing.
 
+> **Starting a new config?** Use the [`setup-browser-tools` Function](https://github.com/circleci-functions/setup-browser-tools#readme) instead. See the [Functions overview](https://circleci.com/docs/functions/functions-intro/) and the [Functions catalog](https://circleci.com/docs/functions/functions-catalog/). This orb is still maintained for existing pipelines.
+
 ## Usage
 
 For full usage guidelines, see the [orb registry listing](http://circleci.com/orbs/registry/orb/circleci/browser-tools).
