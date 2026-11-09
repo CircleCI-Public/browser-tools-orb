@@ -315,7 +315,7 @@ executors:
       - image: cimg/openjdk:11.0-browsers
   macos:
     macos:
-      xcode: 15.3.0
+      xcode: 15.4.0
   linux:
     machine:
       image: ubuntu-2204:2024.08.1
