@@ -9,8 +9,9 @@ parameters:
     type: boolean
     default: false
     description: >
-      If there is an existing installation of Google Chrome, replace it
-      with the latest stable release?
+      Replace an existing Chrome installation when its version differs.
+      On Debian and Ubuntu, also select the requested channel as the
+      default google-chrome executable.
   chrome_version:
     default: latest
     type: string
