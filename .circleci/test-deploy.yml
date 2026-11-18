@@ -73,6 +73,34 @@ jobs:
       - browser-tools/install_chromedriver
       # checkout step is added last to satisfy a test
       - checkout
+  int-test-chrome-channel-replacement:
+    executor: cimg-base
+    steps:
+      - jq/install
+      - browser-tools/install_chrome:
+          channel: stable
+      - run:
+          name: Select Stable before installing Beta
+          command: |
+            test ! -e /usr/bin/google-chrome-beta
+            sudo update-alternatives --set google-chrome /usr/bin/google-chrome-stable
+      - browser-tools/install_chrome:
+          channel: beta
+          replace_existing: true
+      - run:
+          name: Verify Beta is selected after installation
+          command: |
+            test -x /usr/bin/google-chrome-stable
+            test /usr/bin/google-chrome -ef /usr/bin/google-chrome-beta
+      - run: sudo update-alternatives --set google-chrome /usr/bin/google-chrome-stable
+      - browser-tools/install_chrome:
+          channel: beta
+          replace_existing: true
+      - run:
+          name: Verify Beta is selected when reusing it
+          command: |
+            test -x /usr/bin/google-chrome-stable
+            test /usr/bin/google-chrome -ef /usr/bin/google-chrome-beta
   int-test-chrome:
     parameters:
       executor:
@@ -274,6 +302,7 @@ workflows:
               channel:
                 - "stable"
                 - "beta"
+      - int-test-chrome-channel-replacement
       - orb-tools/publish:
           orb_name: circleci/browser-tools
           vcs_type: << pipeline.project.type >>
