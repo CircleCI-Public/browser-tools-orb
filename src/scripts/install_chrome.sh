@@ -104,24 +104,25 @@ elif command -v yum >/dev/null 2>&1; then
     echo "Google Chrome is not currently installed; installing it"
   fi
 else
-  if command -v google-chrome >/dev/null 2>&1; then
+  chrome_package="google-chrome-${ORB_PARAM_CHANNEL}"
+  if chrome_path=$(command -v "$chrome_package"); then
     if [[ "$PROCESSED_CHROME_VERSION" == "latest" ]]; then
-      LATEST_VERSION="$(curl -s 'https://chromiumdash.appspot.com/fetch_releases?channel=Stable&platform=Linux' | jq -r ' .[0] | .version ')"
-      target_version="$LATEST_VERSION"
+      release_channel="${ORB_PARAM_CHANNEL^}"
+      target_version="$(curl -s "https://chromiumdash.appspot.com/fetch_releases?channel=${release_channel}&platform=Linux" | jq -r ' .[0] | .version ')"
     else
       target_version="$PROCESSED_CHROME_VERSION"
     fi
-    installed_version="$(google-chrome --version | awk '{print $3}')"
+    installed_version="$("$chrome_path" --version | awk '{print $3}')"
     if [ "$ORB_PARAM_REPLACE_EXISTING" == "1" ] && [ "$installed_version" != "$target_version" ]; then
-      echo "$(google-chrome --version)is currently installed; replacing it"
-      $SUDO apt-get -y --purge remove google-chrome-stable >/dev/null 2>&1 || true
-      $SUDO rm -f "$(command -v google-chrome)" >/dev/null 2>&1 || true
+      echo "$chrome_package $installed_version is currently installed; replacing it"
+      $SUDO apt-get -y --purge remove "$chrome_package" >/dev/null 2>&1 || true
+      $SUDO rm -f "$chrome_path" >/dev/null 2>&1 || true
     else
-      echo "$(google-chrome --version)is already installed to $(command -v google-chrome)"
+      echo "$chrome_package $installed_version is already installed at $chrome_path"
       exit 0
     fi
   else
-    echo "Google Chrome is not currently installed; installing it"
+    echo "$chrome_package is not currently installed; installing it"
   fi
 fi
 
